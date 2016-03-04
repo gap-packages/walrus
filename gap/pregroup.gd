@@ -22,8 +22,11 @@ DeclareOperation("[]", [IsPregroupTableRep, IsInt]);
 DeclareCategory("IsElementOfPregroup", IsMultiplicativeElement);
 DeclareRepresentation("IsElementOfPregroupRep", IsElementOfPregroup and IsComponentObjectRep, []);
 
+DeclareAttribute("PregroupOf", IsElementOfPregroup);
+
 DeclareOperation("IsDefinedMultiplication", [IsElementOfPregroup, IsElementOfPregroup]);
 DeclareOperation("IsIntermultPair", [IsElementOfPregroup, IsElementOfPregroup]);
-DeclareAttribute("Sigma", IsElementOfPregroup);
+
+DeclareAttribute("PregroupInverse", IsElementOfPregroup);
 
 

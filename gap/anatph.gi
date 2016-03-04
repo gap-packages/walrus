@@ -46,58 +46,30 @@
 # Pregroup(pres)   (the pregroup structure)
 # Relations(pres)  (the set \mathcal{R})
 
-# Determine whether the product of a and b is defined
-# in their pregroup
-ProductDefined := function(a,b)
-
-end;
-
-# Test whether the Pregroup elements a and b intermult, i.e.
-# - a^(-1) <> b
-# - either ProductDefined(a,b)
-#   or there is x s.t. ProductDefined(a,x) and ProductDefined(x^(-1),b)
-#
-DoesIntermult := function(a,b)
-    local x;
-
-    if a = Sigma(b) then
-        return false;
-    elif a * b <> fail then
-        return true;
-    else
-        for x in Pregroup(a) do
-            if (a * x <> fail) and (x^(-1) * b <> fail) then
-                return true;
-            fi;
-        od;
-        return false;
-    fi;
-    # Should not be reached
-    return fail;
-end;
-
-IsRLetter := function(pres, x)
+InstallGlobalFunction(IsRLetter,
+function(pres, x)
     # determine whether x occurs in I(R)
-end;
+end);
 
-
-RepeatedList := function(list, n)
+InstallGlobalFunction(RepeatedList,
+function(list, n)
     local len, res, i;
-
+    
     len := Length(list);
-    res := EmptyPlist(len * int);
-
+    res := EmptyPlist(len * n);
+    
     for i in [1..n] do
         res{[(i-1) * len..(i*len)]} := list;
     od;
-
+    
     return res;
-end;
+end);
 
 # MaxPowerK: Input a word (relator) v over X, output w such that w^k = v, k maximal with this property
 # There might be a better way of doing this? Colva mentioned that it's in one
 # of Derek's books?
-MaxPowerK := function(rel)
+InstallGlobalFunction(MaxPowerK,
+function(rel)
     local len, d, divs, isrep,
           checkrep;
 
@@ -124,10 +96,11 @@ MaxPowerK := function(rel)
     od;
 
     return [ rel, 1 ];
-end;
+end);
 
-MaxPowerK2 := function(rel)
-    local len, divs;
+InstallGlobalFunction(MaxPowerK2,
+function(rel)
+    local len, divs, checkrep, w, k, d, r;
 
     len := Length(rel);
     divs := Reversed(DivisorsInt(len));
@@ -157,9 +130,10 @@ MaxPowerK2 := function(rel)
             w := r[1];
         fi;
     od;
-end;
+end);
 
-Locations := function(rel)
+InstallGlobalFunction(Locations,
+function(rel)
     local res, r, w, k, i;
 
     res := [];
@@ -171,7 +145,7 @@ Locations := function(rel)
     Add(res, [1, w[Length(w)], w[1]]);
 
     return res;
-end;
+end);
 
 
 # for the moment a location is triple [i,a,b]. This is of course redundant, since
@@ -179,7 +153,8 @@ end;
 
 # Given a pregroup presentation as the input, find all places
 # at the moment make a simple presentation for pregroup
-FindPlaces := function(pres)
+InstallGlobalFunction(Places,
+function(pres)
     local loc, c, C, B,
           places, a, b,
           gens;
@@ -193,7 +168,7 @@ FindPlaces := function(pres)
         b := loc[3];
         for c in gens do
             #C = 'B'
-            if DoesIntermult(b^(-1), c) then
+            if DoesIntermult(PregroupInverse(b), c) then
                 if IsRLetter(pres, c) then
                     Add(places, [loc,c,'B',false]);
                 fi;
@@ -203,7 +178,7 @@ FindPlaces := function(pres)
             # find location
             for rel2 in Relations(pres) do
                 for loc2 in Locations(rel2) do
-                    if loc2[2] = b^(-1) and loc2[3] = c then
+                    if loc2[2] = PregroupInverse(b) and loc2[3] = c then
                         if CheckReducedDiagram(rel, rel2) then
                             Add(places, [loc, c, 'G', q])
                         fi;
@@ -214,5 +189,5 @@ FindPlaces := function(pres)
     od;
 
     return places;
-end;
+end);
 

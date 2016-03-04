@@ -1,7 +1,7 @@
 #
 # anatph: A new approach to proving hyperbolicity
 #
-# Implementations
+# Pregroup code
 #
 
 # Define a pregroup by giving a list of generator names and
@@ -52,7 +52,7 @@ end);
 InstallMethod(\*
              , "for pregroup elements"
              , IsIdenticalObj
-             , [IsElementOfPregroup, IsElementOfPregroup]
+             , [IsElementOfPregroupRep, IsElementOfPregroupRep]
              , 0,
 function(x,y)
     local pg, r;
@@ -64,6 +64,25 @@ function(x,y)
     return Objectify(pg!.elt_t, rec( parent := pg, elt := r ));
 end);
 
+InstallMethod(PregroupOf
+             , "for pregroup elements"
+             , [ IsElementOfPregroupRep ]
+             , 0,
+function(a)
+    return a!.parent;
+end);
+
+InstallMethod(PregroupInverse
+             , "for pregroup elements"
+             , [ IsElementOfPregroupRep ]
+             , 0,
+function(a)
+    local pg;
+
+    pg := PregroupOf(a);
+
+    return Objectify(pg!.elt_t, rec( parent := pg, elt := pg!.inv(a) ) );
+end);
 
 InstallMethod(IsDefinedMultiplication
              , "for pregroup elements"
@@ -72,12 +91,14 @@ InstallMethod(IsDefinedMultiplication
              , 0,
 function(a,b)
     local pg;
-    
-    pg := x!.parent;
-    
-    if pg!.table[x!.elt][  ]
+
+    pg := PregroupOf(a);
+
+    return pg!.table[a!.elt][b!.elt] > 0;
 end);
 
+# We could cache intermult pairs,
+# or predetermine them
 InstallMethod(IsIntermultPair
              , "for pregroup elements"
              , IsIdenticalObj
@@ -86,13 +107,14 @@ InstallMethod(IsIntermultPair
 function(a,b)
     local x;
 
-    if a = Sigma(b) then
+    if a = PregroupInverse(b) then
         return false;
-    elif a * b <> fail then
+    elif IsDefinedMultiplication(a, b) then
         return true;
     else
-        for x in Pregroup(a) do
-            if (a * x <> fail) and (x^(-1) * b <> fail) then
+        for x in PregroupOf(a) do
+            if IsDefinedMultiplication(a,x)
+               and IsDefinedMultiplication(PregroupInverse(x), b) then
                 return true;
             fi;
         od;
@@ -101,6 +123,4 @@ function(a,b)
     # Should not be reached
     Error("This shouldn't happen.");
 end);
-
-
 
