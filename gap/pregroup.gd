@@ -18,6 +18,7 @@ DeclareGlobalFunction("PregroupByTableNC");
 DeclareGlobalFunction("PregroupByTable");
 
 DeclareOperation("[]", [IsPregroupTableRep, IsInt]);
+DeclareAttribute("Size", IsPregroup);
 
 DeclareCategory("IsElementOfPregroup", IsMultiplicativeElement);
 DeclareRepresentation("IsElementOfPregroupRep", IsElementOfPregroup and IsComponentObjectRep, []);

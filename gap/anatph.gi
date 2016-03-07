@@ -4,6 +4,45 @@
 # Implementations
 #
 
+InstallGlobalFunction(PregroupPresentation,
+function(pg, rels)
+    local res;
+
+    res := rec();
+
+    res.pg := pg;
+    res.rels := rels;
+
+    return Objectify(PregroupPresentationType, res);
+end);
+
+InstallMethod(ViewString
+             , "for a pregroup presentation"
+             , [IsPregroupPresentationRep],
+function(pgp)
+    # Note that we do not really regard 1 as a generator
+    local res;
+
+    return STRINGIFY("<pregroup presentation with "
+                    , Size(pgp!.pg)-1, " generators and "
+                    , Length(pgp!.rels), " relators>");
+end);
+
+InstallMethod(Pregroup
+             , "for a pregroup presentation"
+             , [IsPregroupPresentation],
+             pgp -> pgp!.pg);
+
+InstallMethod(Relations
+             , "for a pregroup presentation"
+             , [IsPregroupPresentation],
+             pgp -> pgp!.rels);
+
+InstallMethod(GeneratorsOfPregroupPresentation
+             , "for a pregroup presentation"
+             , [IsPregroupPresentation],
+             x -> fail);
+
 ####################################
 #
 #
@@ -49,20 +88,6 @@
 InstallGlobalFunction(IsRLetter,
 function(pres, x)
     # determine whether x occurs in I(R)
-end);
-
-InstallGlobalFunction(RepeatedList,
-function(list, n)
-    local len, res, i;
-    
-    len := Length(list);
-    res := EmptyPlist(len * n);
-    
-    for i in [1..n] do
-        res{[(i-1) * len..(i*len)]} := list;
-    od;
-    
-    return res;
 end);
 
 # MaxPowerK: Input a word (relator) v over X, output w such that w^k = v, k maximal with this property
@@ -132,6 +157,12 @@ function(rel)
     od;
 end);
 
+# at the moment a relation is just a list
+# of integers referring to elements of the
+# pregroup underlying the pregroup presentation
+#
+# for the moment a location is triple [i,a,b]. This is of course redundant, since
+# we know a and b from i and R.
 InstallGlobalFunction(Locations,
 function(rel)
     local res, r, w, k, i;
@@ -147,28 +178,33 @@ function(rel)
     return res;
 end);
 
+InstallGlobalFunction(CheckReducedDiagram,
+function(r1, r2)
+end);
 
-# for the moment a location is triple [i,a,b]. This is of course redundant, since
-# we know a and b from i and R.
 
 # Given a pregroup presentation as the input, find all places
-# at the moment make a simple presentation for pregroup
+# Pregroup presentations consist of a pregroup and a list of relations
 InstallGlobalFunction(Places,
 function(pres)
-    local loc, c, C, B,
+    local loc, loc2, c, C, B,
           places, a, b,
-          gens;
+          gens, rels, rel, rel2,
+          places_for_rel;
 
-    gens := Generators(pres);
+    gens := [2..Size(Pregroup(pres))];
+    rels := Relations(pres);
+
 
     places := [];
 
+    for rel in rels do
     for loc in Locations(rel) do
         a := loc[2];
         b := loc[3];
         for c in gens do
             #C = 'B'
-            if DoesIntermult(PregroupInverse(b), c) then
+            if IsIntermultPair(PregroupInverse(b), c) then
                 if IsRLetter(pres, c) then
                     Add(places, [loc,c,'B',false]);
                 fi;
@@ -180,12 +216,15 @@ function(pres)
                 for loc2 in Locations(rel2) do
                     if loc2[2] = PregroupInverse(b) and loc2[3] = c then
                         if CheckReducedDiagram(rel, rel2) then
-                            Add(places, [loc, c, 'G', q])
+                            Add(places, [loc, c, 'G', true]);
+                        else
+                            Add(places, [loc, c, 'G', false]);
                         fi;
                     fi;
                 od;
             od;
         od;
+    od;
     od;
 
     return places;

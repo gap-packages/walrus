@@ -38,6 +38,13 @@ function(pg)
     return STRINGIFY("<pregroup with ", Length(pg!.enams), " elements in table rep>");
 end);
 
+InstallMethod(Size
+             , "for a pregroup in table rep"
+             , [IsPregroupTableRep],
+function(pg)
+    return Length(pg!.enams);
+end);
+
 InstallMethod(ViewString
              , "for a pregroup element"
              , [IsElementOfPregroupRep],
