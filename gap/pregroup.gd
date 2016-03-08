@@ -7,7 +7,7 @@
 # Declarations
 #
 
-DeclareCategory("IsPregroup", IsObject);
+DeclareCategory("IsPregroup", IsObject and IsCollection);
 BindGlobal("PregroupFamily", NewFamily("PregroupFamily"));
 
 DeclareRepresentation("IsPregroupTableRep", IsPregroup and IsComponentObjectRep, []);
@@ -18,7 +18,7 @@ DeclareGlobalFunction("PregroupByTableNC");
 DeclareGlobalFunction("PregroupByTable");
 
 DeclareOperation("[]", [IsPregroupTableRep, IsInt]);
-DeclareAttribute("Size", IsPregroup);
+# DeclareAttribute("Size", IsPregroup);
 
 DeclareCategory("IsElementOfPregroup", IsMultiplicativeElement);
 DeclareRepresentation("IsElementOfPregroupRep", IsElementOfPregroup and IsComponentObjectRep, []);

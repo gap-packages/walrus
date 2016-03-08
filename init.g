@@ -9,5 +9,7 @@ if _PATH_SO <> fail then
 fi;
 Unbind(_PATH_SO);
 
-ReadPackage( "anatph", "gap/pregroup.gd");
-ReadPackage( "anatph", "gap/anatph.gd");
+ReadPackage("anatph", "gap/pregroup.gd");
+ReadPackage("anatph", "gap/anatph.gd");
+ReadPackage("anatph", "gap/examples.gd");
+

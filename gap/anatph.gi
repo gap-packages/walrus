@@ -199,32 +199,32 @@ function(pres)
     places := [];
 
     for rel in rels do
-    for loc in Locations(rel) do
-        a := loc[2];
-        b := loc[3];
-        for c in gens do
-            #C = 'B'
-            if IsIntermultPair(PregroupInverse(b), c) then
-                if IsRLetter(pres, c) then
-                    Add(places, [loc,c,'B',false]);
-                fi;
-                Add(places, [loc, c, 'B', true] );
-            fi;
-            #C = 'G'
-            # find location
-            for rel2 in Relations(pres) do
-                for loc2 in Locations(rel2) do
-                    if loc2[2] = PregroupInverse(b) and loc2[3] = c then
-                        if CheckReducedDiagram(rel, rel2) then
-                            Add(places, [loc, c, 'G', true]);
-                        else
-                            Add(places, [loc, c, 'G', false]);
-                        fi;
+        for loc in Locations(rel) do
+            a := loc[2];
+            b := loc[3];
+            for c in gens do
+                #C = 'B'
+                if IsIntermultPair(PregroupInverse(b), c) then
+                    if IsRLetter(pres, c) then
+                        Add(places, [loc,c,'B',false]);
                     fi;
+                    Add(places, [loc, c, 'B', true] );
+                fi;
+                #C = 'G'
+                # find location
+                for rel2 in Relations(pres) do
+                    for loc2 in Locations(rel2) do
+                        if loc2[2] = PregroupInverse(b) and loc2[3] = c then
+                            if CheckReducedDiagram(rel, rel2) then
+                                Add(places, [loc, c, 'G', true]);
+                            else
+                                Add(places, [loc, c, 'G', false]);
+                            fi;
+                        fi;
+                    od;
                 od;
             od;
         od;
-    od;
     od;
 
     return places;
