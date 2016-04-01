@@ -19,6 +19,12 @@ BindGlobal("PregroupPresentationType", NewType(PregroupPresentationFamily, IsPre
 
 DeclareGlobalFunction("PregroupPresentation");
 
+# Words over pregroups can be inverted
+# will we automatically multiply things together if multiplication is defined?
+DeclareCategory("IsWordOverPregroup", IsMultiplicativeElementWithInverse and IsList);
+DeclareRepresentation("IsWordOverPregroupListRep", IsWordOverPregroup and IsPositionalObjectRep, [] );
+# Words over different pregroups have to be in different families...
+
 DeclareAttribute("Pregroup", IsPregroupPresentation);
 DeclareAttribute("Relations", IsPregroupPresentation);
 DeclareAttribute("GeneratorsOfPregroupPresentation", IsPregroupPresentation);

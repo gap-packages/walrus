@@ -10,19 +10,67 @@ tg_pg := PregroupByTable("1xyY"
                           );
 
 # Pregroup presentation for triangle group
-tg_pgp := PregroupPresentation(tg_pg, []);
+pg_word := function(pg, l) return List(l, x->pg[x]);
+           end;
 
-inm_pg := PregroupByTable("1aAbBcCxX"
-                           , a -> a^(2,3)(4,5)(6,7)(8,9)
-                           #     1,a,A,b,B,c,C,x,X
-                           , [ [ 1,2,3,4,5,6,7,8,9 ]
-                             , [ 2,0,1,0,0,0,0,6,0 ]
-                             , [ 3,1,0,0,0,8,0,0,0 ]
-                             , [ 4,0,0,0,1,0,0,0,0 ]
-                             , [ 5,0,0,1,0,0,0,6,0 ]
-                             , [ 6,0,0,0,0,0,1,0,2 ]
-                             , [ 7,9,0,0,0,1,0,0,0 ]
-                             , [ 8,0,0,0,0,0,3,0,1 ]
-                             , [ 9,0,7,7,0,0,0,1,0 ] ]
-                           );
+tg_pgp := PregroupPresentation(tg_pg, [pg_word(tg_pg, [2,3,2,3,2,3,2,3]), pg_word(tg_pg,[3,2,3,2,3,2,3,2])]);
+
+pgtbl := function()
+    local e1, e2, sgp, tbl, elts, nelts, a, b,
+          pa, pb, s1p, s2p, pr, invs,
+          sgpi, s1pi, s2pi, sgpp;
+
+
+    sgpp := Elements(Group((1,2,3)));
+    sgp := List(Elements(Group((1,2,3))), x -> [1,x]);
+    s1p := List(Difference(Elements(SymmetricGroup(3)), sgpp), x -> [2,x]);
+    s2p := List(Difference(Elements(SymmetricGroup(4)), sgpp), x -> [3,x]);
+    elts := Concatenation(sgp,s1p,s2p);
+    invs := List(elts, x -> Position(elts, [x[1],x[2]^-1] ));
+
+    nelts := Length(elts);
+
+    tbl := List([1..nelts], x -> [1..nelts] * 0);
+
+    for a in elts do
+        for b in elts do
+            pa := Position(elts, a);
+            pb := Position(elts, b);
+
+            if a[1] = b[1] then
+                pr := Position(elts, [a[1], a[2] * b[2]]);
+		            if pr = fail then
+			              pr := Position(elts, [1, a[2] * b[2]]);
+		            fi;
+            elif (a[1] = 1 and b[1] = 2) or
+                 (a[1] = 2 and b[1] = 1) then
+                pr := Position(elts, [2, a[2] * b[2]]);
+                if pr = fail then
+                    pr := Position(elts, [1, a[2] * b[2]]);
+                fi;
+            elif (a[1] = 1 and b[1] = 3) or
+                 (a[1] = 3 and b[1] = 1) then
+                pr := Position(elts, [3, a[2] * b[2]]);
+                if pr = fail then
+                    pr := Position(elts, [1, a[2] * b[2]]);
+                fi;
+            else
+                pr := 0;
+            fi;
+	          if pr = fail then
+		            Error("wat.");
+	          fi;
+            tbl[pa][pb] := pr;
+        od;
+    od;
+
+    return [elts, SortingPerm(invs), tbl];
+end;
+
+# A clumsy approach to making a pregroup
+# with a non-trivial intermult pair: its the union
+# of SymmetricGroup(3) and SymmetricGroup(4) amalgamating
+# Group((1,2,3))
+tbl := pgtbl();
+inmp_pg := PregroupByTable("1abcdefghijklmnopqrstuvwxyz", x->x^tbl[2], tbl[3]);
 

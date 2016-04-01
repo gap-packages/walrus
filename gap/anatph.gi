@@ -85,9 +85,22 @@ InstallMethod(GeneratorsOfPregroupPresentation
 # Pregroup(pres)   (the pregroup structure)
 # Relations(pres)  (the set \mathcal{R})
 
+# An R-letter is a letter that occurs in any (intersperse) of
+# a relation (Definition 7.4)
+# XXX: Note that the code below does not do intersperses yet!
+# XXX: Colva said we can go without intersperse I think
+# XXX: Check
 InstallGlobalFunction(IsRLetter,
 function(pres, x)
     # determine whether x occurs in I(R)
+    local r,l;
+
+    for r in Relations(pres) do
+        for l in r do
+            return true;
+        od;
+    od;
+    return false;
 end);
 
 # MaxPowerK: Input a word (relator) v over X, output w such that w^k = v, k maximal with this property
@@ -178,8 +191,10 @@ function(rel)
     return res;
 end);
 
+# Definition 3.3: A diagram is reduced  
 InstallGlobalFunction(CheckReducedDiagram,
 function(r1, r2)
+    return false;
 end);
 
 
@@ -195,14 +210,13 @@ function(pres)
     gens := [2..Size(Pregroup(pres))];
     rels := Relations(pres);
 
-
     places := [];
 
     for rel in rels do
         for loc in Locations(rel) do
             a := loc[2];
             b := loc[3];
-            for c in gens do
+            for c in Pregroup(pres) do
                 #C = 'B'
                 if IsIntermultPair(PregroupInverse(b), c) then
                     if IsRLetter(pres, c) then
