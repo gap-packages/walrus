@@ -26,12 +26,26 @@ DeclareRepresentation("IsWordOverPregroupListRep", IsWordOverPregroup and IsPosi
 # Words over different pregroups have to be in different families...
 
 DeclareAttribute("Pregroup", IsPregroupPresentation);
+DeclareAttribute("Generators", IsPregroupPresentation);
 DeclareAttribute("Relations", IsPregroupPresentation);
+DeclareAttribute("Locations", IsPregroupPresentation);
+DeclareAttribute("Places", IsPregroupPresentation);
+
 DeclareAttribute("GeneratorsOfPregroupPresentation", IsPregroupPresentation);
 
 # Proving hyperblicity using RSym
-
-DeclareGlobalFunction("Locations");
-DeclareGlobalFunction("Places");
+# DeclareGlobalFunction("Locations");
+# DeclareGlobalFunction("Places");
 DeclareGlobalFunction("CheckReducedDiagram");
+DeclareGlobalFunction("LocationBlobGraph");
+DeclareGlobalFunction("ComputePlaceTriples");
+
+# Not a good choice of name
+DeclareGlobalFunction("Vertex");
+
+
+DeclareGlobalFunction("ShortBlobWords");
+DeclareGlobalFunction("Blob");
+DeclareGlobalFunction("RSymTester");
+
 

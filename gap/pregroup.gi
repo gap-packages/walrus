@@ -131,6 +131,38 @@ function(pg)
     return Length(pg!.enams);
 end);
 
+InstallMethod(IntermultPairs
+             , "for a pregroup in table rep"
+             , [IsPregroupTableRep],
+function(pg)
+    local i, j, k, pairs;
+
+    pairs := [];
+    for i in [1..Length(pg!.enams)] do
+        for j in [1..Length(pg!.enams)] do
+            if (i <> j) and
+               (pg!.table[i] <> pg!.sigma(j)) then
+                if pg!.table[i][j] > 0 then
+                    Add(pairs, [i,j]);
+                else
+                    for k in [1..Length(pg!.enams)] do
+                        if (pg!.table[i][k] > 0) and
+                           (pg!.table[pg!.sigma(k)][j]) then
+                            Add(pairs, [i,j]);
+                            break;
+                        fi;
+                    od;
+                fi;
+            fi;
+        od;
+    od;
+
+    return pairs;
+end);
+
+#
+# Pregroup elements
+#
 InstallMethod(ViewString
              , "for a pregroup element"
              , [IsElementOfPregroupRep],
@@ -229,7 +261,3 @@ function(a,b)
     # Should not be reached
     Error("This shouldn't happen.");
 end);
-
-
-
-

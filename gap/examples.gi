@@ -8,12 +8,15 @@ tg_pg := PregroupByTable("1xyY"
                               [3,0,4,1],
                               [4,0,1,3] ]
                           );
+TriangleGroupPregroup := tg_pg;
 
 # Pregroup presentation for triangle group
 pg_word := function(pg, l) return List(l, x->pg[x]);
            end;
 
 tg_pgp := PregroupPresentation(tg_pg, [pg_word(tg_pg, [2,3,2,3,2,3,2,3]), pg_word(tg_pg,[3,2,3,2,3,2,3,2])]);
+
+TriangleGroupPGP := tg_pgp;
 
 pgtbl := function()
     local e1, e2, sgp, tbl, elts, nelts, a, b,

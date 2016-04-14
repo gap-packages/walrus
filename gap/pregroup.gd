@@ -19,6 +19,9 @@ DeclareGlobalFunction("PregroupByTable");
 
 DeclareOperation("[]", [IsPregroupTableRep, IsInt]);
 # DeclareAttribute("Size", IsPregroup);
+DeclareAttribute("IntermultPairs", IsPregroup);
+
+# Elements of Pregroups
 
 DeclareCategory("IsElementOfPregroup", IsMultiplicativeElement);
 DeclareRepresentation("IsElementOfPregroupRep", IsElementOfPregroup and IsComponentObjectRep, []);
@@ -30,4 +33,4 @@ DeclareOperation("IsIntermultPair", [IsElementOfPregroup, IsElementOfPregroup]);
 
 DeclareAttribute("PregroupInverse", IsElementOfPregroup);
 
-
+# TBD: Words over Pregroups
