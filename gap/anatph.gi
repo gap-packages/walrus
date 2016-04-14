@@ -191,35 +191,20 @@ end);
 InstallMethod(Locations, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local rel, locs, ls, r, w, k, i;
+    local rels, rel, locs, ls, r, w, k, i;
 
+    rels := Relations(pres);
     locs := [];
 
-    for rel in Relations(pres) do
-        r := MaxPowerK(rel);
+    for rel in [1..Length(rels)] do
+        r := MaxPowerK(rels[rel]);
         w := r[1];
 
-        ls := [[1, w[Length(w)], w[1]]];
-        Append(ls, List([2..Length(w)], i -> [i, w[i-1], w[i]]));
-        Add(locs, ls);
+        Add(locs, [rel, 1, w[Length(w)], w[1]]);
+        Append(locs, List([2..Length(w)], i -> [rel, i, w[i-1], w[i]]));
     od;
     return locs;
 end);
-
-#InstallGlobalFunction(Locations,
-#function(rel)
-#    local res, r, w, k, i;
-#
-#    res := [];
-#
-#    r := MaxPowerK(rel);
-#    w := r[1];
-#
-#    res := List([2..Length(w)], i -> [i, w[i-1], w[i]]);
-#    Add(res, [1, w[Length(w)], w[1]]);
-#
-#    return res;
-#end);
 
 # Definition 3.3: A diagram is semi-reduced, if no distinct adjacent faces
 # are labelled by ww_1 and w_1^{-1}w for a relator ww_1 and have a common
@@ -230,11 +215,16 @@ end);
 #    above?
 #XXX Check correctness, but this is confirmed correct behaviour
 InstallGlobalFunction(CheckReducedDiagram,
-function(r1, l1, r2, l2)
-    local i, j;
+function(pres, l1, l2)
+    local i, j, rels, r1, r2;
 
-    i := l1[1];
-    j := l2[1];
+    rels := Relations(pres);
+
+    r1 := rels[l1[1]];
+    r2 := rels[l2[1]];
+
+    i := l1[2];
+    j := l2[2];
 
     repeat
         i := i + 1;
@@ -272,33 +262,29 @@ function(pres)
     locs := Locations(pres);
     places := [];
 
-    for rel in [1..Length(rels)] do
-        for loc in locs[rel] do
-            a := loc[2];
-            b := loc[3];
-            for c in Generators(pres) do
-                # C = 'B', i.e. red, I still find this confusing
-                if IsIntermultPair(PregroupInverse(b), c) then
-                    if IsRLetter(pres, c) then
-                        Add(places, [loc,c, "red",false]);
-                    fi;
-                    Add(places, [loc, c, "red", true] );
+    for loc in locs do
+        a := loc[3];
+        b := loc[4];
+        for c in Generators(pres) do
+            # C = 'B', i.e. red, I still find this confusing
+            if IsIntermultPair(PregroupInverse(b), c) then
+                if IsRLetter(pres, c) then
+                    Add(places, [loc, c, "red", false]);
                 fi;
-                # C = 'G'
-                # find location R'.
-                for rel2 in [1..Length(rels)] do
-                    for loc2 in locs[rel2] do
-                        if loc2[2] = PregroupInverse(b) and loc2[3] = c then
-                            # Is this really just checking that rel starting at b is
-                            # not equal to rel2
-                            if CheckReducedDiagram(rels[rel], loc, rels[rel2], loc2) then
-                                Add(places, [loc, c, "green", true]);
-                            else
-                                Add(places, [loc, c, "green", false]);
-                            fi;
-                        fi;
-                    od;
-                od;
+                Add(places, [loc, c, "red", true] );
+            fi;
+            # C = 'G'
+            # find location R'.
+            for loc2 in locs do
+                if loc2[3] = PregroupInverse(b) and loc2[4] = c then
+                    # Is this really just checking that rel starting at b is
+                    # not equal to rel2
+                    if CheckReducedDiagram(pres, loc, loc2) then
+                        Add(places, [loc, c, "green", true]);
+                    else
+                        Add(places, [loc, c, "green", false]);
+                    fi;
+                fi;
             od;
         od;
     od;
@@ -313,23 +299,26 @@ end);
 #  - R(i,a,b) -> I(b^(-1),c)
 #  - R(i,a,b) -> R'(j,b^(-1),c) if there is a reduced diagram that has
 #                               faces labelled R and R'
-#XXX This might be horribly inefficient
+#XXX This is horribly inefficient, since we are much sparser
+#    on edges than |v|^2
 InstallGlobalFunction(LocationBlobGraph,
 function(pres)
-    local vertices, edges;
+    local v, e, r, l, ls;
 
-    vertices := List(Locations(pres), x->['L', x]);
-    Append(vertices, List(IntermultPairs(pres), x -> ['I', x]));
+    v := List(Locations(pres), x->['L', x]);
+    for r in [1..Length(Relations(pres))] do
+        Append(v, List(IntermultPairs(Pregroup(pres)), x -> ['I', x]));
+    od;
 
-    edges := function(a,b)
+    e := function(a,b)
         if a[1] = 'L' then
             if b[1] = 'L' then
-                if a[2][3] = PregroupInverse(b[2][2]) and
-                   CheckReducedDiagram(a[2][1], b[2][1]) then
+                if a[2][4] = PregroupInverse(b[2][3]) and
+                   CheckReducedDiagram(pres, a[2], b[2]) then
                     return true;
                 fi;
             elif b[1] = 'I' then
-                if a[2][3] = PregroupInverse(b[2][2]) then
+                if a[2][4] = PregroupInverse(b[2][2]) then
                     return true;
                 fi;
             else
@@ -337,7 +326,7 @@ function(pres)
             fi;
         elif a[1] = 'I' then
             if b[1] = 'L' then
-                if a[2][3] = PregroupInverse(b[2][2]) then
+                if a[2][2] = PregroupInverse(b[2][3]) then
                     return true;
                 fi;
             fi;
@@ -346,7 +335,7 @@ function(pres)
         return false;
     end;
 
-    return [vertices, Digraph(vertices, edges)];
+    return [v, Digraph(v, e)];
 end);
 
 InstallGlobalFunction(ComputePlaceTriples,
