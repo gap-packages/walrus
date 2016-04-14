@@ -141,13 +141,13 @@ function(pg)
     for i in [1..Length(pg!.enams)] do
         for j in [1..Length(pg!.enams)] do
             if (i <> j) and
-               (pg!.table[i] <> pg!.sigma(j)) then
-                if pg!.table[i][j] > 0 then
+               (pg!.table[i] <> pg!.inv(j)) then
+                if (pg!.table[i][j] > 0) then
                     Add(pairs, [i,j]);
                 else
                     for k in [1..Length(pg!.enams)] do
                         if (pg!.table[i][k] > 0) and
-                           (pg!.table[pg!.sigma(k)][j]) then
+                           (pg!.table[pg!.inv(k)][j] > 0) then
                             Add(pairs, [i,j]);
                             break;
                         fi;
