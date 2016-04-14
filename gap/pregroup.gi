@@ -131,6 +131,8 @@ function(pg)
     return Length(pg!.enams);
 end);
 
+#XXX at the moment [1,x] and [x,1] intermult, but I don't think
+#    this is really needed?
 InstallMethod(IntermultPairs
              , "for a pregroup in table rep"
              , [IsPregroupTableRep],
@@ -141,14 +143,15 @@ function(pg)
     for i in [1..Length(pg!.enams)] do
         for j in [1..Length(pg!.enams)] do
             if (i <> j) and
-               (pg!.table[i] <> pg!.inv(j)) then
+               (i <> pg!.inv(j)) then
+
                 if (pg!.table[i][j] > 0) then
-                    Add(pairs, [i,j]);
+                    Add(pairs, [pg[i],pg[j]]);
                 else
                     for k in [1..Length(pg!.enams)] do
                         if (pg!.table[i][k] > 0) and
                            (pg!.table[pg!.inv(k)][j] > 0) then
-                            Add(pairs, [i,j]);
+                            Add(pairs, [pg[i],pg[j]]);
                             break;
                         fi;
                     od;
