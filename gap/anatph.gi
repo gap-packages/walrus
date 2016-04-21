@@ -3,6 +3,15 @@
 #
 # Implementations
 #
+#
+# Run to test (tg_pgp is a pregroup presentation for a triangle group, with
+#              tg_pg better have more):
+#  - IntermultPairs(tg_pg);
+#  - Locations(tg_pgp);
+#  - Places(tg_pgp);
+#  - LocationBlobGraph(tg_pgp);
+#
+
 InstallGlobalFunction(PregroupPresentation,
 function(pg, rels)
     local res;
@@ -303,7 +312,7 @@ end);
 #    on edges than |v|^2
 InstallGlobalFunction(LocationBlobGraph,
 function(pres)
-    local v, e, r, l, ls;
+    local v, e, r, l, ls, lbg;
 
     v := List(Locations(pres), x->['L', x]);
     for r in [1..Length(Relations(pres))] do
@@ -335,41 +344,235 @@ function(pres)
         return false;
     end;
 
-    return [v, Digraph(v, e)];
+    lbg := Digraph(v,e);
+    SetDigraphVertexLabels(lbg, v);
+    return lbg;
 end);
 
+LocationBlobGraphDistances := function(lbg)
+    local wt, f, d;
+
+    wt := function(i,j)
+        if DigraphVertexLabel(lbg, i)[1] = 'I' then
+            return 1;
+        else
+            return 0;
+        fi;
+    end;
+
+    f := function(mat, i, j, k)
+        local t;
+
+        if mat[i][j] = -1 then
+            mat[i][j] := wt(i,j);
+        else
+            mat[i][j] := Minimum(mat[i][j], mat[i][k] + mat[k][j]);
+        fi;
+    end;
+
+    return DigraphFloydWarshall(lbg, f, infinity, -1 );
+end;
+
+#XXX This can probably be simplified. Refer to section 7.3 for the
+#    description
 InstallGlobalFunction(ComputePlaceTriples,
 function(pres)
-    local p, ps, lp, lps;
+    local v, v1, v2, lv, lv1, lv2,
+          d, #
+          dist,
+          p,
+          ps,
+          pls,
+          lp,
+          lps,
+          lpl,
+          lbg,
+          lbgd,
+          locs,
+          places, xi;
 
-#    ps := Places(pres);
-#    lps := [];
-#
-#    for locations in LBG do
-#    od;
-#
-#    for p in ps do
-#        lp := [];
-#    od;
+    lbg := LocationBlobGraph(pres);
+    lbgd := LocationBlobGraphDistances(lbg);
+    locs := Locations(pres);
+    places := Places(pres);
+    pls := Places(pres);
+
+    lpl := ListWithIdenticalEntries(Length(places), []);
+
+    for v in DigraphVertices(lbg) do
+        lv := DigraphVertexLabel(lbg, v);
+#        pls := Filtered(places, x -> x = v[2]);
+        if lv[1] = 'L' then
+            for v1 in InNeighboursOfVertex(lbg, v) do
+                lv1 := DigraphVertexLabel(lbg, v1);
+                for v2 in OutNeighboursOfVertex(lbg, v) do
+                    lv2 := DigraphVertexLabel(lbg, v2);
+                    if lv[1] = 'L' then
+                        if lv2[1] = 'L' then   # v1 and v2 are locations
+                            for p in [1..Length(pls)] do
+                                if (pls[p][1] = lv[2]) and (pls[p][3] = "green") then
+                                    if pls[p][4] = false then
+                                        if lbgd[v2][v1] = 0 then
+                                            Add(lpl[p], [v1, v2, -1/6]);
+                                        elif lbgd[v2][v1] = 1 then
+                                            Add(lpl[p], [v1, v2, -1/4]);
+                                        elif lbgd[v2][v1] = 2 then
+                                            Add(lpl[p], [v1, v2, -3/10]);
+                                        else
+                                            Add(lpl[p], [v1, v2, -1/3]);
+                                        fi;
+                                    else
+                                        Add(lpl[p], [v1,v2, -1/3]);
+                                    fi;
+                                fi;
+                            od;
+                        elif lv2[1] = 'I' then # v1 location, v2 intermult
+                            for p in [1..Length(pls)] do
+                                if (pls[p][1] = lv[2]) and (pls[p][3] = "green") then
+                                    if pls[p][4] = false then
+                                        if lbgd[v2][v1] = 0 then
+                                            Add(lpl[p], [v1, v2, 0]);
+                                        elif lbgd[v2][v1] = 1 then
+                                            Add(lpl[p], [v1, v2, -1/6]);
+                                        else
+                                            Add(lpl[p], [v1, v2, -1/4]);
+                                        fi;
+                                    else
+                                        Add(lpl[p], [v1, v2, -1/4]);
+                                    fi;
+                                fi;
+                            od;
+                        else
+                            Error("this shouldn't happen");
+                        fi;
+                    elif lv1[1] = 'I' then
+                        if lv2[1] = 'L' then
+                            for p in [1..Length(pls)] do
+                                if (pls[p][1] = lv[2][2]) and (pls[p][3] = "red") then
+                                    if pls[p][4] = false then
+                                        if lbgd[v2][v1] = 0 then
+                                            Add(lpl[p], [v1, v2, 0]);
+                                        elif lbgd[v2][v1] = 1 then
+                                            Add(lpl[p], [v1, v2, -1/6]);
+                                        else
+                                            Add(lpl[p], [v1, v2, -1/4]);
+                                        fi;
+                                    else
+                                        Add(lpl[p], [v1, v2, -1/4]);
+                                    fi;
+                                fi;
+                            od;
+                        elif lv2[1] = 'I' then # Both intermult pair
+                            for p in [1..Length(pls)] do
+                                if (pls[p][1] = lv[2][2]) and (pls[p][3] = "red") then
+                                    if pls[p][4] = false then
+                                        Add(lpl[p], [v1, v2, 0]);
+                                    else
+                                        Add(lpl[p], [v1, v2, -1/4]);
+                                    fi;
+                                fi;
+                            od;
+                        else
+                            Error("this shouldn't happen");
+                        fi;
+                    fi;
+                od;
+            od;
+        fi;
+    od;
+    return lpl;
 end);
 
+# This is horrid, and we should think about
+# better indexing.
 InstallGlobalFunction(Vertex,
-function(nu1, P, nu2)
-    local x;
-    
-    
+function(pres, v1, place, v2)
+    local v, vl, loc, x, lbg, found, pls, lpl, pl, pt, pp, tv1, tv2;
 
+    pls := Places(pres);
+    lbg := LocationBlobGraph(pres);
+    lpl := ComputePlaceTriples(pres);
+    loc := place[1];
+
+    found := false;
+    
+    for v in DigraphVertices(lbg) do
+        vl := DigraphVertexLabel(lbg, v);
+
+        if vl[1] = 'L' and vl[2] = loc then
+            found := true;
+            break;
+        fi;
+    od;
+    
+    if found then
+        found := false;
+        for tv1 in InNeighboursOfVertex(lbg, v) do
+            if DigraphVertexLabel(tv1) = v1 then
+                found := true;
+                break;
+            fi;
+        od;
+    else
+        return fail;
+    fi;
+    
+    if found then
+        found := false;
+        for tv2 in OutNeighboursOfVertex(lbg, v) do
+            if DigraphVertexLabel(tv2) = v2 then
+                found := true;
+                break;
+            fi;
+        od;
+    else
+        return fail;
+    fi;
+    
+    if found then
+        found := false;
+        for pp in [1..Length(pls)] do
+            if pls[pp] = place then
+                found := true;
+            fi;
+        od;
+    else
+        return fail;
+    fi;
+    
+    if found then
+        found := false;
+        for pt in lpl[pp] do
+            if pt[1] = v1 and pt[2] = v2 then
+                return pt[3];
+            fi;
+        od;
+    else 
+        return fail;
+    fi;
+    return fail;
 end);
 
 
 InstallGlobalFunction(ShortBlobWords,
-function()
-    Error("short blob words not implemented yet");
+function(pres)
+    local i, lst, pg, alph;
+    alph := Generators(tg_pgp);
+
+    lst := [""];
+
+    for i in [1..6] do
+    od;
+
+    Error("short blob words not complete yet");
+    return lst;
 end);
 
 InstallGlobalFunction(Blob,
 function()
     Error("Blob not implemented yet");
+
+    return -5/14;
 end);
 
 LengthEps := function(eps, rel, l)
@@ -438,4 +641,5 @@ function(pres, eps)
 
     return true;
 end);
+
 
