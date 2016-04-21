@@ -133,6 +133,7 @@ end);
 
 #XXX at the moment [1,x] and [x,1] intermult, but I don't think
 #    this is really needed?
+#XXX Intermult is only defined for elements other than 1
 InstallMethod(IntermultPairs
              , "for a pregroup in table rep"
              , [IsPregroupTableRep],
@@ -140,8 +141,8 @@ function(pg)
     local i, j, k, pairs;
 
     pairs := [];
-    for i in [1..Length(pg!.enams)] do
-        for j in [1..Length(pg!.enams)] do
+    for i in [2..Length(pg!.enams)] do
+        for j in [2..Length(pg!.enams)] do
             if (i <> j) and
                (i <> pg!.inv(j)) then
 
@@ -238,22 +239,22 @@ end);
 # or predetermine them, depending
 # on the number of intermult lookups
 # that could benefit runtime
-#T Find an example of a pregroup that has an intermult pair
-#T That covers the last case
 InstallMethod(IsIntermultPair
              , "for pregroup elements"
              , IsIdenticalObj
              , [IsElementOfPregroup, IsElementOfPregroup]
              , 0,
 function(a,b)
-    local x;
+    local x, nontriv;
 
     if a = PregroupInverse(b) then
         return false;
     elif IsDefinedMultiplication(a, b) then
         return true;
     else
-        for x in PregroupOf(a) do
+        nontriv := List(PregroupOf(a), x -> x);
+        Remove(nontriv, 1);
+        for x in nontriv do
             if IsDefinedMultiplication(a,x)
                and IsDefinedMultiplication(PregroupInverse(x), b) then
                 return true;
