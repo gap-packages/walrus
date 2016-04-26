@@ -143,13 +143,11 @@ function(pg)
     pairs := [];
     for i in [2..Length(pg!.enams)] do
         for j in [2..Length(pg!.enams)] do
-            if (i <> j) and
-               (i <> pg!.inv(j)) then
-
+            if (i <> pg!.inv(j)) then
                 if (pg!.table[i][j] > 0) then
                     Add(pairs, [pg[i],pg[j]]);
                 else
-                    for k in [1..Length(pg!.enams)] do
+                    for k in [2..Length(pg!.enams)] do
                         if (pg!.table[i][k] > 0) and
                            (pg!.table[pg!.inv(k)][j] > 0) then
                             Add(pairs, [pg[i],pg[j]]);
@@ -163,6 +161,67 @@ function(pg)
 
     return pairs;
 end);
+
+InstallMethod(IntermultPairsIds
+             , "for a pregroup in table rep"
+             , [IsPregroupTableRep],
+function(pg)
+    local i, j, k, pairs;
+
+    pairs := [];
+    for i in [2..Length(pg!.enams)] do
+        for j in [2..Length(pg!.enams)] do
+            if (i <> pg!.inv(j)) then
+                if (pg!.table[i][j] > 0) then
+                    Add(pairs, [i,j]);
+                else
+                    for k in [2..Length(pg!.enams)] do
+                        if (pg!.table[i][k] > 0) and
+                           (pg!.table[pg!.inv(k)][j] > 0) then
+                            Add(pairs, [i,j]);
+                            break;
+                        fi;
+                    od;
+                fi;
+            fi;
+        od;
+    od;
+    return pairs;
+end);
+
+InstallMethod(IntermultMap
+             , "for a pregroup in table rep"
+             , [IsPregroupTableRep],
+function(pg)
+    local i, j, k, map;
+
+    map := [];
+    for i in [1..Size(pg)] do
+        map[i] := [];
+    od;
+
+    for i in [2..Length(pg!.enams)] do
+        for j in [2..Length(pg!.enams)] do
+            if (i <> pg!.inv(j)) then
+                if (pg!.table[i][j] > 0) then
+                    Add(map[i], j);
+                else
+                    for k in [2..Length(pg!.enams)] do
+                        if (pg!.table[i][k] > 0) and
+                           (pg!.table[pg!.inv(k)][j] > 0) then
+                            Add(map[i],j);
+                            break;
+                        fi;
+                    od;
+                fi;
+            fi;
+        od;
+    od;
+    return map;
+end);
+
+
+
 
 #
 # Pregroup elements
@@ -178,6 +237,7 @@ function(pge)
     fi;
 end);
 
+#XXX Is fail as a result for multiplication acceptable?
 InstallMethod(\*
              , "for pregroup elements"
              , IsIdenticalObj
@@ -190,7 +250,11 @@ function(x,y)
 
     r := pg!.table[x!.elt][y!.elt];
 
-    return Objectify(pg!.elt_t, rec( parent := pg, elt := r ));
+    if r > 0 then
+        return Objectify(pg!.elt_t, rec( parent := pg, elt := r ));
+    else
+        return fail;
+    fi;
 end);
 
 InstallMethod(\=
@@ -220,6 +284,14 @@ function(a)
     pg := PregroupOf(a);
 
     return Objectify(pg!.elt_t, rec( parent := pg, elt := pg!.inv(a!.elt) ) );
+end);
+
+InstallMethod(PregroupElementId
+             , "for pregroup elements"
+             , [ IsElementOfPregroupRep]
+             , 0,
+function(a)
+    return a!.elt;
 end);
 
 InstallMethod(IsDefinedMultiplication

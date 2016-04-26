@@ -20,6 +20,9 @@ DeclareGlobalFunction("PregroupByTable");
 DeclareOperation("[]", [IsPregroupTableRep, IsInt]);
 # DeclareAttribute("Size", IsPregroup);
 DeclareAttribute("IntermultPairs", IsPregroup);
+DeclareAttribute("IntermultPairsIds", IsPregroup);
+DeclareAttribute("IntermultMap", IsPregroup);
+
 
 # Elements of Pregroups
 
@@ -32,5 +35,6 @@ DeclareOperation("IsDefinedMultiplication", [IsElementOfPregroup, IsElementOfPre
 DeclareOperation("IsIntermultPair", [IsElementOfPregroup, IsElementOfPregroup]);
 
 DeclareAttribute("PregroupInverse", IsElementOfPregroup);
+DeclareAttribute("PregroupElementId", IsElementOfPregroup);
 
 # TBD: Words over Pregroups
