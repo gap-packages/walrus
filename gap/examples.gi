@@ -77,3 +77,7 @@ end;
 tbl := pgtbl();
 inmp_pg := PregroupByTable("1abcdefghijklmnopqrstuvwxyz", x->x^tbl[2], tbl[3]);
 
+alp := Generators(tg_pgp);
+exw := [alp[1], alp[2], alp[3]];
+
+
