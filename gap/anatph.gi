@@ -553,13 +553,59 @@ function(pres, v1, place, v2)
     return fail;
 end);
 
+ReduceUPregroupWord := function(word)
+    local rw, rw2, i, j, one;
+
+    if Length(word) = 0 then
+        return [];
+    fi;
+
+    one := PregroupOf(word[1])[1];
+    rw := ShallowCopy(word);
+
+    for i in [2..Length(rw)] do
+        if rw[i-1] * rw[i] <> fail then
+            rw[i] := rw[i-1] * rw[i];
+            rw[i-1] := one;
+        fi;
+    od;
+
+    i := 1; j := 1;
+    rw2 := [];
+    while i <= Length(rw) do
+        if rw[i] <> one then
+            rw2[j] := rw[i];
+            j := j + 1;
+        fi;
+        i := i + 1;
+    od;
+
+    return rw2;
+end;
+
+
+# In reality we only need a list indexed by triples, so we
+# will quite probably end up with a tree where the leaves have
+# weights as labels.
 
 InstallGlobalFunction(ShortBlobWords,
 function(pres)
-    local i, lst, pg, alph;
-    alph := Generators(tg_pgp);
+    local i, lst, pg, alph, ips, n;
 
-    lst := [""];
+    alph := Generators(pres);
+    ips := IntermultPairsIds(Pregroup(pres));
+    n := Size(Pregroup(pres));
+
+    lst := EmptyPlist(n);
+
+    for i in [1..Length(ips)] do
+        if not IsBound(lst[ips[i][1]]) then
+            lst[ips[i][1]] := EmptyPlist(n);
+        fi;
+        lst[ips[i][1]][ips[i][2]] := EmptyPlist(n);
+        
+    od;
+
 
     for i in [1..6] do
     od;
@@ -570,8 +616,8 @@ end);
 
 InstallGlobalFunction(Blob,
 function()
-    Error("Blob not implemented yet");
 
+    Error("Blob not complete yet");
     return -5/14;
 end);
 
