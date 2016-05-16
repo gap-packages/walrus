@@ -220,9 +220,6 @@ function(pg)
     return map;
 end);
 
-
-
-
 #
 # Pregroup elements
 #
@@ -231,7 +228,18 @@ InstallMethod(ViewString
              , [IsElementOfPregroupRep],
 function(pge)
     if pge!.elt > 0 then
-        return String(pge!.parent!.enams[pge!.elt]);
+        return pge!.parent!.enams[pge!.elt];
+    else
+        return "undefined";
+    fi;
+end);
+
+InstallMethod(String
+             , "for a pregroup element"
+             , [IsElementOfPregroupRep],
+function(pge)
+    if pge!.elt > 0 then
+        return pge!.parent!.enams[pge!.elt];
     else
         return "undefined";
     fi;

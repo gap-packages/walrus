@@ -11,27 +11,55 @@ DeclareGlobalFunction("MaxPowerK");
 DeclareGlobalFunction("MaxPowerK2");
 
 
-DeclareCategory("IsPregroupPresentation", IsObject);
-BindGlobal("PregroupPresentationFamily", NewFamily("PregroupPresentationFamily"));
-
-DeclareRepresentation("IsPregroupPresentationRep", IsPregroupPresentation and IsComponentObjectRep, []);
-BindGlobal("PregroupPresentationType", NewType(PregroupPresentationFamily, IsPregroupPresentationRep));
-
-DeclareGlobalFunction("PregroupPresentation");
-
 # Words over pregroups can be inverted
 # will we automatically multiply things together if multiplication is defined?
 DeclareCategory("IsWordOverPregroup", IsMultiplicativeElementWithInverse and IsList);
 DeclareRepresentation("IsWordOverPregroupListRep", IsWordOverPregroup and IsPositionalObjectRep, [] );
-# Words over different pregroups have to be in different families...
 
-DeclareAttribute("Pregroup", IsPregroupPresentation);
-DeclareAttribute("Generators", IsPregroupPresentation);
-DeclareAttribute("Relations", IsPregroupPresentation);
-DeclareAttribute("Locations", IsPregroupPresentation);
-DeclareAttribute("Places", IsPregroupPresentation);
+DeclareObject(
+    "IsPregroupWord",
+    IsMultiplicativeElementWithInverse and IsList,
+    IsPositionalObjectRep,
+    ["Pregroup", "Base", "Exponent", "Length"],
+    []);
+DeclareGlobalFunction("PregroupWord");
 
-DeclareAttribute("GeneratorsOfPregroupPresentation", IsPregroupPresentation);
+# A relation is just a word over a pregroup attached to a pregroup
+# presentation
+DeclareObject(
+    "IsPregroupRelator",
+    IsPregroupWord,
+    IsComponentObjectRep and IsAttributeStoringRep,
+    ["Presentation", "Base", "Exponent"],
+    []
+    );
+DeclareGlobalFunction("PregroupRelator");
+
+DeclareObject(
+    "IsPregroupLocation",
+    IsObject,
+    IsPositionalObjectRep,
+    ["Relator", "Presentation", "Position", "InLetter", "OutLetter"],
+    []);
+DeclareGlobalFunction("Location");
+
+DeclareObject(
+    "IsPregroupPlace",
+    IsObject,
+    IsPositionalObjectRep,
+    ["Relator", "Presentation", "LocationAt", "InLetter", "OutLetter"],
+    []);
+DeclareGlobalFunction("Place");
+
+DeclareObject(
+    "IsPregroupPresentation",
+    IsObject,
+    IsComponentObjectRep,
+    ["Pregroup", "Generators", "Relators", "Locations", "Places", "Bases", "Powers", "Roots"],
+    []);
+DeclareGlobalFunction("PregroupPresentation");
+#X elements family?
+
 
 # Proving hyperblicity using RSym
 # DeclareGlobalFunction("Locations");

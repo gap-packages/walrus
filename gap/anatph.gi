@@ -1,127 +1,20 @@
 #
 # anatph: A new approach to proving hyperbolicity
 #
+#
+# TODO
+#  - Better Handling for relations:
+#     - Make a type for relations
+#     - they belong to a presentation
+#     - They can have a root-power-presentation
+#     - They should be testable for overlaps
+#  - A type for Locations
+#  - A type for Places
+#
 # Implementations
-#
-#
-# Run to test (tg_pgp is a pregroup presentation for a triangle group, with
-#              tg_pg better have more):
-#  - IntermultPairs(tg_pg);
-#  - Locations(tg_pgp);
-#  - Places(tg_pgp);
-#  - LocationBlobGraph(tg_pgp);
-#
-
-InstallGlobalFunction(PregroupPresentation,
-function(pg, rels)
-    local res;
-
-    res := rec();
-
-    res.pg := pg;
-    res.rels := rels;
-
-    return Objectify(PregroupPresentationType, res);
-end);
-
-InstallMethod(ViewString
-             , "for a pregroup presentation"
-             , [IsPregroupPresentationRep],
-function(pgp)
-    # Note that we do not really regard 1 as a generator
-    local res;
-
-    return STRINGIFY("<pregroup presentation with "
-                    , Size(pgp!.pg)-1, " generators and "
-                    , Length(pgp!.rels), " relators>");
-end);
-
-InstallMethod(Pregroup
-             , "for a pregroup presentation"
-             , [IsPregroupPresentation],
-             pgp -> pgp!.pg);
-
-InstallMethod(Generators
-             , "for a pregroup presentation"
-             , [IsPregroupPresentation],
-function(pres)
-    local gens;
- 
-    gens := List(Pregroup(pres), x->x);
-    Remove(gens, 1);
-    return gens;
-end);
-
-InstallMethod(Relations
-             , "for a pregroup presentation"
-             , [IsPregroupPresentation],
-             pgp -> pgp!.rels);
-
-InstallMethod(GeneratorsOfPregroupPresentation
-             , "for a pregroup presentation"
-             , [IsPregroupPresentation],
-             x -> fail);
-
-####################################
-#
-#
-# Assumptions
-#  I(Rels) only contains cyclic conjugates of R in Rels
 
 
-# we have a bijection between \underline{\abs{P}} and P, i.e. number
-# the elements of P.
-# we also have an involution sigma : P -> P which inverts elements
-# notational convention -i = sigma(i)
-#
-# We also have names for elements of P for better readability
-#
-# relations are (compressed?) strings over P, i.e. lists of pairs
-# [i,e]
-
-#
-# Rels rep'd as a list of ints, for instance x^2y^-2 -> [[1,2],[2, -2]]
-# unfortunately of course [x,-2] = [-x,2]
-#
-
-
-# MaxPowerK: Input a word v over X, output w such that w^k = v, k maximal with this property
-#
-# in the following w is the output of MaxPowerK
-#
-# location (i,a,b) where i in [1..Length(w)] a = w[i-1] and b = w[i] (so a
-# location on R can be represented by just  the, well, location on w (?))
-# R(i,a,b) if the relator is R, and so this involved MaxPowerK(R) as well!
-
-# Place (R(i,a,b), c, C, B) R(i,a,b) is a place c is a generator C in [G,B], B
-# in [true,false]
-
-
-# If input is Rels then?
-
-# A pregroup presentation will be a structure that has
-# Generators(pres) (elements of pregroup except 1)
-# Pregroup(pres)   (the pregroup structure)
-# Relations(pres)  (the set \mathcal{R})
-
-# An R-letter is a letter that occurs in any (intersperse) of
-# a relation (Definition 7.4)
-# XXX: Note that the code below does not do intersperses yet!
-# XXX: Colva said we can go without intersperse I think
-# XXX: Check
-InstallGlobalFunction(IsRLetter,
-function(pres, x)
-    # determine whether x occurs in I(R)
-    local r,l;
-
-    for r in Relations(pres) do
-        for l in r do
-            return true;
-        od;
-    od;
-    return false;
-end);
-
+#### Utility functions
 # MaxPowerK: Input a word (relator) v over X, output w such that w^k = v, k maximal with this property
 # There might be a better way of doing this? Colva mentioned that it's in one
 # of Derek's books?
@@ -189,30 +82,279 @@ function(rel)
     od;
 end);
 
-# at the moment a relation is just a list
-# of integers referring to elements of the
-# pregroup underlying the pregroup presentation
 #
+# Run to test (tg_pgp is a pregroup presentation for a triangle group, with
+#              tg_pg better have more):
+#  - IntermultPairs(tg_pg);
+#  - Locations(tg_pgp);
+#  - Places(tg_pgp);
+#  - LocationBlobGraph(tg_pgp);
+#
+
+InstallGlobalFunction(PregroupRelator,
+function(pres, word)
+    local maxk;
+    maxk := MaxPowerK(word);
+    return Objectify(IsPregroupRelatorType,
+                     rec( pres := pres
+                        , base := maxk[1]
+                        , exponent := maxk[2] )
+                    );
+end);
+
+InstallMethod(Base, "for a pregroup relator",
+              [IsPregroupRelator],
+              r -> r!.base);
+
+InstallMethod(Exponent, "for a pregroup relator",
+              [IsPregroupRelator],
+              r -> r!.exponent);
+
+# Cyclic access good?
+InstallMethod(\[\], "for a pregroup relator",
+              [IsPregroupRelator and IsPregroupRelatorRep, IsPosInt],
+function(r, p)
+    local i, l;
+
+    i := p - 1;
+    l := Length(r!.base);
+
+    return r!.base[ RemInt(i, l) + 1];
+end);
+
+InstallMethod(\in, "for a generator and a pregroup relator",
+              [ IsElementOfPregroup, IsPregroupRelator and IsPregroupRelatorRep],
+function(e,r)
+    return e in r!.base;
+end);
+
+
+InstallMethod(Length, "for a pregroup relator",
+    [IsPregroupRelator],
+function(r)
+    return Length(r!.base) * r!.exponent;
+end);
+
+InstallMethod(ViewString, "for a pregroup relator",
+    [IsPregroupRelator],
+function(r)
+    if Exponent(r) > 1 then
+        return STRINGIFY("<pregroup relator ("
+                        , List(r!.base, ViewString)
+                        , ")^", r!.exponent, ">");
+    else
+        return STRINGIFY("<pregroup relator "
+                        , List(r!.base, ViewString)
+                        , ">");
+    fi;
+end);
+
+InstallMethod(Presentation,
+    "for pregroup relators",
+    [IsPregroupRelator],
+function(r)
+    return r!.pres;
+end);
+
+## Locations
+InstallGlobalFunction(Location,
+function(R,i,a,b)
+    return Objectify(IsPregroupLocationType, [R,i,a,b]);
+end);
+
+InstallMethod(Relator, "for a location",
+              [ IsPregroupLocationRep ],
+              l -> l![1]);
+
+InstallMethod(Position, "for a location",
+              [ IsPregroupLocationRep ],
+              l -> l![2]);
+
+InstallMethod(InLetter, "for a location",
+              [ IsPregroupLocationRep ],
+              l -> l![3]);
+
+InstallMethod(OutLetter, "for a location",
+              [ IsPregroupLocationRep ],
+              l -> l![4]);
+
+InstallMethod(ViewString, "for a location",
+    [ IsPregroupLocationRep ],
+function(l)
+    return STRINGIFY(ViewString(l![1]), "("
+                     , l![2], ","
+                     , ViewString(l![3]), ","
+                     , ViewString(l![4]), ")"
+                    );
+end);
+
+## Places
+InstallGlobalFunction(Place,
+function(loc, c, colour, boundary)
+    return Objectify(IsPregroupPlaceType, [loc,c,colour,boundary]);
+end);
+
+## Presentations
+InstallGlobalFunction(PregroupPresentation,
+function(pg, rels)
+    local res;
+    res := rec();
+    res.pg := pg;
+    res.rels := List(rels, x -> PregroupRelator(res, x));
+    return Objectify(IsPregroupPresentationType, res);
+end);
+
+InstallMethod(ViewString
+             , "for a pregroup presentation"
+             , [IsPregroupPresentationRep],
+function(pgp)
+    # Note that we do not really regard 1 as a generator
+    local res;
+
+    return STRINGIFY("<pregroup presentation with "
+                    , Size(pgp!.pg)-1, " generators and "
+                    , Length(pgp!.rels), " relators>");
+end);
+
+InstallMethod(Pregroup
+             , "for a pregroup presentation"
+             , [IsPregroupPresentation],
+             pgp -> pgp!.pg);
+
+InstallMethod(Generators
+             , "for a pregroup presentation"
+             , [IsPregroupPresentation],
+function(pres)
+    local gens;
+
+    gens := List(Pregroup(pres), x->x);
+    Remove(gens, 1);
+    return gens;
+end);
+
+InstallMethod(Relators
+             , "for a pregroup presentation"
+             , [IsPregroupPresentation],
+             pgp -> pgp!.rels);
+
+
+InstallMethod(Powers
+             , "for a pregroup presentation"
+             , [IsPregroupPresentation],
+             x -> x!.powers);
+
+#InstallMethod(RelationRoots
+#             , "for a pregroup presentation"
+#             , [IsPregroupPresentation],
+#             x -> x!.relroots);
+
 # for the moment a location is triple [i,a,b]. This is of course redundant, since
 # we know a and b from i and R.
 #XXX cleanup
-# Locations are tied to relations
+# Locations are tied to relators, which are in turn tied to a presentation
 InstallMethod(Locations, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local rels, rel, locs, ls, r, w, k, i;
+    local rel, locs, w;
 
-    rels := Relations(pres);
     locs := [];
-
-    for rel in [1..Length(rels)] do
-        r := MaxPowerK(rels[rel]);
-        w := r[1];
-
-        Add(locs, [rel, 1, w[Length(w)], w[1]]);
-        Append(locs, List([2..Length(w)], i -> [rel, i, w[i-1], w[i]]));
+    for rel in Relators(pres) do
+        w := Base(rel);
+        Add(locs, Location(rel, 1, w[Length(w)], w[1]));
+        Append(locs, List([2..Length(w)], i -> Location(rel, i, w[i-1], w[i])));
     od;
     return locs;
+end);
+
+# Given a pregroup presentation as the input, find all places
+InstallMethod(Places, "for a pregroup presentation",
+              [IsPregroupPresentation and IsPregroupPresentationRep],
+function(pres)
+    local loc, loc2,
+          places, a, b, c,
+          rels,
+          locs;
+
+    rels := Relators(pres);
+    locs := Locations(pres);
+    places := [];
+
+    for loc in locs do
+        a := InLetter(loc);
+        b := OutLetter(loc);
+        for c in Generators(pres) do
+            # C = 'B', i.e. red, I still find this confusing
+            if IsIntermultPair(PregroupInverse(b), c) then
+                if IsRLetter(pres, c) then
+                    Add(places, Place(loc, c, "red", false));
+                fi;
+                Add(places, Place(loc, c, "red", true));
+            fi;
+            # C = 'G'
+            # find location R'.
+            for loc2 in locs do
+                if InLetter(loc2) = PregroupInverse(b) and OutLetter(loc2) = c then
+                    # Is this really just checking that rel starting at b is
+                    # not equal to rel2
+                    if CheckReducedDiagram(pres, loc, loc2) then
+                        Add(places, Place(loc, c, "green", true));
+                    else
+                        Add(places, Place(loc, c, "green", false));
+                    fi;
+                fi;
+            od;
+        od;
+    od;
+    return places;
+end);
+
+
+####################################
+#
+#
+# Assumptions
+#  I(Rels) only contains cyclic conjugates of R in Rels
+
+
+# we have a bijection between \underline{\abs{P}} and P, i.e. number
+# the elements of P.
+# we also have an involution sigma : P -> P which inverts elements
+# notational convention -i = sigma(i)
+#
+# We also have names for elements of P for better readability
+#
+# relations are (compressed?) strings over P, i.e. lists of pairs
+# [i,e]
+
+#
+# Rels rep'd as a list of ints, for instance x^2y^-2 -> [[1,2],[2, -2]]
+# unfortunately of course [x,-2] = [-x,2]
+#
+
+
+# If input is Rels then?
+
+# A pregroup presentation will be a structure that has
+# Generators(pres) (elements of pregroup except 1)
+# Pregroup(pres)   (the pregroup structure)
+# Relations(pres)  (the set \mathcal{R})
+
+# An R-letter is a letter that occurs in any (intersperse) of
+# a relation (Definition 7.4)
+# XXX: Note that the code below does not do intersperses yet!
+# XXX: Colva said we can go without intersperse I think
+# XXX: Check
+InstallGlobalFunction(IsRLetter,
+function(pres, x)
+    # determine whether x occurs in I(R)
+    local r,l;
+
+    for r in Relators(pres) do
+        if x in r then
+            return true;
+        fi;
+    od;
+    return false;
 end);
 
 # Definition 3.3: A diagram is semi-reduced, if no distinct adjacent faces
@@ -227,13 +369,12 @@ InstallGlobalFunction(CheckReducedDiagram,
 function(pres, l1, l2)
     local i, j, rels, r1, r2;
 
-    rels := Relations(pres);
+    rels := Relators(pres);
 
-    r1 := rels[l1[1]];
-    r2 := rels[l2[1]];
-
-    i := l1[2];
-    j := l2[2];
+    r1 := Relator(l1);
+    i := Position(l1);
+    r2 := Relator(l2);
+    j := Position(l2);
 
     repeat
         i := i + 1;
@@ -246,59 +387,6 @@ function(pres, l1, l2)
         fi;
     until (i = l1[1]) or (j = l2[1]);
     return false;
-end);
-
-# Given a pregroup presentation as the input, find all places
-# Pregroup presentations consist of a pregroup and a list of relations
-
-# A place is a 4-tuple (location, letter, colour, boundary)
-# such that
-#
-#XXX I think places on a relation are better, so this function should take a relation
-#XXX note though that for the check whether there exists a reduced diagram, we have
-#    to access all other Locations (i.e. relations)
-InstallMethod(Places, "for a pregroup presentation",
-              [IsPregroupPresentation and IsPregroupPresentationRep],
-function(pres)
-    local loc, loc2, c, C, B, X,
-          places, a, b,
-          gens, rels, rel, rel2,
-          locs,
-          places_for_rel,
-          r,l;
-
-    rels := Relations(pres);
-    locs := Locations(pres);
-    places := [];
-
-    for loc in locs do
-        a := loc[3];
-        b := loc[4];
-        for c in Generators(pres) do
-            # C = 'B', i.e. red, I still find this confusing
-            if IsIntermultPair(PregroupInverse(b), c) then
-                if IsRLetter(pres, c) then
-                    Add(places, [loc, c, "red", false]);
-                fi;
-                Add(places, [loc, c, "red", true] );
-            fi;
-            # C = 'G'
-            # find location R'.
-            for loc2 in locs do
-                if loc2[3] = PregroupInverse(b) and loc2[4] = c then
-                    # Is this really just checking that rel starting at b is
-                    # not equal to rel2
-                    if CheckReducedDiagram(pres, loc, loc2) then
-                        Add(places, [loc, c, "green", true]);
-                    else
-                        Add(places, [loc, c, "green", false]);
-                    fi;
-                fi;
-            od;
-        od;
-    od;
-
-    return places;
 end);
 
 # Location blob graph
@@ -495,7 +583,7 @@ function(pres, v1, place, v2)
     loc := place[1];
 
     found := false;
-    
+
     for v in DigraphVertices(lbg) do
         vl := DigraphVertexLabel(lbg, v);
 
@@ -504,7 +592,7 @@ function(pres, v1, place, v2)
             break;
         fi;
     od;
-    
+
     if found then
         found := false;
         for tv1 in InNeighboursOfVertex(lbg, v) do
@@ -516,7 +604,7 @@ function(pres, v1, place, v2)
     else
         return fail;
     fi;
-    
+
     if found then
         found := false;
         for tv2 in OutNeighboursOfVertex(lbg, v) do
@@ -528,7 +616,7 @@ function(pres, v1, place, v2)
     else
         return fail;
     fi;
-    
+
     if found then
         found := false;
         for pp in [1..Length(pls)] do
@@ -539,7 +627,7 @@ function(pres, v1, place, v2)
     else
         return fail;
     fi;
-    
+
     if found then
         found := false;
         for pt in lpl[pp] do
@@ -547,7 +635,7 @@ function(pres, v1, place, v2)
                 return pt[3];
             fi;
         od;
-    else 
+    else
         return fail;
     fi;
     return fail;
@@ -588,34 +676,97 @@ end;
 # will quite probably end up with a tree where the leaves have
 # weights as labels.
 
+#XXX Store only the triples (a,b,c) that are infixes 
+#    of stirngs found here with appropriate numbers
+#XXX It might not be guaranteed yet that no proper subword
+#    of a word found here is equal to 1
+#XXX Redo in nice
 InstallGlobalFunction(ShortBlobWords,
 function(pres)
-    local i, lst, pg, alph, ips, n;
+    local i, j, k, lst, pg, alph, imm, n, elt,
+          coord, levelelt, tree, level, nonrletts, cand, len, c,
+          word, res, levels;
+    pg := Pregroup(pres);
+    n := Size(pg);
+    imm := IntermultMap(Pregroup(pres));
 
-    alph := Generators(pres);
-    ips := IntermultPairsIds(Pregroup(pres));
-    n := Size(Pregroup(pres));
+    res := [];
 
-    lst := EmptyPlist(n);
+    len := 1;
+    nonrletts := [];
+    word := [];
+    levelelt := [];
+    levels := [[],[],[],[],[],[]];
 
-    for i in [1..Length(ips)] do
-        if not IsBound(lst[ips[i][1]]) then
-            lst[ips[i][1]] := EmptyPlist(n);
-        fi;
-        lst[ips[i][1]][ips[i][2]] := EmptyPlist(n);
-        
+    cand := [[2..n]];
+
+    while len > 0 do
+        while len <= 6 and cand[len] <> [] do
+            c := Remove(cand[len], 1);
+            word[len] := c;
+
+            for j in [1..len] do
+                if len > j then
+                    levels[j][len] := levels[j][len - 1] * pg[c];
+                else
+                    levels[j][len] := pg[c];
+                fi;
+            od;
+            if len > 1 then
+                levelelt[len] := levelelt[len - 1] * pg[c];
+            else
+                levelelt[len] := pg[c];
+            fi;
+
+            nonrletts[len] := not IsRLetter(pres, pg[c]);
+            if ForAll(levels{[1..len]}, x -> (Length(x) < len) or (x[len] <> pg[1]))
+               and (len < 6) then
+                cand[len + 1] := ShallowCopy(imm[c]);
+            else
+                cand[len + 1] := [];
+            fi;
+            len := len + 1;
+        od;
+
+        len := len - 1;
+
+        while (len > 0) and (cand[len] = []) do
+
+            if (levelelt[len] = pg[1]) then
+                if IsIntermultPair(pg[word[1]], pg[word[len]]) then
+                    if len = 3 then
+                        if SizeBlist(nonrletts) = 0 then
+                            Add(res, [word{[1..len]}, 1/6]);
+                        elif SizeBlist(nonrletts) = 1 then
+                            Add(res, [word{[1..len]}, 1/4]);
+                        fi;
+                    elif len = 4 then
+                        if SizeBlist(nonrletts) = 0 then
+                            Add(res, [word{[1..len]}, 1/4]);
+                        elif SizeBlist(nonrletts) = 1 then
+                            Add(res, [word{[1..len]}, 1/3]);
+                        fi;
+                    elif len = 5 and (SizeBlist(nonrletts) = 0) then
+                        Add(res, [word{[1..len]}, 3/10]);
+                    elif len = 6 and (SizeBlist(nonrletts) = 0) then
+                        Add(res, [word{[1..len]}, 1/3]);
+                    fi;
+                fi;
+            fi;
+            
+            len := len - 1;
+        od;
     od;
 
-
-    for i in [1..6] do
-    od;
-
-    Error("short blob words not complete yet");
-    return lst;
+    return res;
 end);
 
 InstallGlobalFunction(Blob,
-function()
+function(pres)
+    local sbw;
+
+    sbw := ShortBlobWords(pres);
+
 
     Error("Blob not complete yet");
     return -5/14;
@@ -628,9 +779,83 @@ end;
 StepCurvature := function(places, P, Q)
 end;
 
-OneStepReachable := function()
+OneStepReachable := function(pres)
+    local rel, pl, P, Q, places, osr, curv, pows, lbg, gens, b, c, binv, rels, OneStepRedCase;
+
+    gens := Generators(pres);
+    places := Places(pres);
+    pows := Powers(pres);
+    lbg := LocationBlobGraph(pres);
+    rels := Relators(pres);
+
+    # list with places, and offsets
+    # ()
+    curv := List(places, function(x)
+                    if x[3] = "red" then
+                        return [0,infinity];
+                    elif x[3] = "green" then
+                        return List([0..QuoInt(pows[x[1][1]], 2)], y -> [y,infinity]);
+                    else
+                        Error("invalid colour");
+                    fi;
+                end);
+
+    OneStepRedCase := function(P)
+        local Q, b, y, v;
+
+        for Q in Places(pres) do
+            # same relator, one position up
+            if (Q[1][1] = P[1][1])
+               and (Q[1][2] + 1 = P[1][2]) then
+                for y in gens do
+                    b := P[1][3];
+                    binv := PregroupInverse(b);
+                    if IsIntermultPair(y, binv) then
+                        v := LBGVertexForLoc(Q);
+                        for v2 in OutNeighboursOfVertex(lbg, v) do
+                            xi1 := Blob(y, binv, c);
+                            xi2 := Vertex([y, binv], pl2[1], v2);
+                            # Note that xi1, xi2 are negative
+                            # Here we only have 0 offset
+                            curv[Q][2] := Minimum(curv[Q][2], xi1 + xi2);
+                        od;
+                    fi;
+                od;
+            fi;
+        od;
+    end;
+
+    for P in Places(pres) do
+        c := pl[3];
+        if pl[3] = "red" then
+            OneStepRedCase(P);
+        elif pl[3] = "green" then
+            # offsets?
+            nu1 := __;
+            nu2 := __;
+
+            # xi1 is negative
+            xi1 := Vertex(nu1, Pp, nu2);
+
+            if Pp[3] = "green" then
+                curv[Q][2] := Minimum(curv[Q][2], xi1);
+
+            elif Pp[3] = "red" then
+                OneStepRedCase(Pp);
+            else
+                Error("invalid colour");
+            fi;
+            
+            for Rp in [1..Length(rels)] do
+                
+            od;
+        else
+            Error("Invalid colour");
+        fi;
+    od;
+
+ 
     Error("OneStepReachable not implemented yet");
-    
 end;
 
 InitStepsCurve := function(places, p)
@@ -687,5 +912,3 @@ function(pres, eps)
 
     return true;
 end);
-
-
