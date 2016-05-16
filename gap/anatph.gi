@@ -370,9 +370,7 @@ end);
 # it is reduced if this also holds for a face incident with itself.
 InstallGlobalFunction(CheckReducedDiagram,
 function(l1, l2)
-    local i, j, rels, r1, r2;
-
-    rels := Relators(pres);
+    local i, j, r1, r2;
 
     r1 := Relator(l1);
     i := Position(l1);
@@ -401,18 +399,17 @@ end);
 #                               faces labelled R and R'
 #XXX This is horribly inefficient, since we are much sparser
 #    on edges than |v|^2
-InstallGlobalFunction(LocationBlobGraph,
+InstallMethod(LocationBlobGraph, "for a pregroup presentation",
+              [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
     local v, e, r, l, ls, lbg;
 
     v := ShallowCopy(Locations(pres));
-    for r in [1..Length(Relations(pres))] do
-        Append(v, List(IntermultPairs(Pregroup(pres)), x -> ['I', x]));
-    od;
+    Append(v, List(IntermultPairs(Pregroup(pres)), x -> ['I', x]));
 
     e := function(a,b)
         if IsPregroupLocation(a) then
-            if IsPregroupLocation(1) then
+            if IsPregroupLocation(b) then
                 if OutLetter(a) = PregroupInverse(InLetter(b)) and
                    CheckReducedDiagram(a, b) then
                     return true;

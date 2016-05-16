@@ -55,7 +55,8 @@ DeclareObject(
     "IsPregroupPresentation",
     IsObject,
     IsComponentObjectRep,
-    ["Pregroup", "Generators", "Relators", "Locations", "Places", "Bases", "Powers", "Roots"],
+    ["Pregroup", "Generators", "Relators", "Locations", "Places", "Bases", "Powers", "Roots",
+     "LocationBlobGraph"],
     []);
 DeclareGlobalFunction("PregroupPresentation");
 #X elements family?
@@ -65,7 +66,6 @@ DeclareGlobalFunction("PregroupPresentation");
 # DeclareGlobalFunction("Locations");
 # DeclareGlobalFunction("Places");
 DeclareGlobalFunction("CheckReducedDiagram");
-DeclareGlobalFunction("LocationBlobGraph");
 DeclareGlobalFunction("ComputePlaceTriples");
 
 # Not a good choice of name
