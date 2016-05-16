@@ -10,6 +10,10 @@
 #     - They should be testable for overlaps
 #  - A type for Locations
 #  - A type for Places
+#  - Check correctness of IsReducedDiagram
+#  - MakeIsReducedDiagram a method
+#  - Put relators of different presentations into different families
+ 
 #
 # Implementations
 
@@ -128,7 +132,6 @@ function(e,r)
     return e in r!.base;
 end);
 
-
 InstallMethod(Length, "for a pregroup relator",
     [IsPregroupRelator],
 function(r)
@@ -177,6 +180,10 @@ InstallMethod(InLetter, "for a location",
 InstallMethod(OutLetter, "for a location",
               [ IsPregroupLocationRep ],
               l -> l![4]);
+
+InstallMethod(Presentation, "for a location",
+              [ IsPregroupLocationRep ],
+              l -> Presentation(l![1]));
 
 InstallMethod(ViewString, "for a location",
     [ IsPregroupLocationRep ],
@@ -361,12 +368,8 @@ end);
 # are labelled by ww_1 and w_1^{-1}w for a relator ww_1 and have a common
 # consolidated edge labelled by w and w^-1
 # it is reduced if this also holds for a face incident with itself.
-#XXX When is a face "incident with itself" again?)
-#XXX Is this then just checking that the two relators do not behave like
-#    above?
-#XXX Check correctness, but this is confirmed correct behaviour
 InstallGlobalFunction(CheckReducedDiagram,
-function(pres, l1, l2)
+function(l1, l2)
     local i, j, rels, r1, r2;
 
     rels := Relators(pres);
@@ -385,7 +388,7 @@ function(pres, l1, l2)
         if r1[i] <> PregroupInverse(r2[j]) then
             return true;
         fi;
-    until (i = l1[1]) or (j = l2[1]);
+    until (i = Position(l1)) or (j = Position(l2));
     return false;
 end);
 
@@ -402,28 +405,28 @@ InstallGlobalFunction(LocationBlobGraph,
 function(pres)
     local v, e, r, l, ls, lbg;
 
-    v := List(Locations(pres), x->['L', x]);
+    v := ShallowCopy(Locations(pres));
     for r in [1..Length(Relations(pres))] do
         Append(v, List(IntermultPairs(Pregroup(pres)), x -> ['I', x]));
     od;
 
     e := function(a,b)
-        if a[1] = 'L' then
-            if b[1] = 'L' then
-                if a[2][4] = PregroupInverse(b[2][3]) and
-                   CheckReducedDiagram(pres, a[2], b[2]) then
+        if IsPregroupLocation(a) then
+            if IsPregroupLocation(1) then
+                if OutLetter(a) = PregroupInverse(InLetter(b)) and
+                   CheckReducedDiagram(a, b) then
                     return true;
                 fi;
-            elif b[1] = 'I' then
-                if a[2][4] = PregroupInverse(b[2][2]) then
+            elif IsList(b) then # IsList is a hack to recognse intermult pairs
+                if OutLetter(a) = PregroupInverse(b[2][2]) then
                     return true;
                 fi;
             else
                 Error("This shouldn't happen");
             fi;
-        elif a[1] = 'I' then
-            if b[1] = 'L' then
-                if a[2][2] = PregroupInverse(b[2][3]) then
+        elif IsList(a) then
+            if IsPregroupLocation(b) then
+                if a[2][2] = PregroupInverse(InLetter(b)) then
                     return true;
                 fi;
             fi;
