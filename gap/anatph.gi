@@ -250,7 +250,7 @@ function(pres)
                             Error("this shouldn't happen");
                         fi;
                     elif IsList(lv1) then # v1 intermult pair
-                        if IsLocation(lv2) then
+                        if IsPregroupLocation(lv2) then
                             for p in Places(lv) do
                                 if (Letter(p) = OutLetter(lv2))
                                    and (Colour(p) = "red") then
@@ -263,7 +263,7 @@ function(pres)
                                             Add(lpl[__ID(p)], [v1, v2, -1/4]);
                                         fi;
                                     else
-                                        Add(lpl[__ID(p))], [v1, v2, -1/4]);
+                                        Add(lpl[__ID(p)], [v1, v2, -1/4]);
                                     fi;
                                 fi;
                             od;
@@ -294,17 +294,15 @@ InstallGlobalFunction(Vertex,
 function(pres, v1, place, v2)
     local v, vl, loc, x, lbg, found, pls, lpl, pl, pt, pp, tv1, tv2;
 
-    pls := Places(pres);
     lbg := LocationBlobGraph(pres);
     lpl := ComputePlaceTriples(pres);
-    loc := place[1];
 
     found := false;
 
     for v in DigraphVertices(lbg) do
         vl := DigraphVertexLabel(lbg, v);
 
-        if vl[1] = 'L' and vl[2] = loc then
+        if vl = Location(place) then
             found := true;
             break;
         fi;
@@ -336,18 +334,7 @@ function(pres, v1, place, v2)
 
     if found then
         found := false;
-        for pp in [1..Length(pls)] do
-            if pls[pp] = place then
-                found := true;
-            fi;
-        od;
-    else
-        return fail;
-    fi;
-
-    if found then
-        found := false;
-        for pt in lpl[pp] do
+        for pt in lpl[__ID(place)] do
             if pt[1] = v1 and pt[2] = v2 then
                 return pt[3];
             fi;
