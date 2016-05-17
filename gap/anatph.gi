@@ -199,74 +199,81 @@ function(pres)
 
     for v in DigraphVertices(lbg) do
         lv := DigraphVertexLabel(lbg, v);
-#        pls := Filtered(places, x -> x = v[2]);
         if IsPregroupLocation(lv) then
             for v1 in InNeighboursOfVertex(lbg, v) do
                 lv1 := DigraphVertexLabel(lbg, v1);
                 for v2 in OutNeighboursOfVertex(lbg, v) do
                     lv2 := DigraphVertexLabel(lbg, v2);
-                    if IsPregroupLocation(lv) then
+                    
+                    # we have v1 -> v -> v2
+
+                    if IsPregroupLocation(lv1) then
                         if IsPregroupLocation(lv2) then   # v1 and v2 are locations
-                            for p in [1..Length(pls)] do
-                                if (pls[p][1] = lv[2]) and (pls[p][3] = "green") then
-                                    if pls[p][4] = false then
+                            for p in Places(lv) do        # places that have location v
+                                # InLetter(lv2) = OutLetter(lv) is
+                                # holds by construction of LocationBlobGraph
+                                if (Letter(p) = OutLetter(lv2))
+                                   and (Colour(p) = "green") then
+                                    if Boundary(p) = false then
                                         if lbgd[v2][v1] = 0 then
-                                            Add(lpl[p], [v1, v2, -1/6]);
+                                            Add(lpl[__ID(p)], [v1, v2, -1/6]);
                                         elif lbgd[v2][v1] = 1 then
-                                            Add(lpl[p], [v1, v2, -1/4]);
+                                            Add(lpl[__ID(p)], [v1, v2, -1/4]);
                                         elif lbgd[v2][v1] = 2 then
-                                            Add(lpl[p], [v1, v2, -3/10]);
+                                            Add(lpl[__ID(p)], [v1, v2, -3/10]);
                                         else
-                                            Add(lpl[p], [v1, v2, -1/3]);
+                                            Add(lpl[__ID(p)], [v1, v2, -1/3]);
                                         fi;
                                     else
-                                        Add(lpl[p], [v1,v2, -1/3]);
+                                        Add(lpl[__ID(p)], [v1,v2, -1/3]);
                                     fi;
                                 fi;
                             od;
-                        elif lv2[1] = 'I' then # v1 location, v2 intermult
-                            for p in [1..Length(pls)] do
-                                if (pls[p][1] = lv[2]) and (pls[p][3] = "green") then
-                                    if pls[p][4] = false then
+                        elif IsList(lv2) then # v1 location, v2 intermult
+                            for p in Places(lv) do
+                                if (Letter(p) = lv2[2])
+                                   and (Colour(p) = "green") then
+                                    if pls[__ID(p)][4] = false then
                                         if lbgd[v2][v1] = 0 then
-                                            Add(lpl[p], [v1, v2, 0]);
+                                            Add(lpl[__ID(p)], [v1, v2, 0]);
                                         elif lbgd[v2][v1] = 1 then
-                                            Add(lpl[p], [v1, v2, -1/6]);
+                                            Add(lpl[__ID(p)], [v1, v2, -1/6]);
                                         else
-                                            Add(lpl[p], [v1, v2, -1/4]);
+                                            Add(lpl[__ID(p)], [v1, v2, -1/4]);
                                         fi;
                                     else
-                                        Add(lpl[p], [v1, v2, -1/4]);
+                                        Add(lpl[__ID(p)], [v1, v2, -1/4]);
                                     fi;
                                 fi;
                             od;
                         else
                             Error("this shouldn't happen");
                         fi;
-                    elif lv1[1] = 'I' then
-                        if lv2[1] = 'L' then
-                            for p in [1..Length(pls)] do
-                                if (pls[p][1] = lv[2][2]) and (pls[p][3] = "red") then
-                                    if pls[p][4] = false then
+                    elif IsList(lv1) then # v1 intermult pair
+                        if IsLocation(lv2) then
+                            for p in Places(lv) do
+                                if (Letter(p) = OutLetter(lv2))
+                                   and (Colour(p) = "red") then
+                                    if Boundary(p) = false then
                                         if lbgd[v2][v1] = 0 then
-                                            Add(lpl[p], [v1, v2, 0]);
+                                            Add(lpl[__ID(p)], [v1, v2, 0]);
                                         elif lbgd[v2][v1] = 1 then
-                                            Add(lpl[p], [v1, v2, -1/6]);
+                                            Add(lpl[__ID(p)], [v1, v2, -1/6]);
                                         else
-                                            Add(lpl[p], [v1, v2, -1/4]);
+                                            Add(lpl[__ID(p)], [v1, v2, -1/4]);
                                         fi;
                                     else
-                                        Add(lpl[p], [v1, v2, -1/4]);
+                                        Add(lpl[__ID(p))], [v1, v2, -1/4]);
                                     fi;
                                 fi;
                             od;
-                        elif lv2[1] = 'I' then # Both intermult pair
-                            for p in [1..Length(pls)] do
-                                if (pls[p][1] = lv[2][2]) and (pls[p][3] = "red") then
-                                    if pls[p][4] = false then
-                                        Add(lpl[p], [v1, v2, 0]);
+                        elif IsList(lv2) then # Both intermult pair
+                            for p in Places(lv) do
+                                if Colour(p) = "red" then
+                                    if Boundary(p) = false then
+                                        Add(lpl[__ID(p)], [v1, v2, 0]);
                                     else
-                                        Add(lpl[p], [v1, v2, -1/4]);
+                                        Add(lpl[__ID(p)], [v1, v2, -1/4]);
                                     fi;
                                 fi;
                             od;

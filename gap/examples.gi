@@ -14,7 +14,7 @@ TriangleGroupPregroup := tg_pg;
 pg_word := function(pg, l) return List(l, x->pg[x]);
            end;
 
-tg_pgp := PregroupPresentation(tg_pg, [pg_word(tg_pg, [2,3,2,3,2,3,2,3]), pg_word(tg_pg,[3,2,3,2,3,2,3,2])]);
+tg_pgp := NewPregroupPresentation(tg_pg, [pg_word(tg_pg, [2,3,2,3,2,3,2,3]), pg_word(tg_pg,[3,2,3,2,3,2,3,2])]);
 
 TriangleGroupPGP := tg_pgp;
 

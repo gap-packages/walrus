@@ -3,12 +3,12 @@
 #
 
 ## Presentations
-InstallGlobalFunction(PregroupPresentation,
+InstallGlobalFunction(NewPregroupPresentation,
 function(pg, rels)
     local res;
     res := rec();
     res.pg := pg;
-    res.rels := List(rels, x -> PregroupRelator(res, x));
+    res.rels := List(rels, x -> NewPregroupRelator(res, x));
     return Objectify(IsPregroupPresentationType, res);
 end);
 
@@ -79,13 +79,18 @@ end);
 InstallMethod(Locations, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local rel, locs, w;
+    local rel, locs, w, i;
 
     locs := [];
     for rel in RelatorsAndInverses(pres) do
         w := Base(rel);
         Add(locs, NewLocation(rel, 1, w[Length(w)], w[1]));
         Append(locs, List([2..Length(w)], i -> NewLocation(rel, i, w[i-1], w[i])));
+    od;
+
+    # Hack
+    for i in [1..Length(locs)] do
+        locs[i]![5] := i;
     od;
     return locs;
 end);
@@ -97,7 +102,7 @@ function(pres)
     local loc, loc2,
           places, a, b, c,
           rels,
-          locs;
+          locs, i;
 
     rels := Relators(pres);
     locs := Locations(pres);
@@ -110,9 +115,9 @@ function(pres)
             # C = 'B', i.e. red, I still find this confusing
             if IsIntermultPair(PregroupInverse(b), c) then
                 if IsRLetter(pres, c) then
-                    Add(places, Place(loc, c, "red", false));
+                    Add(places, NewPlace(loc, c, "red", false));
                 fi;
-                Add(places, Place(loc, c, "red", true));
+                Add(places, NewPlace(loc, c, "red", true));
             fi;
             # C = 'G'
             # find location R'.
@@ -121,13 +126,17 @@ function(pres)
                     # Is this really just checking that rel starting at b is
                     # not equal to rel2
                     if CheckReducedDiagram(loc, loc2) then
-                        Add(places, Place(loc, c, "green", true));
+                        Add(places, NewPlace(loc, c, "green", true));
                     else
-                        Add(places, Place(loc, c, "green", false));
+                        Add(places, NewPlace(loc, c, "green", false));
                     fi;
                 fi;
             od;
         od;
+    od;
+    # Hack
+    for i in [1..Length(places)] do
+        places[i]![5] := i;
     od;
     return places;
 end);

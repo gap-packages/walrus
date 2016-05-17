@@ -23,6 +23,10 @@ InstallMethod(OutLetter, "for a location",
               [ IsPregroupLocationRep ],
               l -> l![4]);
 
+InstallMethod(__ID, "for a location",
+              [ IsPregroupLocationRep ],
+              l -> l![5]);
+
 # Return list of Places that have this location
 InstallMethod(Places, "for a location",
               [ IsPregroupLocationRep ],
