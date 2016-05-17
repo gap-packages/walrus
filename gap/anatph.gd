@@ -41,13 +41,13 @@ DeclareObject(
     IsPositionalObjectRep,
     ["Relator", "Presentation", "Position", "InLetter", "OutLetter"],
     []);
-DeclareGlobalFunction("Location");
+DeclareGlobalFunction("NewLocation");
 
 DeclareObject(
     "IsPregroupPlace",
     IsObject,
     IsPositionalObjectRep,
-    ["Relator", "Presentation", "LocationAt", "InLetter", "OutLetter"],
+    ["Relator", "Presentation", "Location", "Letter", "Colour", "Boundary"],
     []);
 DeclareGlobalFunction("Place");
 
@@ -55,8 +55,11 @@ DeclareObject(
     "IsPregroupPresentation",
     IsObject,
     IsComponentObjectRep,
-    ["Pregroup", "Generators", "Relators", "Locations", "Places", "Bases", "Powers", "Roots",
-     "LocationBlobGraph"],
+    ["Pregroup", "Generators", "Relators", "RelatorsAndInverses",
+     "Locations", "Places", "Bases", "Powers", "Roots",
+     "LocationBlobGraph", "LocationBlobGraphDistances",
+     "RLetters"
+     ],
     []);
 DeclareGlobalFunction("PregroupPresentation");
 #X elements family?

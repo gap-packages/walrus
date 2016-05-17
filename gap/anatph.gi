@@ -13,8 +13,8 @@
 #  - Check correctness of IsReducedDiagram
 #  - MakeIsReducedDiagram a method
 #  - Put relators of different presentations into different families
- 
-#
+#  - rename constructors to NewX 
+#  - organise objects into files
 # Implementations
 
 
@@ -114,6 +114,14 @@ InstallMethod(Exponent, "for a pregroup relator",
               [IsPregroupRelator],
               r -> r!.exponent);
 
+InstallMethod(Inverse, "for a pregroup relator",
+              [IsPregroupRelator],
+              r -> Objectify(IsPregroupRelatorType,
+                             rec( pres := r!.pres
+                                , base := List(Reversed(r!.base), PregroupInverse)
+                                , exponent := r!.exponent )
+                            ));
+
 # Cyclic access good?
 InstallMethod(\[\], "for a pregroup relator",
               [IsPregroupRelator and IsPregroupRelatorRep, IsPosInt],
@@ -160,7 +168,7 @@ function(r)
 end);
 
 ## Locations
-InstallGlobalFunction(Location,
+InstallGlobalFunction(NewLocation,
 function(R,i,a,b)
     return Objectify(IsPregroupLocationType, [R,i,a,b]);
 end);
@@ -200,6 +208,38 @@ InstallGlobalFunction(Place,
 function(loc, c, colour, boundary)
     return Objectify(IsPregroupPlaceType, [loc,c,colour,boundary]);
 end);
+
+InstallMethod(Location
+             , "for a pregroup place"
+             , [IsPregroupPlaceRep],
+             p -> p![1]);
+
+InstallMethod(Letter
+             , "for a pregroup place"
+             , [IsPregroupPlaceRep],
+             p -> p![2]);
+
+InstallMethod(Colour
+             , "for a pregroup place"
+             , [IsPregroupPlaceRep],
+             p -> p![3]);
+
+InstallMethod(Boundary
+             , "for a pregroup place"
+             , [IsPregroupPlaceRep],
+             p -> p![4]);
+
+InstallMethod(ViewString
+             , "for a pregroup place"
+             , [IsPregroupPlaceRep],
+function(p)
+    return STRINGIFY("(", ViewString(p![1]),
+                     ",", ViewString(p![2]),
+                     ",", ViewString(p![3]),
+                     ",", ViewString(p![4]),
+                     ")");
+end);
+
 
 ## Presentations
 InstallGlobalFunction(PregroupPresentation,
@@ -244,11 +284,37 @@ InstallMethod(Relators
              , [IsPregroupPresentation],
              pgp -> pgp!.rels);
 
+InstallMethod(RelatorsAndInverses
+             , "for a pregroup presentation"
+             , [IsPregroupPresentation],
+function(pgp)
+    local r;
+    r := Relators(pgp);
+    return Concatenation(r, List(r, Inverse));
+end);
 
 InstallMethod(Powers
              , "for a pregroup presentation"
              , [IsPregroupPresentation],
              x -> x!.powers);
+
+InstallMethod(RLetters
+             , "for a pregroup presentation"
+             , [IsPregroupPresentation],
+function(pres)
+    local rels, gens, x, r, rlett;
+
+    rels := Relators(pres);
+    gens := Generators(pres);
+    rlett := Set([]);
+    for r in rels do
+        for x in gens do
+            if x in r then AddSet(rlett, x); fi;
+        od;
+    od;
+    return rlett;
+end);
+
 
 #InstallMethod(RelationRoots
 #             , "for a pregroup presentation"
@@ -265,10 +331,10 @@ function(pres)
     local rel, locs, w;
 
     locs := [];
-    for rel in Relators(pres) do
+    for rel in RelatorsAndInverses(pres) do
         w := Base(rel);
-        Add(locs, Location(rel, 1, w[Length(w)], w[1]));
-        Append(locs, List([2..Length(w)], i -> Location(rel, i, w[i-1], w[i])));
+        Add(locs, NewLocation(rel, 1, w[Length(w)], w[1]));
+        Append(locs, List([2..Length(w)], i -> NewLocation(rel, i, w[i-1], w[i])));
     od;
     return locs;
 end);
@@ -303,7 +369,7 @@ function(pres)
                 if InLetter(loc2) = PregroupInverse(b) and OutLetter(loc2) = c then
                     # Is this really just checking that rel starting at b is
                     # not equal to rel2
-                    if CheckReducedDiagram(pres, loc, loc2) then
+                    if CheckReducedDiagram(loc, loc2) then
                         Add(places, Place(loc, c, "green", true));
                     else
                         Add(places, Place(loc, c, "green", false));
@@ -356,7 +422,7 @@ function(pres, x)
     # determine whether x occurs in I(R)
     local r,l;
 
-    for r in Relators(pres) do
+    for r in RelatorsAndInverses(pres) do
         if x in r then
             return true;
         fi;
@@ -437,17 +503,19 @@ function(pres)
     return lbg;
 end);
 
-LocationBlobGraphDistances := function(lbg)
-    local wt, f, d;
+InstallMethod(LocationBlobGraphDistances, "for a pregroup presentation",
+              [IsPregroupPresentation and IsPregroupPresentationRep],
+function(pres)
+    local lbg, wt, f, d;
 
+    lbg := LocationBlobGraph(pres);
     wt := function(i,j)
-        if DigraphVertexLabel(lbg, i)[1] = 'I' then
+        if not IsPregroupLocation(DigraphVertexLabel(lbg, i)) then
             return 1;
         else
             return 0;
         fi;
     end;
-
     f := function(mat, i, j, k)
         local t;
 
@@ -457,9 +525,8 @@ LocationBlobGraphDistances := function(lbg)
             mat[i][j] := Minimum(mat[i][j], mat[i][k] + mat[k][j]);
         fi;
     end;
-
     return DigraphFloydWarshall(lbg, f, infinity, -1 );
-end;
+end);
 
 #XXX This can probably be simplified. Refer to section 7.3 for the
 #    description
@@ -479,24 +546,24 @@ function(pres)
           locs,
           places, xi;
 
-    lbg := LocationBlobGraph(pres);
-    lbgd := LocationBlobGraphDistances(lbg);
     locs := Locations(pres);
     places := Places(pres);
     pls := Places(pres);
+    lbg := LocationBlobGraph(pres);
+    lbgd := LocationBlobGraphDistances(pres);
 
     lpl := ListWithIdenticalEntries(Length(places), []);
 
     for v in DigraphVertices(lbg) do
         lv := DigraphVertexLabel(lbg, v);
 #        pls := Filtered(places, x -> x = v[2]);
-        if lv[1] = 'L' then
+        if IsPregroupLocation(lv) then
             for v1 in InNeighboursOfVertex(lbg, v) do
                 lv1 := DigraphVertexLabel(lbg, v1);
                 for v2 in OutNeighboursOfVertex(lbg, v) do
                     lv2 := DigraphVertexLabel(lbg, v2);
-                    if lv[1] = 'L' then
-                        if lv2[1] = 'L' then   # v1 and v2 are locations
+                    if IsPregroupLocation(lv) then
+                        if IsPregroupLocation(lv2) then   # v1 and v2 are locations
                             for p in [1..Length(pls)] do
                                 if (pls[p][1] = lv[2]) and (pls[p][3] = "green") then
                                     if pls[p][4] = false then

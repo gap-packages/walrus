@@ -274,6 +274,16 @@ function(x,y)
     return x!.elt = y!.elt;
 end);
 
+# Artificial ordering on pregroup to make sets work
+InstallMethod(\<
+             , "for pregroup elements"
+             , IsIdenticalObj
+             , [ IsElementOfPregroupRep, IsElementOfPregroupRep]
+             , 0,
+function(x,y)
+    return x!.elt < y!.elt;
+end);
+
 InstallMethod(PregroupOf
              , "for pregroup elements"
              , [ IsElementOfPregroupRep ]
