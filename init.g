@@ -3,13 +3,11 @@
 #
 # Reading the declaration part of the package.
 #
-_PATH_SO:=Filename(DirectoriesPackagePrograms("anatph"), "anatph.so");
-if _PATH_SO <> fail then
-    LoadDynamicModule(_PATH_SO);
-fi;
-Unbind(_PATH_SO);
-
+ReadPackage("anatph", "gap/util.gd");
 ReadPackage("anatph", "gap/pregroup.gd");
+ReadPackage("anatph", "gap/relator.gd");
+ReadPackage("anatph", "gap/presentation.gd");
+ReadPackage("anatph", "gap/location.gd");
+ReadPackage("anatph", "gap/place.gd");
 ReadPackage("anatph", "gap/anatph.gd");
 ReadPackage("anatph", "gap/examples.gd");
-
