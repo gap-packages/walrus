@@ -96,6 +96,8 @@ function(pres)
 end);
 
 # Given a pregroup presentation as the input, find all places
+
+# B is true if a place will always occur on the boundary
 InstallMethod(Places, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
@@ -112,14 +114,15 @@ function(pres)
         a := InLetter(loc);
         b := OutLetter(loc);
         for c in Generators(pres) do
-            # C = 'B', i.e. red, I still find this confusing
+            # Colour is "red"
             if IsIntermultPair(PregroupInverse(b), c) then
                 if IsRLetter(pres, c) then
                     Add(places, NewPlace(loc, c, "red", false));
+                else
+                    Add(places, NewPlace(loc, c, "red", true));
                 fi;
-                Add(places, NewPlace(loc, c, "red", true));
             fi;
-            # C = 'G'
+            # Colour is "green"
             # find location R'.
             for loc2 in locs do
                 if InLetter(loc2) = PregroupInverse(b) and OutLetter(loc2) = c then
