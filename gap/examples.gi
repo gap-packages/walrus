@@ -74,10 +74,10 @@ end;
 # with a non-trivial intermult pair: its the union
 # of SymmetricGroup(3) and SymmetricGroup(4) amalgamating
 # Group((1,2,3))
+#T To be superseded by PregroupFromFreeProduct
+#T as soon as I got amalgamation to work
 tbl := pgtbl();
 inmp_pg := PregroupByTable("1abcdefghijklmnopqrstuvwxyz", x->x^tbl[2], tbl[3]);
 
 alp := Generators(tg_pgp);
 exw := [alp[1], alp[2], alp[3]];
-
-
