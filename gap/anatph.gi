@@ -173,6 +173,8 @@ end);
 
 #XXX This can probably be simplified. Refer to section 7.3 for the
 #    description
+#XXX Also at the moment this produces resuls that don't look plausible
+#    Check locationblobgraph again + distances?
 InstallGlobalFunction(ComputePlaceTriples,
 function(pres)
     local v, v1, v2, lv, lv1, lv2,
@@ -195,18 +197,19 @@ function(pres)
     lbg := LocationBlobGraph(pres);
     lbgd := LocationBlobGraphDistances(pres);
 
-    lpl := ListWithIdenticalEntries(Length(places), []);
+    lpl := List([1..Length(places)], x -> []);
 
-    for v in DigraphVertices(lbg) do
+    for v in DigraphVertices(lbg) do                            # All locations are vertices in the LocationBlobGraph
+
         lv := DigraphVertexLabel(lbg, v);
+
         if IsPregroupLocation(lv) then
             for v1 in InNeighboursOfVertex(lbg, v) do
                 lv1 := DigraphVertexLabel(lbg, v1);
                 for v2 in OutNeighboursOfVertex(lbg, v) do
                     lv2 := DigraphVertexLabel(lbg, v2);
-                    
-                    # we have v1 -> v -> v2
 
+                    # we have v1 -> v -> v2
                     if IsPregroupLocation(lv1) then
                         if IsPregroupLocation(lv2) then   # v1 and v2 are locations
                             for p in Places(lv) do        # places that have location v
@@ -231,9 +234,9 @@ function(pres)
                             od;
                         elif IsList(lv2) then # v1 location, v2 intermult
                             for p in Places(lv) do
-                                if (Letter(p) = lv2[2])
-                                   and (Colour(p) = "green") then
-                                    if pls[__ID(p)][4] = false then
+                                if (Letter(p) = lv2[2]) # tis is probably true by LBG construction?
+                                   and (Colour(p) = "red") then
+                                    if Boundary(p) = false then
                                         if lbgd[v2][v1] = 0 then
                                             Add(lpl[__ID(p)], [v1, v2, 0]);
                                         elif lbgd[v2][v1] = 1 then
@@ -311,7 +314,7 @@ function(pres, v1, place, v2)
     if found then
         found := false;
         for tv1 in InNeighboursOfVertex(lbg, v) do
-            if DigraphVertexLabel(tv1) = v1 then
+            if DigraphVertexLabel(lbg, tv1) = v1 then
                 found := true;
                 break;
             fi;
@@ -323,7 +326,7 @@ function(pres, v1, place, v2)
     if found then
         found := false;
         for tv2 in OutNeighboursOfVertex(lbg, v) do
-            if DigraphVertexLabel(tv2) = v2 then
+            if DigraphVertexLabel(lbg, tv2) = v2 then
                 found := true;
                 break;
             fi;
@@ -374,7 +377,6 @@ ReduceUPregroupWord := function(word)
 
     return rw2;
 end;
-
 
 # In reality we only need a list indexed by triples, so we
 # will quite probably end up with a tree where the leaves have
