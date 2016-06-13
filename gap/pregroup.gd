@@ -38,3 +38,13 @@ DeclareAttribute("PregroupInverse", IsElementOfPregroup);
 DeclareAttribute("PregroupElementId", IsElementOfPregroup);
 
 # TBD: Words over Pregroups
+
+# Constructing Pregroups
+
+# Make a pregroup from two groups.
+#T This should actually take an embedding of an almalgamating
+#T subgroup in the end to get intermult pairs and interleaving
+#T and all that
+DeclareGlobalFunction("PregroupFromFreeProduct");
+
+
