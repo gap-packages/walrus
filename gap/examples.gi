@@ -81,3 +81,14 @@ inmp_pg := PregroupByTable("1abcdefghijklmnopqrstuvwxyz", x->x^tbl[2], tbl[3]);
 
 alp := Generators(tg_pgp);
 exw := [alp[1], alp[2], alp[3]];
+
+
+Repeat := function(n, l);
+    return ShallowCopy(Flat(ListWithIdenticalEntries(n,l)));
+end;
+
+
+#
+ex1_pg := PregroupFromFreeProduct(CyclicGroup(IsPermGroup, 3), CyclicGroup(IsPermGroup, 3), ());
+ex1_words := List([ Repeat(10, [2,5]), [3,4,3,4], [2,3,4,5] ], x -> pg_word(ex1_pg, x));
+ex1_pgp := NewPregroupPresentation(ex1_pg, ex1_words);
