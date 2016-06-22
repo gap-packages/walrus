@@ -70,6 +70,10 @@ pgtbl := function()
     return [elts, SortingPerm(invs), tbl];
 end;
 
+Repeat := function(n, l);
+    return ShallowCopy(Flat(ListWithIdenticalEntries(n,l)));
+end;
+
 # A clumsy approach to making a pregroup
 # with a non-trivial intermult pair: its the union
 # of SymmetricGroup(3) and SymmetricGroup(4) amalgamating
@@ -77,18 +81,23 @@ end;
 #T To be superseded by PregroupFromFreeProduct
 #T as soon as I got amalgamation to work
 tbl := pgtbl();
-inmp_pg := PregroupByTable("1abcdefghijklmnopqrstuvwxyz", x->x^tbl[2], tbl[3]);
+ex2_pg := PregroupByTable("1abcdefghijklmnopqrstuvwxyz", x->x^tbl[2], tbl[3]);
+ex2_words := List([Repeat(10, [2,3,4,5]), [21,22],[2,24], [15,18,20,21,15,16,15,15]], x -> pg_word(ex2_pg, x));
+ex2_pgp := NewPregroupPresentation(ex2_pg, ex2_words);
+
+# This word does not reduce, but cyclically reduces
+ex2_cycword := pg_word(ex2_pg, [4,20,4]);
+
 
 alp := Generators(tg_pgp);
 exw := [alp[1], alp[2], alp[3]];
 
-
-Repeat := function(n, l);
-    return ShallowCopy(Flat(ListWithIdenticalEntries(n,l)));
-end;
 
 
 #
 ex1_pg := PregroupFromFreeProduct(CyclicGroup(IsPermGroup, 3), CyclicGroup(IsPermGroup, 3), ());
 ex1_words := List([ Repeat(10, [2,5]), [3,4,3,4], [2,3,4,5] ], x -> pg_word(ex1_pg, x));
 ex1_pgp := NewPregroupPresentation(ex1_pg, ex1_words);
+
+
+

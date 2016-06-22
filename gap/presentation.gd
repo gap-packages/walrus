@@ -4,14 +4,21 @@
 DeclareObject(
                "IsPregroupPresentation",
                IsObject,
-               IsComponentObjectRep,
+               IsComponentObjectRep and IsAttributeStoringRep,
                ["Pregroup", "Generators",
                 "Relators", "RelatorsAndInverses",
                 "Locations", "Places", "Bases", "Powers", "Roots",
                 "LocationBlobGraph", "LocationBlobGraphDistances",
-                "RLetters"
+                "RLetters", "PlaceTriples"
+#                , "ShortRedBlobs"
+                , "ShortRedBlobIndex"
+                , "OneStepReachablePlaces"
                ],
                []);
+
+
+# DeclareOperation( "Blob", [IsPregroupPresentation, IsPregroupElement, IsPregroupElement, IsPregroupElement ])
+
 DeclareGlobalFunction("NewPregroupPresentation");
 #X elements family?
 

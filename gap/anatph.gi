@@ -14,6 +14,7 @@
 #  - MakeIsReducedDiagram a method
 #  - Put relators of different presentations into different families
 #  - Write some tests
+#  - Straighten out negative/positive curvature storage
 
 
 #
@@ -123,7 +124,7 @@ function(pres)
                    CheckReducedDiagram(a, b) then
                     return true;
                 fi;
-            elif IsList(b) then # IsList is a hack to recognse intermult pairs
+            elif IsList(b) then # IsList is a hack to recognise intermult pairs
                 if OutLetter(a) = PregroupInverse(b[2][2]) then
                     return true;
                 fi;
@@ -175,7 +176,9 @@ end);
 #    description
 #XXX Also at the moment this produces resuls that don't look plausible
 #    Check locationblobgraph again + distances?
-InstallGlobalFunction(ComputePlaceTriples,
+# InstallGlobalFunction(ComputePlaceTriples,
+InstallMethod(PlaceTriples, "for a pregroup presentation",
+              [IsPregroupPresentation],
 function(pres)
     local v, v1, v2, lv, lv1, lv2,
           d, #
@@ -294,58 +297,46 @@ end);
 # This is horrid, and we should think about
 # better indexing.
 InstallGlobalFunction(Vertex,
+#InstallMethod(Vertex, "for a pregroup presentation",
+#              [IsPregroupPresentation],
 function(pres, v1, place, v2)
-    local v, vl, loc, x, lbg, found, pls, lpl, pl, pt, pp, tv1, tv2;
+    local v,     # Vertex in locationblobgraph
+          trp,   # triple
+          lbg,   # LocationBlobGraph
+          lpl,   # L_P list
+          loc,   # Location(place)
+          min;   # Minimal curvature
 
     lbg := LocationBlobGraph(pres);
-    lpl := ComputePlaceTriples(pres);
 
-    found := false;
+    # This is the list L_P, the place triples
+    # are at the moment indexed the same way
+    # as places in the presentation
+    lpl := PlaceTriples(pres)[__ID(place)];
+    loc := Location(place);
 
+    #X Find the vertex in LBG that is labelled by Location(place)
+    #X Better vertex indexing is necessary in digraphs: we need
+    #X bijective labelling map.
     for v in DigraphVertices(lbg) do
-        vl := DigraphVertexLabel(lbg, v);
-
-        if vl = Location(place) then
-            found := true;
+        if DigraphVertexLabel(lbg, v) = loc then
             break;
         fi;
     od;
+    # If we don't find the vertex (which would hint at a bug!) we're
+    # stuffed here
 
-    if found then
-        found := false;
-        for tv1 in InNeighboursOfVertex(lbg, v) do
-            if DigraphVertexLabel(lbg, tv1) = v1 then
-                found := true;
-                break;
-            fi;
-        od;
-    else
-        return fail;
-    fi;
+    # -Xi does my head in...
+    min := infinity;
+    for trp in lpl do
+        if (trp[1] in DigraphInEdges(v)) and
+           (trp[2] in DigraphOutEdges(v)) and
+           (-trp[3] < min) then
+            min := -trp[3];
+        fi;
+    od;
 
-    if found then
-        found := false;
-        for tv2 in OutNeighboursOfVertex(lbg, v) do
-            if DigraphVertexLabel(lbg, tv2) = v2 then
-                found := true;
-                break;
-            fi;
-        od;
-    else
-        return fail;
-    fi;
-
-    if found then
-        found := false;
-        for pt in lpl[__ID(place)] do
-            if pt[1] = v1 and pt[2] = v2 then
-                return pt[3];
-            fi;
-        od;
-    else
-        return fail;
-    fi;
-    return fail;
+    return min;
 end);
 
 ReduceUPregroupWord := function(word)
@@ -382,16 +373,84 @@ end;
 # will quite probably end up with a tree where the leaves have
 # weights as labels.
 
+CyclicSubList := function(l, pos, len)
+    local r, i, j, llen;
+
+    llen := Length(l);
+    r := [];
+    i := pos; j := 1;
+    while j <= len do
+        r[j] := l[i];
+        i := i + 1; j := j + 1;
+        if i > llen then
+            i := 1;
+        fi;
+    od;
+
+    return r;
+end;
+
+
+# Tests whether there is a proper subword
+# that reduces to 1
+#
+# because adjacent letters are intermult pairs we only need to test
+# strings of length 3 to len - 1
+#
+# This is probably horribly inefficient.
+CyclicReducedSubwords := function(word)
+    local l, i, pos;
+
+    pos := [1..Length(word)];
+    for l in [3..Length(word)] do
+        for i in [1..Length(word)] do
+            if ReduceUPregroupWord(word{CyclicSubList(pos, i, l)}) = [] then
+                return [true, word{ CyclicSubList(pos, i, l) } ];
+            fi;
+        od;
+    od;
+    return [false];
+end;
+
+IndexMinEnter := function(idx, key, value)
+    local i, it;
+
+    it := idx;
+    for i in key do
+        if not IsBound(it[i]) then
+            it[i] := [];
+        fi;
+        it := it[i];
+    od;
+
+    if it = [] then
+        it[1] := value;
+    else
+        it[1] := Minimum(it[1], value);
+    fi;
+end;
+
+EnterAllSubwords := function(idx, word, value)
+    local i, pos;
+    pos := [1..Length(word)];
+    for i in pos do
+        IndexMinEnter(idx, word{ CyclicSubList(pos, i, 3) }, value);
+    od;
+end;
+
 #XXX Store only the triples (a,b,c) that are infixes 
 #    of stirngs found here with appropriate numbers
+#    This is done
 #XXX It might not be guaranteed yet that no proper subword
 #    of a word found here is equal to 1
 #XXX Redo in nice
-InstallGlobalFunction(ShortBlobWords,
+#XXX for lots of generators this becomes unbearably slow.
+InstallMethod(ShortRedBlobIndex, "for a pregroup presentation",
+              [IsPregroupPresentation],
 function(pres)
     local i, j, k, lst, pg, alph, imm, n, elt,
           coord, levelelt, tree, level, nonrletts, cand, len, c,
-          word, res, levels;
+          word, res, levels, redw, reduced, ww, nrl;
     pg := Pregroup(pres);
     n := Size(pg);
     imm := IntermultMap(Pregroup(pres));
@@ -403,30 +462,24 @@ function(pres)
     word := [];
     levelelt := [];
     levels := [[],[],[],[],[],[]];
+    index := [];
 
     cand := [[2..n]];
 
+    # len: current length of word (depth in tree?)
     while len > 0 do
-        while len <= 6 and cand[len] <> [] do
+        reduced := [false];
+        while (len <= 6)                     # up to depth 6
+              and (cand[len] <> [])          # apply all intermult candidates
+              and (not reduced[1]) do           # only go deeper if no subword is equal to id
+
             c := Remove(cand[len], 1);
+            # the current word
             word[len] := c;
-
-            for j in [1..len] do
-                if len > j then
-                    levels[j][len] := levels[j][len - 1] * pg[c];
-                else
-                    levels[j][len] := pg[c];
-                fi;
-            od;
-            if len > 1 then
-                levelelt[len] := levelelt[len - 1] * pg[c];
-            else
-                levelelt[len] := pg[c];
-            fi;
-
             nonrletts[len] := not IsRLetter(pres, pg[c]);
-            if ForAll(levels{[1..len]}, x -> (Length(x) < len) or (x[len] <> pg[1]))
-               and (len < 6) then
+            reduced := CyclicReducedSubwords(List(word{ [1..len] }, x -> pg[x]));
+
+            if (len < 6) and (not reduced[1]) then
                 cand[len + 1] := ShallowCopy(imm[c]);
             else
                 cand[len + 1] := [];
@@ -437,44 +490,56 @@ function(pres)
         len := len - 1;
 
         while (len > 0) and (cand[len] = []) do
-
-            if (levelelt[len] = pg[1]) then
+            ww := ReduceUPregroupWord(List(word{[1..len]}, x -> pg[x]));
+            nrl := nonrletts{[1..len]};
+#            Print("word: ", word{[1..len]}, " redw: ", ww, " nrl: ", nrl, "\n");
+            if (ww = []) then
                 if IsIntermultPair(pg[word[1]], pg[word[len]]) then
                     if len = 3 then
-                        if SizeBlist(nonrletts) = 0 then
-                            Add(res, [word{[1..len]}, 1/6]);
-                        elif SizeBlist(nonrletts) = 1 then
-                            Add(res, [word{[1..len]}, 1/4]);
+                        if SizeBlist(nrl) = 0 then
+#                            Add(res, [word{[1..len]}, 1/6]);
+                            EnterAllSubwords(index, word{[1..len]}, 1/6);
+                        elif SizeBlist(nrl) = 1 then
+#                            Add(res, [word{[1..len]}, 1/4]);
+                            EnterAllSubwords(index, word{[1..len]}, 1/4);
                         fi;
                     elif len = 4 then
-                        if SizeBlist(nonrletts) = 0 then
-                            Add(res, [word{[1..len]}, 1/4]);
-                        elif SizeBlist(nonrletts) = 1 then
-                            Add(res, [word{[1..len]}, 1/3]);
+                        if SizeBlist(nrl) = 0 then
+#                            Add(res, [word{[1..len]}, 1/4]);
+                            EnterAllSubwords(index, word{[1..len]}, 1/4);
+                        elif SizeBlist(nrl) = 1 then
+#                            Add(res, [word{[1..len]}, 1/3]);
+                            EnterAllSubwords(index, word{[1..len]}, 1/3);
                         fi;
-                    elif len = 5 and (SizeBlist(nonrletts) = 0) then
-                        Add(res, [word{[1..len]}, 3/10]);
-                    elif len = 6 and (SizeBlist(nonrletts) = 0) then
-                        Add(res, [word{[1..len]}, 1/3]);
+                    elif len = 5 and (SizeBlist(nrl) = 0) then
+#                        Add(res, [word{[1..len]}, 3/10]);
+                        EnterAllSubwords(index, word{[1..len]}, 3/10);
+                    elif len = 6 and (SizeBlist(nrl) = 0) then
+#                        Add(res, [word{[1..len]}, 1/3]);
+                        EnterAllSubwords(index, word{[1..len]}, 1/3);
                     fi;
                 fi;
             fi;
-            
             len := len - 1;
         od;
     od;
-
-    return res;
+    return index;
 end);
 
 InstallGlobalFunction(Blob,
-function(pres)
-    local sbw;
+function(pres, a, b, c)
+    local it;
 
-    sbw := ShortBlobWords(pres);
-
-
-    Error("Blob not complete yet");
+    it := ShortRedBlobIndex(pres);
+    if IsBound(it[a]) then
+        it := it[a];
+        if IsBound(it[b]) then
+            it := it[b];
+            if IsBound(it[c]) then
+                return it[c][1];
+            fi;
+        fi;
+    fi;
     return -5/14;
 end);
 
@@ -485,14 +550,21 @@ end;
 StepCurvature := function(places, P, Q)
 end;
 
-OneStepReachable := function(pres)
-    local rel, pl, P, Q, places, osr, curv, pows, lbg, gens, b, c, binv, rels, OneStepRedCase;
+InstallMethod(OneStepReachablePlaces, "for a pregroup presentation",
+              [IsPregroupPresentation],
+function(pres)
+    local rel, pl, P, Q, places, osr, curv, pows, lbg, gens, b, c, binv, rels
+          , OneStepRedCase
+          , OneStepGreenCase
+          , OneStepByPlace;
 
     gens := Generators(pres);
     places := Places(pres);
     pows := Powers(pres);
     lbg := LocationBlobGraph(pres);
     rels := Relators(pres);
+
+    OneStepByPlace := [];
 
     # list with places, and offsets
     # ()
@@ -507,61 +579,98 @@ OneStepReachable := function(pres)
                 end);
 
     OneStepRedCase := function(P)
-        local Q, b, y, v;
+        local Q, b, y, v, Pl, Ql, res;
+
+        res := [];
+        Pl := Location(P);
 
         for Q in Places(pres) do
             # same relator, one position up
-            if (Q[1][1] = P[1][1])
-               and (Q[1][2] + 1 = P[1][2]) then
+            Ql := Location(Q);
+            if (Relator(Q) = Relator(P))
+               and (Position(Ql) = Position(Pl) + 1)
+               and (InLetter(Ql) = OutLetter(Pl)) then
                 for y in gens do
-                    b := P[1][3];
-                    binv := PregroupInverse(b);
+                    binv := PregroupInverse(InLetter(Ql));
                     if IsIntermultPair(y, binv) then
                         v := LBGVertexForLoc(Q);
                         for v2 in OutNeighboursOfVertex(lbg, v) do
                             xi1 := Blob(y, binv, c);
-                            xi2 := Vertex([y, binv], pl2[1], v2);
+                            xi2 := Vertex([y, binv], Ql, v2);
                             # Note that xi1, xi2 are negative
                             # Here we only have 0 offset
-                            curv[Q][2] := Minimum(curv[Q][2], xi1 + xi2);
+                            # Add(OneStepByPlace[__ID(P)], [Q, 1, xi1 + xi2]);
+                            Add(res, OneStopByPlace[__ID(P)], [Q, 1, xi1 + xi2]);
                         od;
                     fi;
                 od;
             fi;
         od;
+        return res;
     end;
 
-    for P in Places(pres) do
-        c := pl[3];
-        if pl[3] = "red" then
-            OneStepRedCase(P);
-        elif pl[3] = "green" then
-            # offsets?
-            nu1 := __;
-            nu2 := __;
+    # P is the place we're working on
+    OneStepGreenCase := function(P)
+        local L, L2, b, c, loc, pls, is_consoledge, l, v, nu1, nu2, xi1;
 
-            # xi1 is negative
-            xi1 := Vertex(nu1, Pp, nu2);
+        L := Location(P);
+        b := InLetter(L);
+        c := Letter(P);
 
-            if Pp[3] = "green" then
-                curv[Q][2] := Minimum(curv[Q][2], xi1);
-
-            elif Pp[3] = "red" then
-                OneStepRedCase(Pp);
-            else
-                Error("invalid colour");
+        # Every place that is instanciated with location that is in an instantiation of
+        # a place P'.
+        # We're interested in consolidated edges between Relator(P) and Relator(pls) 
+        # from the locations that P and pls are at.
+        # 
+        # Have to check that Relator(P) and Relator(pls) don't entirely cancel (is this
+        # assumed to be only the case when Relator(P) = Relator(pls)^{-1})
+        for pls in Places(pres) do
+            L2 := Location(pls); # This is the location on R'
+            if (InLetter(L2) = PregroupInverse(b))
+               and (OutLetter(L2) = c) then
+                l := 1;
+                is_consoledge := true;
+                while is_consoledge do
+                    P2 := Place(); # This is the place that is reachable along the consolidated
+                                   # edge
+                    v := LBGVertexForLoc(Location(P2));
+                    for nu1 in InEdges(v) do
+                        for nu2 in OutEdges(v) do
+                            if Colour(nu2) = Colour(P2) then
+                                xi1 := Vertex(nu1, P2, nu2);
+                                if Colour(P2) = "green" then
+                                    Add(OneStepByPlace[__ID(P)], [P2,l,xi1])
+                                elif Colour(P2) = "red" then
+                                    #T is this application of OneStepRedCase correct?
+                                    next := OneStepRedCase(P2);
+                                    Append(OneStepByPlace[__ID(P)], List(next, x -> [x[1], l + 1, x[3] + xi1]))
+                                    # Add(OneStepByPlace[__ID(P)], [Q,l+1,xi1 + xi2])
+                                else
+                                    Error("Invalid colour");
+                                fi;
+                            fi;
+                        od;
+                    od;
+                    
+                    if Colour(P2) = "green"
+                od;
             fi;
-            
-            for Rp in [1..Length(rels)] do
-                
-            od;
+        od;
+    end;
+
+    # for every place we compute a list of
+    # one-step reachable places
+    for P in Places(pres) do
+        if Colour(P) = "red" then
+            OneStepRedCase(P);
+        elif Colour(P) = "green" then
+            OneStepGreenCase(P);
         else
-            Error("Invalid colour");
+            Error("Invalid colour for place ", P, "\n");
         fi;
     od;
 
- 
-    Error("OneStepReachable not implemented yet");
+    Error("OneStepReachablePlaces not completely implemented yet");
 end;
 
 InitStepsCurve := function(places, p)

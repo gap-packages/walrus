@@ -13,6 +13,11 @@ InstallMethod(Location
              , [IsPregroupPlaceRep],
              p -> p![1]);
 
+InstallMethod(Relator
+             , "for a pregroup place"
+             , [IsPregroupPlace],
+             x -> Relator(p![1]));
+
 InstallMethod(Letter
              , "for a pregroup place"
              , [IsPregroupPlaceRep],
