@@ -22,6 +22,7 @@ DeclareOperation("[]", [IsPregroupTableRep, IsInt]);
 DeclareAttribute("IntermultPairs", IsPregroup);
 DeclareAttribute("IntermultPairsIds", IsPregroup);
 DeclareAttribute("IntermultMap", IsPregroup);
+DeclareAttribute("One", IsPregroup);
 
 
 # Elements of Pregroups
@@ -36,6 +37,7 @@ DeclareOperation("IsIntermultPair", [IsElementOfPregroup, IsElementOfPregroup]);
 
 DeclareAttribute("PregroupInverse", IsElementOfPregroup);
 DeclareAttribute("PregroupElementId", IsElementOfPregroup);
+DeclareAttribute("__ID", IsElementOfPregroup);
 
 # TBD: Words over Pregroups
 

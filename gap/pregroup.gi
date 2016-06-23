@@ -220,6 +220,10 @@ function(pg)
     return map;
 end);
 
+InstallMethod(One, "for a pregroup",
+              [IsPregroup],
+              pg -> pg[1]);
+
 #
 # Pregroup elements
 #
@@ -308,9 +312,13 @@ InstallMethod(PregroupElementId
              , "for pregroup elements"
              , [ IsElementOfPregroupRep]
              , 0,
-function(a)
-    return a!.elt;
-end);
+             a -> a!.elt);
+
+InstallMethod(__ID
+             , "for pregroup elements"
+             , [IsElementOfPregroup]
+             , 0,
+             x -> x!.elt);
 
 InstallMethod(IsDefinedMultiplication
              , "for pregroup elements"
