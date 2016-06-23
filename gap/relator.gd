@@ -21,7 +21,7 @@ DeclareObject(
                "IsPregroupRelator",
                IsPregroupWord,
                IsComponentObjectRep and IsAttributeStoringRep,
-               ["Presentation", "Base", "Exponent"],
+               ["Presentation", "Base", "Exponent", "Places"],
                []
     );
 DeclareGlobalFunction("NewPregroupRelator");

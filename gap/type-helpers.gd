@@ -5,7 +5,7 @@
 #
 
 
-if not IsBound("DeclareObject") then
+if not IsBound(DeclareObject) then
     
 DeclareGlobalFunction("DeclareObject");
 

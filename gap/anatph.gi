@@ -15,7 +15,7 @@
 #  - Put relators of different presentations into different families
 #  - Write some tests
 #  - Straighten out negative/positive curvature storage
-
+#  - Interleaving
 
 #
 # Run to test (tg_pgp is a pregroup presentation for a triangle group, with
@@ -445,12 +445,14 @@ end;
 #    of a word found here is equal to 1
 #XXX Redo in nice
 #XXX for lots of generators this becomes unbearably slow.
+#XXX This is probably because I first descent to length 6 and then
+#XXX prune instead of the other way round.
 InstallMethod(ShortRedBlobIndex, "for a pregroup presentation",
               [IsPregroupPresentation],
 function(pres)
     local i, j, k, lst, pg, alph, imm, n, elt,
           coord, levelelt, tree, level, nonrletts, cand, len, c,
-          word, res, levels, redw, reduced, ww, nrl;
+          word, res, levels, redw, reduced, ww, nrl, index;
     pg := Pregroup(pres);
     n := Size(pg);
     imm := IntermultMap(Pregroup(pres));
@@ -550,13 +552,23 @@ end;
 StepCurvature := function(places, P, Q)
 end;
 
+
+# Location blob graph has by convention set of locations first
+# in vertex set for quick lookup
+DeclareGlobalFunction("LBGVertexForLoc",
+function(lbg, loc)
+    return __ID(loc);
+end);
+
+
 InstallMethod(OneStepReachablePlaces, "for a pregroup presentation",
               [IsPregroupPresentation],
 function(pres)
     local rel, pl, P, Q, places, osr, curv, pows, lbg, gens, b, c, binv, rels
           , OneStepRedCase
           , OneStepGreenCase
-          , OneStepByPlace;
+          , OneStepByPlace
+          , NextPlaces;
 
     gens := Generators(pres);
     places := Places(pres);
@@ -579,7 +591,7 @@ function(pres)
                 end);
 
     OneStepRedCase := function(P)
-        local Q, b, y, v, Pl, Ql, res;
+        local Q, b, y, v, v2, Pl, Ql, res, xi1, xi2;
 
         res := [];
         Pl := Location(P);
@@ -593,14 +605,14 @@ function(pres)
                 for y in gens do
                     binv := PregroupInverse(InLetter(Ql));
                     if IsIntermultPair(y, binv) then
-                        v := LBGVertexForLoc(Q);
+                        v := LBGVertexForLoc(lbg, Q);
                         for v2 in OutNeighboursOfVertex(lbg, v) do
                             xi1 := Blob(y, binv, c);
                             xi2 := Vertex([y, binv], Ql, v2);
                             # Note that xi1, xi2 are negative
                             # Here we only have 0 offset
                             # Add(OneStepByPlace[__ID(P)], [Q, 1, xi1 + xi2]);
-                            Add(res, OneStopByPlace[__ID(P)], [Q, 1, xi1 + xi2]);
+                            Add(res, OneStepByPlace[__ID(P)], [Q, 1, xi1 + xi2]);
                         od;
                     fi;
                 od;
@@ -609,9 +621,34 @@ function(pres)
         return res;
     end;
 
+    # This assumes all previous have been checked already!
+    NextPlaces := function(loc1, loc2, l)
+        local P, res, i, j;
+
+        res := [];
+
+        i := Position(loc1) + l;
+        j := Position(loc2) - l;
+        # Poor man's cyclic access
+        # TODO check correctness?
+        while j < 0 do
+            j := j + Length(Relator(loc2));
+        od;
+
+        if Relator(loc1)[i] = PregroupInverse(Relator(loc2)[j]) then
+            for P in Places(Relator(loc1)) do
+                if Position(Location(P)) = i then
+                    Add(res, P);
+                fi;
+            od;
+        fi;
+        return res;
+    end;
+
     # P is the place we're working on
     OneStepGreenCase := function(P)
-        local L, L2, b, c, loc, pls, is_consoledge, l, v, nu1, nu2, xi1;
+        local L, L2, b, c, loc, pls, is_consoledge, l, v, nu1, nu2, xi1, xi2, curl,
+              R, R2, P2, P2s, i, j, next;
 
         L := Location(P);
         b := InLetter(L);
@@ -626,34 +663,40 @@ function(pres)
         # assumed to be only the case when Relator(P) = Relator(pls)^{-1})
         for pls in Places(pres) do
             L2 := Location(pls); # This is the location on R'
+            R2 := Relator(L2);
+
+            # L2 instantiates place on R2, have to test consolidated
+            #    edges between R and R2 starting from L/L2 on R/R2
+            #    respectively
             if (InLetter(L2) = PregroupInverse(b))
                and (OutLetter(L2) = c) then
-                l := 1;
-                is_consoledge := true;
-                while is_consoledge do
-                    P2 := Place(); # This is the place that is reachable along the consolidated
-                                   # edge
-                    v := LBGVertexForLoc(Location(P2));
-                    for nu1 in InEdges(v) do
-                        for nu2 in OutEdges(v) do
-                            if Colour(nu2) = Colour(P2) then
-                                xi1 := Vertex(nu1, P2, nu2);
-                                if Colour(P2) = "green" then
-                                    Add(OneStepByPlace[__ID(P)], [P2,l,xi1])
-                                elif Colour(P2) = "red" then
-                                    #T is this application of OneStepRedCase correct?
-                                    next := OneStepRedCase(P2);
-                                    Append(OneStepByPlace[__ID(P)], List(next, x -> [x[1], l + 1, x[3] + xi1]))
-                                    # Add(OneStepByPlace[__ID(P)], [Q,l+1,xi1 + xi2])
-                                else
-                                    Error("Invalid colour");
+                l := 0;
+                repeat
+                    l := l + 1;
+                    # Collect all places that are along a consolidated edge
+                    # between R and R2 of length l
+                    P2s := NextPlaces(L, L2, l);
+                    for P2 in P2s do
+                        v := LBGVertexForLoc(lbg, Location(P2));
+                        for nu1 in DigraphInEdges(lbg, v) do
+                            for nu2 in DigraphOutEdges(lbg, v) do
+                                if Colour(nu2) = Colour(P2) then
+                                    xi1 := Vertex(nu1, P2, nu2);
+                                    if Colour(P2) = "green" then
+                                        Add(OneStepByPlace[__ID(P)], [P2,l,xi1]);
+                                    elif Colour(P2) = "red" then
+                                        #X is this application of OneStepRedCase correct?
+                                        next := OneStepRedCase(P2);
+                                        Append(OneStepByPlace[__ID(P)], List(next, x -> [x[1], l + 1, x[3] + xi1]));
+                                        # Add(OneStepByPlace[__ID(P)], [Q,l+1,xi1 + xi2])
+                                    else
+                                        Error("Invalid colour");
+                                    fi;
                                 fi;
-                            fi;
+                            od;
                         od;
                     od;
-                    
-                    if Colour(P2) = "green"
-                od;
+                until P2s = [];
             fi;
         od;
     end;
@@ -669,9 +712,8 @@ function(pres)
             Error("Invalid colour for place ", P, "\n");
         fi;
     od;
-
-    Error("OneStepReachablePlaces not completely implemented yet");
-end;
+    return OneStepByPlace;
+end);
 
 InitStepsCurve := function(places, p)
     local i, j, res, nplaces;
@@ -688,16 +730,18 @@ InitStepsCurve := function(places, p)
 end;
 
 # The RSym tester
-InstallGlobalFunction(RSymTester,
+InstallMethod(RSymTest, "for a pregroup presentation, and a float",
+              [IsPregroupPresentation, IsFloat],
 function(pres, eps)
     local i, j, rel,
           places, Ps, P, Q,
           stepscurve,   # Steps and curvature
           zeta,
-          Xi;
-    zeta := Int(Ceil(6 * (1 + eps)));
+          xi, osr;
+    zeta := Int(Round((6 * (1 + eps)) + 1/2));
+    osr := OneStepReachablePlaces(pres);
 
-    for rel in Relations(pres) do
+    for rel in Relators(pres) do
         places := Places(pres, rel);
         for Ps in places do
             stepscurve := InitStepsCurve(places, Ps);
@@ -705,18 +749,18 @@ function(pres, eps)
             for i in [1..zeta] do
                 for P in [1..Length(places)] do
                     if stepscurve[j][1] = i - 1 then
-                        for Q in OneStepReachable(places[P]) do
-                            Xi := stepscurve[P][2]
+                        for Q in osr[__ID(P)] do
+                            xi := stepscurve[P][2]
                                   + StepCurvature(places, P, Q)
                                   + LengthEps(eps, rel, P, Q);
 
-                            if (Xi >= 0) and (Ps = Q) then
+                            if (xi >= 0) and (Ps = Q) then
                                 return [fail, stepscurve];
                             fi;
 
-                            if (Xi > stepscurve[Q][1]) then
+                            if (xi > stepscurve[Q][1]) then
                                 stepscurve[Q][1] := i;
-                                stepscurve[Q][2] := Xi;
+                                stepscurve[Q][2] := xi;
                             fi;
                         od;
                     fi;

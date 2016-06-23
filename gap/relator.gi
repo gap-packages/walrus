@@ -36,13 +36,14 @@ InstallMethod(Presentation,
 
 # Cyclic access good?
 InstallMethod(\[\], "for a pregroup relator",
-              [IsPregroupRelator and IsPregroupRelatorRep, IsPosInt],
+              [IsPregroupRelator and IsPregroupRelatorRep, IsInt],
 function(r, p)
     local i, l;
-
     i := p - 1;
     l := Length(r!.base);
-
+    while i < 0 do
+        i := i + l;
+    od;
     return r!.base[ RemInt(i, l) + 1];
 end);
 
@@ -51,6 +52,24 @@ InstallMethod(Length, "for a pregroup relator",
 function(r)
     return Length(r!.base) * r!.exponent;
 end);
+
+# we could possibly store this on creation
+InstallMethod(Places, "for a pregroup relator",
+              [IsPregroupRelator],
+function(r)
+    local P, res;
+
+    res := [];
+
+    for P in Places(Presentation(r)) do
+        if Relator(P) = r then
+            Add(res, P);
+        fi;
+    od;
+    return res;
+end);
+
+
 
 InstallMethod(ViewString, "for a pregroup relator",
     [IsPregroupRelator],
