@@ -431,16 +431,16 @@ IndexMinEnter := function(idx, key, value)
 end;
 
 EnterAllSubwords := function(idx, word, value)
-    local i, pos;
+    local i, pos, ww;
     pos := [1..Length(word)];
+    ww := List(word, x -> __ID(x));
     for i in pos do
-        IndexMinEnter(idx, word{ CyclicSubList(pos, i, 3) }, value);
+        IndexMinEnter(idx, ww{ CyclicSubList(pos, i, 3) }, value);
     od;
 end;
 
-#XXX Store only the triples (a,b,c) that are infixes 
+#XXX Computes triples (a,b,c) that are infixes 
 #    of stirngs found here with appropriate numbers
-#    This is done
 InstallMethod(ShortRedBlobIndex, "for a pregroup presentation",
               [IsPregroupPresentation],
 function(pres)
@@ -453,20 +453,21 @@ function(pres)
     index := [];
     cand := [[2..n]];
 
-    while len > 0 do
-        # minimum length 3
-        while len < 7 do
+    nonrletts := [];
+    word := [];
+
+    len := 1;
+
+    # minimum length 3
+    while (len > 0) and (len < 7) do
+        if Length(cand[len]) > 0 then
             c := Remove(cand[len], 1);
-            word[len] := c;
+            word[len] := pg[c];
             nonrletts[len] := not IsRLetter(pres, pg[c]);
-
             # Possible not go further if we have too many R-letters?
-
             if IsIntermultPair(word[len], word[1]) and
                ReduceUPregroupWord(word{ [1..len] }) = [] then
-
                 nrl := SizeBlist(nonrletts{[1..len]});
-
                 if len = 3 then
                     # if len = 3 then no proper subword can be equal to 1
                     # because we only look at intermult pairs, and pairs
@@ -497,7 +498,7 @@ function(pres)
                         EnterAllSubwords(index, word{[1..len]}, 1/3);
                     fi;
                 fi;
-                # Backtrack
+                # We have entered, so backtrack
                 len := len - 1;
             else
                 # Expand if not substring that is equal to 1?
@@ -509,93 +510,12 @@ function(pres)
                     cand[len] := ShallowCopy(imm[c]);
                 fi;
             fi;
-        od;
+        else
+            len := len - 1;
+        fi;
     od;
-
     return index;
 end);
-
-
-#InstallMethod(ShortRedBlobIndex, "for a pregroup presentation",
-#              [IsPregroupPresentation],
-#function(pres)
-#    local i, j, k, lst, pg, alph, imm, n, elt,
-#          coord, levelelt, tree, level, nonrletts, cand, len, c,
-#          word, res, levels, redw, reduced, ww, nrl, index;
-#    pg := Pregroup(pres);
-#    n := Size(pg);
-#    imm := IntermultMap(Pregroup(pres));
-#
-#    res := [];
-#
-#    len := 1;
-#    nonrletts := [];
-#    word := [];
-#    levelelt := [];
-#    levels := [[],[],[],[],[],[]];
-#    index := [];
-#
-#    cand := [[2..n]];
-#
-#    # len: current length of word (depth in tree?)
-#    while len > 0 do
-#        reduced := [false];
-#        while (len <= 6)                     # up to depth 6
-#              and (cand[len] <> [])          # apply all intermult candidates
-#              and (not reduced[1]) do           # only go deeper if no subword is equal to id
-#
-#            c := Remove(cand[len], 1);
-#            # the current word
-#            word[len] := c;
-#            nonrletts[len] := not IsRLetter(pres, pg[c]);
-#            reduced := CyclicReducedSubwords(List(word{ [1..len] }, x -> pg[x]));
-#
-#            if (len < 6) and (not reduced[1]) then
-#                cand[len + 1] := ShallowCopy(imm[c]);
-#            else
-#                cand[len + 1] := [];
-#            fi;
-#            len := len + 1;
-#        od;
-#
-#        len := len - 1;
-#
-#        while (len > 0) and (cand[len] = []) do
-#            ww := ReduceUPregroupWord(List(word{[1..len]}, x -> pg[x]));
-#            nrl := nonrletts{[1..len]};
-##            Print("word: ", word{[1..len]}, " redw: ", ww, " nrl: ", nrl, "\n");
-#            if (ww = []) then
-#                if IsIntermultPair(pg[word[1]], pg[word[len]]) then
-#                    if len = 3 then
-#                        if SizeBlist(nrl) = 0 then
-##                            Add(res, [word{[1..len]}, 1/6]);
-#                            EnterAllSubwords(index, word{[1..len]}, 1/6);
-#                        elif SizeBlist(nrl) = 1 then
-##                            Add(res, [word{[1..len]}, 1/4]);
-#                            EnterAllSubwords(index, word{[1..len]}, 1/4);
-#                        fi;
-#                    elif len = 4 then
-#                        if SizeBlist(nrl) = 0 then
-##                            Add(res, [word{[1..len]}, 1/4]);
-#                            EnterAllSubwords(index, word{[1..len]}, 1/4);
-#                        elif SizeBlist(nrl) = 1 then
-##                            Add(res, [word{[1..len]}, 1/3]);
-#                            EnterAllSubwords(index, word{[1..len]}, 1/3);
-#                        fi;
-#                    elif len = 5 and (SizeBlist(nrl) = 0) then
-##                        Add(res, [word{[1..len]}, 3/10]);
-#                        EnterAllSubwords(index, word{[1..len]}, 3/10);
-#                    elif len = 6 and (SizeBlist(nrl) = 0) then
-##                        Add(res, [word{[1..len]}, 1/3]);
-#                        EnterAllSubwords(index, word{[1..len]}, 1/3);
-#                    fi;
-#                fi;
-#            fi;
-#            len := len - 1;
-#        od;
-#    od;
-#    return index;
-#end);
 
 InstallGlobalFunction(Blob,
 function(pres, a, b, c)
