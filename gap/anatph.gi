@@ -522,12 +522,12 @@ function(pres, a, b, c)
     local it;
 
     it := ShortRedBlobIndex(pres);
-    if IsBound(it[a]) then
-        it := it[a];
-        if IsBound(it[b]) then
-            it := it[b];
-            if IsBound(it[c]) then
-                return it[c][1];
+    if IsBound(it[a!.elt]) then
+        it := it[a!.elt];
+        if IsBound(it[b!.elt]) then
+            it := it[b!.elt];
+            if IsBound(it[c!.elt]) then
+                return it[c!.elt][1];
             fi;
         fi;
     fi;
@@ -542,9 +542,7 @@ StepCurvature := function(places, P, Q)
 end;
 
 
-# Location blob graph has by convention set of locations first
-# in vertex set for quick lookup
-DeclareGlobalFunction("LBGVertexForLoc",
+InstallGlobalFunction(LBGVertexForLoc,
 function(lbg, loc)
     return __ID(loc);
 end);
@@ -561,7 +559,6 @@ function(pres)
 
     gens := Generators(pres);
     places := Places(pres);
-    pows := Powers(pres);
     lbg := LocationBlobGraph(pres);
     rels := Relators(pres);
 
@@ -570,10 +567,11 @@ function(pres)
     # list with places, and offsets
     # ()
     curv := List(places, function(x)
-                    if x[3] = "red" then
+                    Print("warning, hack, is this broken?\n");
+                    if Colour(x) = "red" then
                         return [0,infinity];
-                    elif x[3] = "green" then
-                        return List([0..QuoInt(pows[x[1][1]], 2)], y -> [y,infinity]);
+                    elif Colour(x) = "green" then
+                        return List([0..QuoInt(Exponent(Relator(x)), 2)], y -> [y,infinity]);
                     else
                         Error("invalid colour");
                     fi;
@@ -594,10 +592,10 @@ function(pres)
                 for y in gens do
                     binv := PregroupInverse(InLetter(Ql));
                     if IsIntermultPair(y, binv) then
-                        v := LBGVertexForLoc(lbg, Q);
+                        v := LBGVertexForLoc(lbg, Location(Q));
                         for v2 in OutNeighboursOfVertex(lbg, v) do
-                            xi1 := Blob(y, binv, c);
-                            xi2 := Vertex([y, binv], Ql, v2);
+                            xi1 := Blob(pres, y, binv, Letter(P));
+                            xi2 := Vertex(pres, [y, binv], Ql, v2);
                             # Note that xi1, xi2 are negative
                             # Here we only have 0 offset
                             # Add(OneStepByPlace[__ID(P)], [Q, 1, xi1 + xi2]);
@@ -704,40 +702,28 @@ function(pres)
     return OneStepByPlace;
 end);
 
-InitStepsCurve := function(places, p)
-    local i, j, res, nplaces;
-    nplaces := Length(places);
-    res := [];
-    for i in [1..nplaces] do
-        res[i] := [];
-        for j in [1..nplaces] do
-            res[i][j] := [-1,0];
-        od;
-        res[i][i] := [0,0];
-    od;
-    return res;
-end;
-
 # The RSym tester
+# The epsilon is chosen by the user
 InstallMethod(RSymTest, "for a pregroup presentation, and a float",
               [IsPregroupPresentation, IsFloat],
 function(pres, eps)
     local i, j, rel,
-          places, Ps, P, Q,
+          places, Ps, P, Q, Pq,
           stepscurve,   # Steps and curvature
           zeta,
           xi, osr;
-    zeta := Int(Round((6 * (1 + eps)) + 1/2));
+    zeta := Maximum(Int(Round((6 * (1 + eps)) + 1/2)),
+                       LengthLongestRelator(pres));
     osr := OneStepReachablePlaces(pres);
 
     for rel in Relators(pres) do
-        places := Places(pres, rel);
+        places := Places(rel);
         for Ps in places do
-            stepscurve := InitStepsCurve(places, Ps);
+            stepscurve := [ [Ps, 0, 0, 0] ];
 
             for i in [1..zeta] do
-                for P in [1..Length(places)] do
-                    if stepscurve[j][1] = i - 1 then
+                for Pq in stepscurve do
+                    if Pq[3] = i - 1 then
                         for Q in osr[__ID(P)] do
                             xi := stepscurve[P][2]
                                   + StepCurvature(places, P, Q)

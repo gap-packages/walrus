@@ -22,4 +22,8 @@ DeclareGlobalFunction("ShortBlobWords");
 DeclareGlobalFunction("Blob");
 DeclareGlobalFunction("RSymTester");
 
+# Location blob graph has by convention set of locations first
+# in vertex set for quick lookup
+DeclareGlobalFunction("LBGVertexForLoc");
+
 
