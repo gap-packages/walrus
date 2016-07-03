@@ -13,6 +13,7 @@ DeclareObject(
 #                , "ShortRedBlobs"
                 , "ShortRedBlobIndex"
                 , "OneStepReachablePlaces"
+                , "LengthLongestRelator"
                ],
                []);
 

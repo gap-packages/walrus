@@ -144,3 +144,10 @@ function(pres)
     return places;
 end);
 
+InstallMethod(LengthLongestRelator, "for a pregroup presentation",
+              [IsPregroupPresentation and IsPregroupPresentationRep],
+function(pres)
+    return Maximum(List(Relators(pres), Length));
+end);
+
+
