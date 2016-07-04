@@ -48,3 +48,14 @@ function(p)
                      ",", ViewString(p![4]),
                      ")");
 end);
+
+InstallMethod(\=
+             , "for two pregroup places"
+             , [IsPregroupPlaceRep, IsPregroupPlaceRep],
+function(p1, p2)
+    return (p1![1] = p2![1])
+           and (p1![2] = p2![2])
+           and (p1![3] = p2![3])
+           and (p1![4] = p2![4]);
+end);
+
