@@ -169,6 +169,7 @@ function(pres)
             mat[i][j] := Minimum(mat[i][j], mat[i][k] + mat[k][j]);
         fi;
     end;
+    # Can there be more than one such entry?
     return DigraphFloydWarshall(lbg, f, infinity, -1 );
 end);
 
@@ -307,6 +308,10 @@ function(pres, v1, place, v2)
           loc,   # Location(place)
           min;   # Minimal curvature
 
+    if not IsPregroupPlace(place) then
+        Error("Vertex: place needs to be a place!");
+    fi;
+
     lbg := LocationBlobGraph(pres);
 
     # This is the list L_P, the place triples
@@ -327,10 +332,10 @@ function(pres, v1, place, v2)
     # stuffed here
 
     # -Xi does my head in...
-    min := infinity;
+    min := 1.0 / 0.0;
     for trp in lpl do
-        if (trp[1] in DigraphInEdges(v)) and
-           (trp[2] in DigraphOutEdges(v)) and
+        if (trp[1] in DigraphInEdges(lbg, v)) and
+           (trp[2] in DigraphOutEdges(lbg, v)) and
            (-trp[3] < min) then
             min := -trp[3];
         fi;
@@ -567,11 +572,10 @@ function(pres)
     # list with places, and offsets
     # ()
     curv := List(places, function(x)
-                    Print("warning, hack, is this broken?\n");
                     if Colour(x) = "red" then
-                        return [0,infinity];
+                        return [ 0, 1.0 / 0.0 ];
                     elif Colour(x) = "green" then
-                        return List([0..QuoInt(Exponent(Relator(x)), 2)], y -> [y,infinity]);
+                        return List([0..QuoInt(Exponent(Relator(x)), 2)], y -> [ y, 1.0 / 0.0 ]);
                     else
                         Error("invalid colour");
                     fi;
@@ -595,11 +599,11 @@ function(pres)
                         v := LBGVertexForLoc(lbg, Location(Q));
                         for v2 in OutNeighboursOfVertex(lbg, v) do
                             xi1 := Blob(pres, y, binv, Letter(P));
-                            xi2 := Vertex(pres, [y, binv], Ql, v2);
+                            xi2 := Vertex(pres, [y, binv], Q, v2);
                             # Note that xi1, xi2 are negative
                             # Here we only have 0 offset
                             # Add(OneStepByPlace[__ID(P)], [Q, 1, xi1 + xi2]);
-                            Add(res, OneStepByPlace[__ID(P)], [Q, 1, xi1 + xi2]);
+                            Add(res, [Q, 1, xi1 + xi2]);
                         od;
                     fi;
                 od;
@@ -635,7 +639,9 @@ function(pres)
     # P is the place we're working on
     OneStepGreenCase := function(P)
         local L, L2, b, c, loc, pls, is_consoledge, l, v, nu1, nu2, xi1, xi2, curl,
-              R, R2, P2, P2s, i, j, next;
+              R, R2, P2, P2s, i, j, next, res;
+
+        res := [];
 
         L := Location(P);
         b := InLetter(L);
@@ -670,11 +676,12 @@ function(pres)
                                 if Colour(nu2) = Colour(P2) then
                                     xi1 := Vertex(nu1, P2, nu2);
                                     if Colour(P2) = "green" then
-                                        Add(OneStepByPlace[__ID(P)], [P2,l,xi1]);
+                                        Add(res, [P2,l,xi1]);
                                     elif Colour(P2) = "red" then
                                         #X is this application of OneStepRedCase correct?
                                         next := OneStepRedCase(P2);
-                                        Append(OneStepByPlace[__ID(P)], List(next, x -> [x[1], l + 1, x[3] + xi1]));
+                                        Append(res, List(next, x -> [x[1], l + 1, x[3] + xi1]));
+                                        #Append(OneStepByPlace[__ID(P)], List(next, x -> [x[1], l + 1, x[3] + xi1]));
                                         # Add(OneStepByPlace[__ID(P)], [Q,l+1,xi1 + xi2])
                                     else
                                         Error("Invalid colour");
@@ -686,15 +693,16 @@ function(pres)
                 until P2s = [];
             fi;
         od;
+        return res;
     end;
 
     # for every place we compute a list of
     # one-step reachable places
     for P in Places(pres) do
         if Colour(P) = "red" then
-            OneStepRedCase(P);
+            OneStepByPlace[__ID(P)] := OneStepRedCase(P);
         elif Colour(P) = "green" then
-            OneStepGreenCase(P);
+            OneStepByPlace[__ID(P)] := OneStepGreenCase(P);
         else
             Error("Invalid colour for place ", P, "\n");
         fi;
@@ -707,11 +715,12 @@ end);
 InstallMethod(RSymTest, "for a pregroup presentation, and a float",
               [IsPregroupPresentation, IsFloat],
 function(pres, eps)
-    local i, j, rel,
+    local i, j, rel, R,
           places, Ps, P, Q, Pq,
-          stepscurve,   # Steps and curvature
+          osrp, # a one-step reachable place
+          L,
           zeta,
-          xi, osr;
+          xi, osr, psip, pp;
     zeta := Maximum(Int(Round((6 * (1 + eps)) + 1/2)),
                        LengthLongestRelator(pres));
     osr := OneStepReachablePlaces(pres);
@@ -719,23 +728,38 @@ function(pres, eps)
     for rel in Relators(pres) do
         places := Places(rel);
         for Ps in places do
-            stepscurve := [ [Ps, 0, 0, 0] ];
-
+            L := [ [Ps, 0, 0, 0] ]; # This list is called L in the paper
+            # The meaning of the components of the quadruples q is
+            # - q[1] is a place 
+            # - q[2] is the distance of q[1] from Ps
+            # - q[3] is the number of steps that q[1] is from Ps
+            # - q[4] is a curvature value
             for i in [1..zeta] do
-                for Pq in stepscurve do
-                    if Pq[3] = i - 1 then
-                        for Q in osr[__ID(P)] do
-                            xi := stepscurve[P][2]
-                                  + StepCurvature(places, P, Q)
-                                  + LengthEps(eps, rel, P, Q);
-
-                            if (xi >= 0) and (Ps = Q) then
-                                return [fail, stepscurve];
-                            fi;
-
-                            if (xi > stepscurve[Q][1]) then
-                                stepscurve[Q][1] := i;
-                                stepscurve[Q][2] := xi;
+                for Pq in L do      # Pq is for "PlaceQuadruple", which is
+                                    # a silly name
+                    if Pq[3] = i - 1 then  # Reachable in i - 1 steps
+                        for osrp in osr[__ID(Pq[1])] do
+                            if Pq[2] + osrp[2] <= Length(rel) then
+                                psip := Pq[4]
+                                        + osrp[2] * (1 + eps) / Length(rel)
+                                        + osrp[3];
+                                if psip < 0.0 then
+                                elif (Pq[4] > 0) and
+                                     (osrp[1] = Ps) and
+                                     (Pq[2] + osrp[2] = Length(rel)) then
+                                    return [fail, L];
+                                else
+                                    pp := PositionProperty(L, x -> (x[1] = osrp[1]) and (x[2] = Pq[2]));
+                                    if pp = fail then
+                                        Add(L, [osrp[1], Pq[2] + osrp[2], i, psip] );
+                                    else
+                                        # Can there be more than one such entry?
+                                        if L[pp][4] > psip then
+                                            L[pp][3] := i;
+                                            L[pp][4] := psip;
+                                        fi;
+                                    fi;
+                                fi;
                             fi;
                         od;
                     fi;
