@@ -3,75 +3,38 @@
 #
 #
 # TODO
-#  - Better Handling for relations:
-#     - Make a type for relations
-#     - they belong to a presentation
-#     - They can have a root-power-presentation
-#     - They should be testable for overlaps
-#  - A type for Locations
-#  - A type for Places
-#  - Check correctness of IsReducedDiagram
 #  - MakeIsReducedDiagram a method
 #  - Put relators of different presentations into different families
 #  - Write some tests
 #  - Straighten out negative/positive curvature storage
 #  - Interleaving
 
+# To Check (write tests?)
 #
-# Run to test (tg_pgp is a pregroup presentation for a triangle group, with
-#              tg_pg better have more):
-#  - IntermultPairs(tg_pg);
-#  - Locations(tg_pgp);
-#  - Places(tg_pgp);
-#  - LocationBlobGraph(tg_pgp);
+# Preparing the presentation?
+# Check what representation my curvature is in, do I store negative curvature?
+#  => always store "negative curvature" which irritatingly is a *positive* value
+#  => What about float vs rational?
+# Locations
+# Places
+# LocationBlobGraph + distances
+# Vertex function
+# RedBlobData
+# OneStepReachables
+# RSymTester
+# ReducedDiagram?
 #
+# Sort out families of elements etc
+# what to do about the __ID hack?
 
-####################################
-#
-#
-# Assumptions
-#  I(Rels) only contains cyclic conjugates of R in Rels
-
-
-# we have a bijection between \underline{\abs{P}} and P, i.e. number
-# the elements of P.
-# we also have an involution sigma : P -> P which inverts elements
-# notational convention -i = sigma(i)
-#
-# We also have names for elements of P for better readability
-#
-# relations are (compressed?) strings over P, i.e. lists of pairs
-# [i,e]
-
-#
-# Rels rep'd as a list of ints, for instance x^2y^-2 -> [[1,2],[2, -2]]
-# unfortunately of course [x,-2] = [-x,2]
-#
-
-
-# If input is Rels then?
-
-# A pregroup presentation will be a structure that has
-# Generators(pres) (elements of pregroup except 1)
-# Pregroup(pres)   (the pregroup structure)
-# Relations(pres)  (the set \mathcal{R})
-
-# An R-letter is a letter that occurs in any (intersperse) of
+# Intersperse = Interleave?
+# An R-letter is a letter that occurs in any (interleave) of
 # a relation (Definition 7.4)
-# XXX: Note that the code below does not do intersperses yet!
-# XXX: Colva said we can go without intersperse I think
-# XXX: Check
+# XXX: Note that the code below does not do interleaves yet!
 InstallGlobalFunction(IsRLetter,
 function(pres, x)
     # determine whether x occurs in I(R)
-    local r,l;
-
-    for r in RelatorsAndInverses(pres) do
-        if x in r then
-            return true;
-        fi;
-    od;
-    return false;
+    return ForAny(RelatorsAndInverses(pres), r -> x in r);
 end);
 
 # Definition 3.3: A diagram is semi-reduced, if no distinct adjacent faces
