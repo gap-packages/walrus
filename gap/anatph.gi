@@ -15,8 +15,7 @@
 # Check what representation my curvature is in, do I store negative curvature?
 #  => always store "negative curvature" which irritatingly is a *positive* value
 #  => What about float vs rational?
-# Locations checked
-# Places checked
+# Tracing information
 # LocationBlobGraph + distances
 # Vertex function
 # RedBlobData
@@ -122,7 +121,9 @@ function(pres)
 
     lbg := LocationBlobGraph(pres);
     wt := function(i,j)
-        if not IsPregroupLocation(DigraphVertexLabel(lbg, i)) then
+        if IsPregroupLocation(DigraphVertexLabel(lbg, i))
+           and (IsPregroupLocation(DigraphVertexLabel(lbg, j)) or
+                IsList(DigraphVertexLabel(lbg,j))) then
             return 1;
         else
             return 0;
@@ -143,9 +144,6 @@ end);
 
 #XXX This can probably be simplified. Refer to section 7.3 for the
 #    description
-#XXX Also at the moment this produces resuls that don't look plausible
-#    Check locationblobgraph again + distances?
-# InstallGlobalFunction(ComputePlaceTriples,
 InstallMethod(PlaceTriples, "for a pregroup presentation",
               [IsPregroupPresentation],
 function(pres)
@@ -171,10 +169,11 @@ function(pres)
 
     lpl := List([1..Length(places)], x -> []);
 
-    for v in DigraphVertices(lbg) do                            # All locations are vertices in the LocationBlobGraph
-
+    # All locations are vertices in the LocationBlobGraph
+    # And actually, since we put the locations *first* we could
+    # stop this loop as soon as we run out of locations?
+    for v in DigraphVertices(lbg) do
         lv := DigraphVertexLabel(lbg, v);
-
         if IsPregroupLocation(lv) then
             for v1 in InNeighboursOfVertex(lbg, v) do
                 lv1 := DigraphVertexLabel(lbg, v1);
@@ -191,16 +190,16 @@ function(pres)
                                    and (Colour(p) = "green") then
                                     if Boundary(p) = false then
                                         if lbgd[v2][v1] = 0 then
-                                            Add(lpl[__ID(p)], [v1, v2, -1/6]);
+                                            Add(lpl[__ID(p)], [v1, v2, 1/6]);
                                         elif lbgd[v2][v1] = 1 then
-                                            Add(lpl[__ID(p)], [v1, v2, -1/4]);
+                                            Add(lpl[__ID(p)], [v1, v2, 1/4]);
                                         elif lbgd[v2][v1] = 2 then
-                                            Add(lpl[__ID(p)], [v1, v2, -3/10]);
+                                            Add(lpl[__ID(p)], [v1, v2, 3/10]);
                                         else
-                                            Add(lpl[__ID(p)], [v1, v2, -1/3]);
+                                            Add(lpl[__ID(p)], [v1, v2, 1/3]);
                                         fi;
                                     else
-                                        Add(lpl[__ID(p)], [v1,v2, -1/3]);
+                                        Add(lpl[__ID(p)], [v1,v2, 1/3]);
                                     fi;
                                 fi;
                             od;
@@ -212,12 +211,12 @@ function(pres)
                                         if lbgd[v2][v1] = 0 then
                                             Add(lpl[__ID(p)], [v1, v2, 0]);
                                         elif lbgd[v2][v1] = 1 then
-                                            Add(lpl[__ID(p)], [v1, v2, -1/6]);
+                                            Add(lpl[__ID(p)], [v1, v2, 1/6]);
                                         else
-                                            Add(lpl[__ID(p)], [v1, v2, -1/4]);
+                                            Add(lpl[__ID(p)], [v1, v2, 1/4]);
                                         fi;
                                     else
-                                        Add(lpl[__ID(p)], [v1, v2, -1/4]);
+                                        Add(lpl[__ID(p)], [v1, v2, 1/4]);
                                     fi;
                                 fi;
                             od;
@@ -228,17 +227,17 @@ function(pres)
                         if IsPregroupLocation(lv2) then
                             for p in Places(lv) do
                                 if (Letter(p) = OutLetter(lv2))
-                                   and (Colour(p) = "red") then
+                                   and (Colour(p) = "green") then
                                     if Boundary(p) = false then
                                         if lbgd[v2][v1] = 0 then
                                             Add(lpl[__ID(p)], [v1, v2, 0]);
                                         elif lbgd[v2][v1] = 1 then
-                                            Add(lpl[__ID(p)], [v1, v2, -1/6]);
+                                            Add(lpl[__ID(p)], [v1, v2, 1/6]);
                                         else
-                                            Add(lpl[__ID(p)], [v1, v2, -1/4]);
+                                            Add(lpl[__ID(p)], [v1, v2, 1/4]);
                                         fi;
                                     else
-                                        Add(lpl[__ID(p)], [v1, v2, -1/4]);
+                                        Add(lpl[__ID(p)], [v1, v2, 1/4]);
                                     fi;
                                 fi;
                             od;
@@ -248,7 +247,7 @@ function(pres)
                                     if Boundary(p) = false then
                                         Add(lpl[__ID(p)], [v1, v2, 0]);
                                     else
-                                        Add(lpl[__ID(p)], [v1, v2, -1/4]);
+                                        Add(lpl[__ID(p)], [v1, v2, 1/4]);
                                     fi;
                                 fi;
                             od;
@@ -263,11 +262,9 @@ function(pres)
     return lpl;
 end);
 
-# This is horrid, and we should think about
-# better indexing.
+
+# Here we use rationals still
 InstallGlobalFunction(Vertex,
-#InstallMethod(Vertex, "for a pregroup presentation",
-#              [IsPregroupPresentation],
 function(pres, v1, place, v2)
     local v,     # Vertex in locationblobgraph
           trp,   # triple
@@ -277,7 +274,7 @@ function(pres, v1, place, v2)
           min;   # Minimal curvature
 
     if not IsPregroupPlace(place) then
-        Error("Vertex: place needs to be a place!");
+        Error("Vertex: <place> needs to be a place!");
     fi;
 
     lbg := LocationBlobGraph(pres);
@@ -291,24 +288,29 @@ function(pres, v1, place, v2)
     #X Find the vertex in LBG that is labelled by Location(place)
     #X Better vertex indexing is necessary in digraphs: we need
     #X bijective labelling map.
-    for v in DigraphVertices(lbg) do
-        if DigraphVertexLabel(lbg, v) = loc then
-            break;
-        fi;
-    od;
-    # If we don't find the vertex (which would hint at a bug!) we're
-    # stuffed here
+    #X at the moment as a hack we could use __ID(), i.e.
+    # v = __ID(loc);
+    #for v in DigraphVertices(lbg) do
+    #    if DigraphVertexLabel(lbg, v) = loc then
+    #        break;
+    #    fi;
+    #od;
+    v = __ID(loc);
+    if DigraphVertexLabel(lbg, v) <> loc then
+        Error("This is a bug\n");
+    fi;
 
-    # -Xi does my head in...
-    min := 1.0 / 0.0;
+    # -Xi is the negative curvature, i.e. positive (yeah, I know)
+    min := infinity;
     for trp in lpl do
         if (trp[1] in DigraphInEdges(lbg, v)) and
            (trp[2] in DigraphOutEdges(lbg, v)) and
-           (-trp[3] < min) then
-            min := -trp[3];
+           (trp[3] < min) then
+            min := trp[3];
         fi;
     od;
 
+    # This is a negative curvature, i.e. a positive value. Our curvatures need to be positive values
     return min;
 end);
 
@@ -345,7 +347,6 @@ end;
 # In reality we only need a list indexed by triples, so we
 # will quite probably end up with a tree where the leaves have
 # weights as labels.
-
 CyclicSubList := function(l, pos, len)
     local r, i, j, llen;
 
@@ -363,7 +364,6 @@ CyclicSubList := function(l, pos, len)
     return r;
 end;
 
-
 # Tests whether there is a proper subword
 # that reduces to 1
 #
@@ -371,19 +371,19 @@ end;
 # strings of length 3 to len - 1
 #
 # This is probably horribly inefficient.
-CyclicReducedSubwords := function(word)
-    local l, i, pos;
-
-    pos := [1..Length(word)];
-    for l in [3..Length(word)] do
-        for i in [1..Length(word)] do
-            if ReduceUPregroupWord(word{CyclicSubList(pos, i, l)}) = [] then
-                return [true, word{ CyclicSubList(pos, i, l) } ];
-            fi;
-        od;
-    od;
-    return [false];
-end;
+#CyclicReducedSubwords := function(word)
+#    local l, i, pos;
+#
+#    pos := [1..Length(word)];
+#    for l in [3..Length(word)] do
+#        for i in [1..Length(word)] do
+#            if ReduceUPregroupWord(word{CyclicSubList(pos, i, l)}) = [] then
+#                return [true, word{ CyclicSubList(pos, i, l) } ];
+#            fi;
+#        od;
+#    od;
+#    return [false];
+#end;
 
 IndexMinEnter := function(idx, key, value)
     local i, it;
@@ -446,9 +446,9 @@ function(pres)
                     # because we only look at intermult pairs, and pairs
                     # of inverses are explicitly not intermult pairs
                     if nrl = 0 then
-                        EnterAllSubwords(index, word{[1..len]}, -1/6);
+                        EnterAllSubwords(index, word{[1..len]}, 1/6);
                     elif nrl = 1 then
-                        EnterAllSubwords(index, word{[1..len]}, -1/4);
+                        EnterAllSubwords(index, word{[1..len]}, 1/4);
                     else
                         Print("? nrl", nrl, "\n");
                     fi;
