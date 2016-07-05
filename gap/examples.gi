@@ -100,4 +100,33 @@ ex1_words := List([ Repeat(10, [2,5]), [3,4,3,4], [2,3,4,5] ], x -> pg_word(ex1_
 ex1_pgp := NewPregroupPresentation(ex1_pg, ex1_words);
 
 
+# Triangle Groups
+InstallGlobalFunction("TriangleGroup",
+function(l,m,n)
+    local pg;
+    pg := PregroupFromFreeProduct( CyclicGroup( IsPermGroup, l)
+                                 , CyclicGroup( IsPermGroup, m)
+                                 , () );
+    # This is a bit icky, we can't tell which element of pg is the one of the
+    # second cyclic group
+    return NewPregroupPresentation(pg, [ pg_word( pg, Repeat(n, [2, l + 1]))]);
+end);
+
+# Example from Theorem 9.5, triangle-like: quotient of 2-3-m triangle group
+# our choice of pregroup is the free product of cyclic groups of order 2 and 3
+#T see what happens if we present this group as
+#T <x,y,z | x^2, y^3, z^m, (zxY)^n > ?
+#T though we push a parameter into the pregroup?
+InstallGlobalFunction("TRISH",
+function(m,n)
+    return NewPregroupPresentation(tg_pg,
+                                   [ pg_word(tg_pg, Repeat(m, [2,3])),
+                                     pg_word(tg_pg, Repeat(n, [2,3,2,4]))
+                                   ]);
+end);
+
+trish_3_3  := TRISH(3,3);
+trish_13_7 := TRISH(13,7);
+trish_4_10 := TRISH(4,10);
+trish_8_19 := TRISH(8,19);
 
