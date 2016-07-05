@@ -129,8 +129,6 @@ function(pres)
                     # Is this really just checking that rel starting at b is
                     # not equal to rel2
                     if CheckReducedDiagram(loc, loc2) then
-                        Add(places, NewPlace(loc, c, "green", true));
-                    else
                         Add(places, NewPlace(loc, c, "green", false));
                     fi;
                 fi;
