@@ -15,8 +15,8 @@
 # Check what representation my curvature is in, do I store negative curvature?
 #  => always store "negative curvature" which irritatingly is a *positive* value
 #  => What about float vs rational?
-# Locations
-# Places
+# Locations checked
+# Places checked
 # LocationBlobGraph + distances
 # Vertex function
 # RedBlobData
@@ -26,6 +26,7 @@
 #
 # Sort out families of elements etc
 # what to do about the __ID hack?
+# change labelling of generators
 
 # Intersperse = Interleave?
 # An R-letter is a letter that occurs in any (interleave) of
@@ -66,6 +67,7 @@ end);
 # Location blob graph
 # vertices: locations and intermult pairs
 # directed edges:
+# Here "I" means "IntermultPair"
 #  - I(a,b) -> R(j,b^(-1),c)
 #  - R(i,a,b) -> I(b^(-1),c)
 #  - R(i,a,b) -> R'(j,b^(-1),c) if there is a reduced diagram that has
@@ -75,11 +77,12 @@ end);
 InstallMethod(LocationBlobGraph, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local v, e, r, l, ls, lbg;
+    local v, e, lbg;
 
     v := ShallowCopy(Locations(pres));
     Append(v, List(IntermultPairs(Pregroup(pres)), x -> ['I', x]));
 
+    # Edge relation for LocationBlobGraph
     e := function(a,b)
         if IsPregroupLocation(a) then
             if IsPregroupLocation(b) then
@@ -88,7 +91,7 @@ function(pres)
                     return true;
                 fi;
             elif IsList(b) then # IsList is a hack to recognise intermult pairs
-                if OutLetter(a) = PregroupInverse(b[2][2]) then
+                if OutLetter(a) = PregroupInverse(b[2][1]) then
                     return true;
                 fi;
             else
@@ -96,7 +99,7 @@ function(pres)
             fi;
         elif IsList(a) then
             if IsPregroupLocation(b) then
-                if a[2][2] = PregroupInverse(InLetter(b)) then
+                if PregroupInverse(a[2][2]) = InLetter(b) then
                     return true;
                 fi;
             fi;
@@ -110,10 +113,12 @@ function(pres)
     return lbg;
 end);
 
+# Can we analyse connected components?
+# At the moment this is the slowest bit of the algorithm
 InstallMethod(LocationBlobGraphDistances, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local lbg, wt, f, d;
+    local lbg, wt, f;
 
     lbg := LocationBlobGraph(pres);
     wt := function(i,j)
@@ -445,7 +450,7 @@ function(pres)
                     elif nrl = 1 then
                         EnterAllSubwords(index, word{[1..len]}, -1/4);
                     else
-                        Print("?");
+                        Print("? nrl", nrl, "\n");
                     fi;
                 elif len = 4 then
                     if nrl = 0 then
@@ -453,7 +458,7 @@ function(pres)
                     elif nrl = 1 then
                         EnterAllSubwords(index, word{[1..len]}, 1/3);
                     else
-                        Print("?");
+                        Print("? nrl", nrl, "\n");
                     fi;
                 elif len = 5 then
                     if (nrl = 0) then
