@@ -126,8 +126,6 @@ function(pres)
             # find location R'.
             for loc2 in locs do
                 if InLetter(loc2) = PregroupInverse(b) and OutLetter(loc2) = c then
-                    # Is this really just checking that rel starting at b is
-                    # not equal to rel2
                     if CheckReducedDiagram(loc, loc2) then
                         Add(places, NewPlace(loc, c, "green", false));
                     fi;
