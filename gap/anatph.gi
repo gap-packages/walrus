@@ -1,36 +1,33 @@
+########################################################################
 #
 # anatph: A new approach to proving hyperbolicity
 #
-#
-# TODO
-#  - MakeIsReducedDiagram a method
-#  - Put relators of different presentations into different families
-#  - Write some tests
-#  - Straighten out negative/positive curvature storage
-#  - Interleaving
 
-# To Check (write tests?)
 #
-# Preparing the presentation?
-# Check what representation my curvature is in, do I store negative curvature?
-#  => always store "negative curvature" which irritatingly is a *positive* value
-#  => What about float vs rational?
-# Tracing information
-# LocationBlobGraph + distances
-# Vertex function
-# RedBlobData
-# OneStepReachables
-# RSymTester
-# ReducedDiagram?
+# TODO (technical)
+#  - MakeIsReducedDiagram a method
+#  - Sort out families of elements etc
+#  - what to do about the __ID hack?
+#  - What to do about float vs rational?
+#  - provide a way to label of generators
+#  - Introduce an InfoLevel and log things with info levels, remove Print
+#    statements
 #
-# Sort out families of elements etc
-# what to do about the __ID hack?
-# change labelling of generators
+# TODO (mathematical/functional)
+#  - Put relators of different presentations into different families
+#  - Write tests
+#  - Interleaving
+#  - Preparing the presentation
+#  - check LocationBlobGraph + distances
+#  - Make the distance computation in LBG more efficient?
+#  - Check OneStepReachables
+#  - Check RSymTest
 #
-# Introduce an InfoLevel and log things with info levels, remove Print
-# statements
+# DONE
+#  - always store "negative curvature" which is a *positive* value
 #
-# Intersperse = Interleave?
+
+
 # An R-letter is a letter that occurs in any (interleave) of
 # a relation (Definition 7.4)
 # XXX: Note that the code below does not do interleaves yet!
