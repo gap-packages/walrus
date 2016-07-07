@@ -26,7 +26,10 @@
 # Sort out families of elements etc
 # what to do about the __ID hack?
 # change labelling of generators
-
+#
+# Introduce an InfoLevel and log things with info levels, remove Print
+# statements
+#
 # Intersperse = Interleave?
 # An R-letter is a letter that occurs in any (interleave) of
 # a relation (Definition 7.4)
@@ -326,7 +329,13 @@ function(pres, v1, place, v2)
         fi;
     od;
 
-    # This is a negative curvature, i.e. a positive value. Our curvatures need to be positive values
+    # Since floating point infinity gets in the way we only convert to
+    # it late.
+    if min = infinity then
+        min := 1.0 / 0.0;
+    fi;
+
+    # This is a negative curvature, i.e. a positive value.
     return min;
 end);
 
@@ -542,7 +551,6 @@ NextPlaces := function(loc1, loc2, l)
 
     i := Position(loc1) + l;
     j := Position(loc2) - l;
-    Print("   i: ", i, " j: ", j, "\n");
 
     # Poor man's cyclic access
     # TODO check correctness?
@@ -579,8 +587,6 @@ function(pres)
 
     OneStepByPlace := [];
 
-    # list with places, and offsets
-    # ()
     curv := List(places, function(x)
                     if Colour(x) = "red" then
                         return [ 0, 1.0 / 0.0 ];
@@ -630,7 +636,6 @@ function(pres)
 
         i := Position(loc1) + l;
         j := Position(loc2) - l;
-        Print("   i: ", i, " j: ", j, "\n");
 
         # Poor man's cyclic access
         # TODO check correctness?
@@ -678,11 +683,9 @@ function(pres)
                 l := 0;
                 repeat
                     l := l + 1;
-                    Print("consolidated edge: ", l, "\n");
                     # Collect all places that are along a consolidated edge
                     # between R and R2 of length l
                     P2s := NextPlaces(L, L2, l);
-                    Print("next places: ", P2s, "\n");
 
                     for P2 in P2s do
                         v := LBGVertexForLoc(lbg, Location(P2));
@@ -743,10 +746,8 @@ function(pres, eps)
     osr := OneStepReachablePlaces(pres);
 
     for rel in Relators(pres) do
-        Print("relator: ", ViewString(rel), "\n");
         places := Places(rel);
         for Ps in places do
-            Print("  place: (", __ID(Ps), ")", ViewString(Ps), "\n");
             L := [ [Ps, 0, 0, 0] ]; # This list is called L in the paper
             # The meaning of the components of the quadruples q is
             # - q[1] is a place 
@@ -754,27 +755,20 @@ function(pres, eps)
             # - q[3] is the number of steps that q[1] is from Ps
             # - q[4] is a curvature value
             for i in [1..zeta] do
-                Print("  i: ", i, "\n");
                 for Pq in L do      # Pq is for "PlaceQuadruple", which is
                                     # a silly name
                     if Pq[3] = i - 1 then  # Reachable in i - 1 steps
-                        Print("        OneStepReachablePlaces: ", ViewString(osr[__ID(Pq[1])]), "\n");
                         for osrp in osr[__ID(Pq[1])] do
-                            Print("          OneStepReachablePlace: ", ViewString(osrp), "\n");
                             if Pq[2] + osrp[2] <= Length(rel) then
                                 psip := Pq[4]
                                         + osrp[2] * (1 + eps) / Length(rel)
                                         + osrp[3];
-                                Print("      psip: ", psip, "\n");
                                 if psip < 0.0 then
-                                    Print("            psip < 0.0\n");
                                 elif (Pq[4] > 0.0) and
                                      (osrp[1] = Ps) and
                                      (Pq[2] + osrp[2] = Length(rel)) then
-                                    Print("            RSymTester failed\n");
                                     return [fail, L];
                                 else
-                                    Print("            updating\n");
                                     pp := PositionProperty(L, x -> (x[1] = osrp[1]) and (x[2] = Pq[2]));
                                     if pp = fail then
                                         Add(L, [osrp[1], Pq[2] + osrp[2], i, psip] );
