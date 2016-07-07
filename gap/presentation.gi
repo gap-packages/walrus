@@ -65,7 +65,7 @@ InstallMethod(RLetters
 function(pres)
     local rels, gens, x, r, rlett;
 
-    rels := Relators(pres);
+    rels := RelatorsAndInverses(pres);
     gens := Generators(pres);
     rlett := Set([]);
     for r in rels do
@@ -121,9 +121,11 @@ function(pres)
                 else
                     Add(places, NewPlace(loc, c, "red", true));
                 fi;
+                # Add(places, NewPlace(loc,c,"red", not IsRLetter(pres,c)));
             fi;
             # Colour is "green"
-            # find location R'.
+            # find location R'(j,b^(-1),c) and check that a diagram that
+            # meets at the edge b doesn't collapse.
             for loc2 in locs do
                 if InLetter(loc2) = PregroupInverse(b) and OutLetter(loc2) = c then
                     if CheckReducedDiagram(loc, loc2) then
@@ -145,5 +147,3 @@ InstallMethod(LengthLongestRelator, "for a pregroup presentation",
 function(pres)
     return Maximum(List(Relators(pres), Length));
 end);
-
-
