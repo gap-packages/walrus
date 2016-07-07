@@ -41,25 +41,41 @@ end);
 # are labelled by ww_1 and w_1^{-1}w for a relator ww_1 and have a common
 # consolidated edge labelled by w and w^-1
 # it is reduced if this also holds for a face incident with itself.
+
+# test whether label on Relator(l2) beginning at b^(-1) is equal to inverse
+# of label on Relator(l1) ending at b
 InstallGlobalFunction(CheckReducedDiagram,
 function(l1, l2)
-    local i, j, r1, r2;
+    local i, j, r1, r2, iend, jend;
 
     r1 := Relator(l1);
     i := Position(l1);
+    iend := i + 1;
+    if iend > Length(r1) then iend := iend - Length(r1); fi;
+
     r2 := Relator(l2);
-    j := Position(l2);
+    j := Position(l2) - 1;
+    jend := j - 1;
+    if jend < 0 then jend := jend + Length(r2); fi;
+
+    # Here inverses should match, or otherwise the passed
+    # locations are already incompatible
+    if r1[i] <> PregroupInverse(r2[j]) then
+        Error("loc1 and loc2 are not compatible");
+        return fail;
+    fi;
 
     repeat
-        i := i + 1;
-        if i > Length(r1) then i := 1; fi;
-        j := j - 1;
-        if j = 0 then j := Length(r2); fi;
+        i := i - 1;
+        if i = 0 then i := Length(r1); fi;
+        j := j + 1;
+        if j > Length(r2) then j := 1; fi;
 
         if r1[i] <> PregroupInverse(r2[j]) then
             return true;
         fi;
-    until (i = Position(l1)) or (j = Position(l2));
+    until (i = iend) or (j = jend);
+
     return false;
 end);
 
@@ -295,7 +311,7 @@ function(pres, v1, place, v2)
     #        break;
     #    fi;
     #od;
-    v = __ID(loc);
+    v := __ID(loc);
     if DigraphVertexLabel(lbg, v) <> loc then
         Error("This is a bug\n");
     fi;
@@ -413,7 +429,7 @@ EnterAllSubwords := function(idx, word, value)
 end;
 
 #XXX Computes triples (a,b,c) that are infixes 
-#    of stirngs found here with appropriate numbers
+#    of strings found here with appropriate numbers
 InstallMethod(ShortRedBlobIndex, "for a pregroup presentation",
               [IsPregroupPresentation],
 function(pres)
@@ -450,7 +466,7 @@ function(pres)
                     elif nrl = 1 then
                         EnterAllSubwords(index, word{[1..len]}, 1/4);
                     else
-                        Print("? nrl", nrl, "\n");
+                        # Print("? nrl", nrl, "\n");
                     fi;
                 elif len = 4 then
                     if nrl = 0 then
@@ -458,7 +474,7 @@ function(pres)
                     elif nrl = 1 then
                         EnterAllSubwords(index, word{[1..len]}, 1/3);
                     else
-                        Print("? nrl", nrl, "\n");
+                        # Print("? nrl", nrl, "\n");
                     fi;
                 elif len = 5 then
                     if (nrl = 0) then
@@ -469,6 +485,8 @@ function(pres)
                      and (ReduceUPregroupWord(word{[3,4,5]}) <> []) then
                     if nrl = 0 then
                         EnterAllSubwords(index, word{[1..len]}, 1/3);
+                    else
+                        # Print("? nrl", nrl, "\n");
                     fi;
                 fi;
                 # We have entered, so backtrack
@@ -490,35 +508,59 @@ function(pres)
     return index;
 end);
 
+# This should become an operation
+#InstallMethod(Blob, "for a pregroup presentation, an element, an element, and an element"
+#             , [ IsPregroupPresentation, IsPregroupElement, IsPregroupElement, IsPregroupElement ]
+#             , function(pres, a, b, c) end);
 InstallGlobalFunction(Blob,
 function(pres, a, b, c)
     local it;
 
     it := ShortRedBlobIndex(pres);
-    if IsBound(it[a!.elt]) then
-        it := it[a!.elt];
-        if IsBound(it[b!.elt]) then
-            it := it[b!.elt];
-            if IsBound(it[c!.elt]) then
-                return it[c!.elt][1];
+    if IsBound(it[__ID(a)]) then
+        it := it[__ID(a)];
+        if IsBound(it[__ID(b)]) then
+            it := it[__ID(b)];
+            if IsBound(it[__ID(c)]) then
+                return it[__ID(c)][1];
             fi;
         fi;
     fi;
-    return -5/14;
+    return 5/14;
 end);
-
-LengthEps := function(eps, rel, l)
-    return (1 + eps)/Length(rel) * l;
-end;
-
-StepCurvature := function(places, P, Q)
-end;
-
 
 InstallGlobalFunction(LBGVertexForLoc,
 function(lbg, loc)
     return __ID(loc);
 end);
+
+# This assumes all previous have been checked already!
+NextPlaces := function(loc1, loc2, l)
+    local P, res, i, j;
+
+    res := [];
+
+    i := Position(loc1) + l;
+    j := Position(loc2) - l;
+    Print("   i: ", i, " j: ", j, "\n");
+
+    # Poor man's cyclic access
+    # TODO check correctness?
+    while j < 0 do
+        j := j + Length(Relator(loc2));
+    od;
+
+    # mhm.
+    if Relator(loc1)[i] = PregroupInverse(Relator(loc2)[j]) then
+        for P in Places(Relator(loc1)) do
+            if Position(Location(P)) = i then
+                Add(res, P);
+            fi;
+        od;
+    fi;
+    return res;
+end;
+
 
 
 InstallMethod(OneStepReachablePlaces, "for a pregroup presentation",
@@ -588,12 +630,15 @@ function(pres)
 
         i := Position(loc1) + l;
         j := Position(loc2) - l;
+        Print("   i: ", i, " j: ", j, "\n");
+
         # Poor man's cyclic access
         # TODO check correctness?
         while j < 0 do
             j := j + Length(Relator(loc2));
         od;
 
+        # mhm.
         if Relator(loc1)[i] = PregroupInverse(Relator(loc2)[j]) then
             for P in Places(Relator(loc1)) do
                 if Position(Location(P)) = i then
@@ -608,18 +653,17 @@ function(pres)
     OneStepGreenCase := function(P)
         local L, L2, b, c, loc, pls, is_consoledge, l, v, nu1, nu2, xi1, xi2, curl,
               R, R2, P2, P2s, i, j, next, res;
-
         res := [];
 
         L := Location(P);
-        b := InLetter(L);
+        b := OutLetter(L);
         c := Letter(P);
 
         # Every place that is instanciated with location that is in an instantiation of
         # a place P'.
         # We're interested in consolidated edges between Relator(P) and Relator(pls) 
         # from the locations that P and pls are at.
-        # 
+        #
         # Have to check that Relator(P) and Relator(pls) don't entirely cancel (is this
         # assumed to be only the case when Relator(P) = Relator(pls)^{-1})
         for pls in Places(pres) do
@@ -634,9 +678,12 @@ function(pres)
                 l := 0;
                 repeat
                     l := l + 1;
+                    Print("consolidated edge: ", l, "\n");
                     # Collect all places that are along a consolidated edge
                     # between R and R2 of length l
                     P2s := NextPlaces(L, L2, l);
+                    Print("next places: ", P2s, "\n");
+
                     for P2 in P2s do
                         v := LBGVertexForLoc(lbg, Location(P2));
                         for nu1 in DigraphInEdges(lbg, v) do
@@ -691,11 +738,15 @@ function(pres, eps)
           xi, osr, psip, pp;
     zeta := Maximum(Int(Round((6 * (1 + eps)) + 1/2)),
                        LengthLongestRelator(pres));
+    Print("RSymTest start\n");
+    Print("zeta: ", zeta, "\n");
     osr := OneStepReachablePlaces(pres);
 
     for rel in Relators(pres) do
+        Print("relator: ", ViewString(rel), "\n");
         places := Places(rel);
         for Ps in places do
+            Print("  place: (", __ID(Ps), ")", ViewString(Ps), "\n");
             L := [ [Ps, 0, 0, 0] ]; # This list is called L in the paper
             # The meaning of the components of the quadruples q is
             # - q[1] is a place 
@@ -703,20 +754,27 @@ function(pres, eps)
             # - q[3] is the number of steps that q[1] is from Ps
             # - q[4] is a curvature value
             for i in [1..zeta] do
+                Print("  i: ", i, "\n");
                 for Pq in L do      # Pq is for "PlaceQuadruple", which is
                                     # a silly name
                     if Pq[3] = i - 1 then  # Reachable in i - 1 steps
+                        Print("        OneStepReachablePlaces: ", ViewString(osr[__ID(Pq[1])]), "\n");
                         for osrp in osr[__ID(Pq[1])] do
+                            Print("          OneStepReachablePlace: ", ViewString(osrp), "\n");
                             if Pq[2] + osrp[2] <= Length(rel) then
                                 psip := Pq[4]
                                         + osrp[2] * (1 + eps) / Length(rel)
                                         + osrp[3];
+                                Print("      psip: ", psip, "\n");
                                 if psip < 0.0 then
-                                elif (Pq[4] > 0) and
+                                    Print("            psip < 0.0\n");
+                                elif (Pq[4] > 0.0) and
                                      (osrp[1] = Ps) and
                                      (Pq[2] + osrp[2] = Length(rel)) then
+                                    Print("            RSymTester failed\n");
                                     return [fail, L];
                                 else
+                                    Print("            updating\n");
                                     pp := PositionProperty(L, x -> (x[1] = osrp[1]) and (x[2] = Pq[2]));
                                     if pp = fail then
                                         Add(L, [osrp[1], Pq[2] + osrp[2], i, psip] );
