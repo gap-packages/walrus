@@ -1,17 +1,12 @@
 #
 # anatph: A new approach to proving hyperbolicity
 #
-# This file contains package meta data. For additional information on
-# the meaning and correct usage of these fields, please consult the
-# manual of the "Example" package as well as the comments in its
-# PackageInfo.g file.
-#
 SetPackageInfo( rec(
 
 PackageName := "anatph",
 Subtitle := "A new approach to proving hyperbolicity",
-Version := "0.1",
-Date := "15/02/2016", # dd/mm/yyyy format
+Version := "0.2",
+Date := "07/07/2016", # dd/mm/yyyy format
 
 Persons := [
   rec(
@@ -89,7 +84,7 @@ Persons := [
       ),
 ],
 
-PackageWWWHome := "https://www.morphism.de/~markusp/anatph/",
+PackageWWWHome := "https://gap-packages.github.io/anatph/",
 
 ArchiveURL     := Concatenation( ~.PackageWWWHome, "anatph-", ~.Version ),
 README_URL     := Concatenation( ~.PackageWWWHome, "README" ),
@@ -119,7 +114,7 @@ PackageDoc := rec(
 ),
 
 Dependencies := rec(
-  GAP := ">= 4.6",
+  GAP := ">= 4.8",
   NeededOtherPackages := [ [ "GAPDoc", ">= 1.5" ],
                            [ "digraphs", ">= 0.5" ] ],
   SuggestedOtherPackages := [ ],
