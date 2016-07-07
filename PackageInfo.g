@@ -58,6 +58,22 @@ Persons := [
   rec(
        IsAuthor := true,
        IsMaintainer := true,
+       FirstNames := "Stephen",
+       LastName := "Linton",
+       WWWHome := "",
+       Email := "sal4@st-andrews.ac.uk",
+       PostalAddress := Concatenation(
+                                       "School of Computer Science\n",
+                                       "University of St Andrews\n",
+                                       "Jack Cole Building, North Haugh\n",
+                                       "St Andrews, Fife, KY16 9SX\n",
+                                       "United Kingdom" ),
+       Place := "St Andrews",
+       Institution := "University of St Andrews",
+      ),
+  rec(
+       IsAuthor := true,
+       IsMaintainer := true,
        FirstNames := "Markus",
        LastName := "Pfeiffer",
        WWWHome := "http://www.morphism.de/~markusp/",
