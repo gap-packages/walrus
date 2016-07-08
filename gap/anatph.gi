@@ -2,7 +2,13 @@
 #
 # anatph: A new approach to proving hyperbolicity
 #
-
+# WARNING
+#
+########################################################################
+#
+# TODO (documentation)
+#  - Examples
+#  - notes on the implementation (design decisions etc)
 #
 # TODO (technical)
 #  - MakeIsReducedDiagram a method
@@ -12,9 +18,9 @@
 #  - provide a way to label of generators
 #  - Introduce an InfoLevel and log things with info levels, remove Print
 #    statements
+#  - Put relators of different presentations into different families
 #
 # TODO (mathematical/functional)
-#  - Put relators of different presentations into different families
 #  - Write tests
 #  - Interleaving
 #  - Preparing the presentation
@@ -23,10 +29,16 @@
 #  - Check OneStepReachables
 #  - Check RSymTest
 #
-# DONE
-#  - always store "negative curvature" which is a *positive* value
+########################################################################
 #
-
+# Some notes on the implementation
+#
+# - Stored curvature is always "negative curvature", so in most cases a 
+#   positive value.
+# - Curvature values are stored as rationals at first, later converted to
+#   floats. This might not be the best way to do this (we might want to 
+#   always use rationals or always use floats)
+#
 
 # An R-letter is a letter that occurs in any (interleave) of
 # a relation (Definition 7.4)
@@ -59,7 +71,8 @@ function(l1, l2)
     if jend < 0 then jend := jend + Length(r2); fi;
 
     # Here inverses should match, or otherwise the passed
-    # locations are already incompatible
+    # 
+    locations are already incompatible
     if r1[i] <> PregroupInverse(r2[j]) then
         Error("loc1 and loc2 are not compatible");
         return fail;
@@ -336,6 +349,7 @@ function(pres, v1, place, v2)
     return min;
 end);
 
+#T redo
 ReduceUPregroupWord := function(word)
     local rw, rw2, i, j, one;
 
@@ -386,27 +400,7 @@ CyclicSubList := function(l, pos, len)
     return r;
 end;
 
-# Tests whether there is a proper subword
-# that reduces to 1
-#
-# because adjacent letters are intermult pairs we only need to test
-# strings of length 3 to len - 1
-#
-# This is probably horribly inefficient.
-#CyclicReducedSubwords := function(word)
-#    local l, i, pos;
-#
-#    pos := [1..Length(word)];
-#    for l in [3..Length(word)] do
-#        for i in [1..Length(word)] do
-#            if ReduceUPregroupWord(word{CyclicSubList(pos, i, l)}) = [] then
-#                return [true, word{ CyclicSubList(pos, i, l) } ];
-#            fi;
-#        od;
-#    od;
-#    return [false];
-#end;
-
+#T this is very ad-hoc
 IndexMinEnter := function(idx, key, value)
     local i, it;
 
@@ -547,14 +541,10 @@ NextPlaces := function(loc1, loc2, l)
     res := [];
 
     i := Position(loc1) + l;
-    j := Position(loc2) - l;
+    j := Position(loc2) - l - 1;
 
     # Poor man's cyclic access
     # TODO check correctness?
-    while j < 0 do
-        j := j + Length(Relator(loc2));
-    od;
-
     # mhm.
     if Relator(loc1)[i] = PregroupInverse(Relator(loc2)[j]) then
         for P in Places(Relator(loc1)) do
@@ -625,36 +615,57 @@ function(pres)
         return res;
     end;
 
-    # This assumes all previous have been checked already!
-    NextPlaces := function(loc1, loc2, l)
-        local P, res, i, j;
+    # Compute places reachable from loc1 on Relator(loc1) by a
+    # consolidated edge between Relator(loc1) and Relator(loc2)
+    # At the moment we assume that OutLetter(loc1) = InLetter(loc2),
+    # better indexing would make this more efficent,
+    # not iterating over places
+    ConsolidatedEdgePlaces := function(loc1, loc2)
+        local P, pos, res, i, j, l, r1, r2, e;
 
-        res := [];
+        r1 := Relator(loc1);
+        r2 := Relator(loc2);
 
-        i := Position(loc1) + l;
-        j := Position(loc2) - l;
+        res := Set([]);
 
-        # Poor man's cyclic access
-        # TODO check correctness?
-        while j < 0 do
-            j := j + Length(Relator(loc2));
+        pos := [];;
+
+        l := 1;
+
+        i := Position(loc1);
+        j := Position(loc2) - 1;
+
+        # Compute a list of positions on r1 that
+        # can be reached by a consolidated edge
+        # together with the length of that edge
+        while (r1[i] = PregroupInverse(r2[j]))
+              and (l < Length(r1)) do
+            Add(pos, [i, l]);
+            i := i + 1; j := j - 1; l := l + 1;
         od;
 
-        # mhm.
-        if Relator(loc1)[i] = PregroupInverse(Relator(loc2)[j]) then
-            for P in Places(Relator(loc1)) do
-                if Position(Location(P)) = i then
-                    Add(res, P);
+        # need to be careful here with power/exponent rep of
+        # relators, the positions we stored above are on the
+        # relator, to get to positions for locations, we need
+        # to do the modulo dance.
+        #T prettier soloution: we should be able to get the Location
+        #T of relator[i] directly
+        e := Length(Base(r1));
+        for P in Places(Relator(loc1)) do
+            for l in pos do
+                if Position(Location(P)) = ((l[1] - 1) mod e) + 1 then
+                    Add(res, [P,l[2]]);
                 fi;
             od;
-        fi;
+        od;
+
         return res;
     end;
 
     # P is the place we're working on
     OneStepGreenCase := function(P)
-        local L, L2, b, c, loc, pls, is_consoledge, l, v, nu1, nu2, xi1, xi2, curl,
-              R, R2, P2, P2s, i, j, next, res;
+        local L, L2, b, c, loc, pls, is_consoledge, v, nu1, nu2, xi1, xi2, curl,
+              R, R2, P2, P2s, P2P, i, j, next, res;
         res := [];
 
         L := Location(P);
@@ -677,36 +688,37 @@ function(pres)
             #    respectively
             if (InLetter(L2) = PregroupInverse(b))
                and (OutLetter(L2) = c) then
-                l := 0;
-                repeat
-                    l := l + 1;
-                    # Collect all places that are along a consolidated edge
-                    # between R and R2 of length l
-                    P2s := NextPlaces(L, L2, l);
 
-                    for P2 in P2s do
-                        v := LBGVertexForLoc(lbg, Location(P2));
-                        for nu1 in DigraphInEdges(lbg, v) do
-                            for nu2 in DigraphOutEdges(lbg, v) do
-                                if Colour(nu2) = Colour(P2) then
-                                    xi1 := Vertex(nu1, P2, nu2);
-                                    if Colour(P2) = "green" then
-                                        Add(res, [P2,l,xi1]);
-                                    elif Colour(P2) = "red" then
-                                        #X is this application of OneStepRedCase correct?
-                                        next := OneStepRedCase(P2);
-                                        Append(res, List(next, x -> [x[1], l + 1, x[3] + xi1]));
-                                        #Append(OneStepByPlace[__ID(P)], List(next, x -> [x[1], l + 1, x[3] + xi1]));
-                                        # Add(OneStepByPlace[__ID(P)], [Q,l+1,xi1 + xi2])
-                                    else
-                                        Error("Invalid colour");
-                                    fi;
+                # We compute all consolidated edge places,
+                # we could do this incrementally, but I don't
+                # currently see a use in doing so
+                P2s := ConsolidatedEdgePlaces(L, L2);
+
+                for P2P in P2s do
+                    P2 := P2P[1];  # Place reachable on R1 by consolidated edge
+                    len := P2P[2]; # length of consolidated edge
+                    v := LBGVertexForLoc(lbg, Location(P2));
+                    for nu1 in DigraphInEdges(lbg, v) do
+                        for nu2 in DigraphOutEdges(lbg, v) do
+                            if Colour(nu2) = Colour(P2) then
+                                xi1 := Vertex(nu1, P2, nu2);
+                                if Colour(P2) = "green" then
+                                    Add(res, [P2,len,xi1]);
+                                elif Colour(P2) = "red" then
+                                    #X is this application of OneStepRedCase correct?
+                                    next := OneStepRedCase(P2);
+                                    Append(res, List(next, x -> [x[1], len + 1, x[3] + xi1]));
+                                    #Append(OneStepByPlace[__ID(P)], List(next, x -> [x[1], l + 1, x[3] + xi1]));
+                                    # Add(OneStepByPlace[__ID(P)], [Q,l+1,xi1 + xi2])
+                                else
+                                    Error("Invalid colour");
                                 fi;
-                            od;
+                            fi;
                         od;
                     od;
-                until P2s = [];
-            fi;
+                od;
+            fi
+            ;
         od;
         return res;
     end;
