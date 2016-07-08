@@ -19,6 +19,8 @@
 #  - Introduce an InfoLevel and log things with info levels, remove Print
 #    statements
 #  - Put relators of different presentations into different families
+#  - Check whether some sub-functions could be cleaned out from functions
+#    and would become more generally useful
 #
 # TODO (mathematical/functional)
 #  - Write tests
@@ -71,8 +73,7 @@ function(l1, l2)
     if jend < 0 then jend := jend + Length(r2); fi;
 
     # Here inverses should match, or otherwise the passed
-    # 
-    locations are already incompatible
+    # locations are already incompatible
     if r1[i] <> PregroupInverse(r2[j]) then
         Error("loc1 and loc2 are not compatible");
         return fail;
@@ -565,7 +566,7 @@ function(pres)
           , OneStepRedCase
           , OneStepGreenCase
           , OneStepByPlace
-          , NextPlaces;
+          , ConsolidatedEdgePlaces;
 
     gens := Generators(pres);
     places := Places(pres);
@@ -664,8 +665,8 @@ function(pres)
 
     # P is the place we're working on
     OneStepGreenCase := function(P)
-        local L, L2, b, c, loc, pls, is_consoledge, v, nu1, nu2, xi1, xi2, curl,
-              R, R2, P2, P2s, P2P, i, j, next, res;
+        local L, L2, b, c, loc, pls, is_consoledge, v, nu1, nu2, xi1, xi2,
+              R, R2, P2, P2s, P2P, i, j, next, res, len;
         res := [];
 
         L := Location(P);
