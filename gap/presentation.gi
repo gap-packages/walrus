@@ -95,8 +95,27 @@ function(pres)
     return locs;
 end);
 
-# Given a pregroup presentation as the input, find all places
 
+# For a location R(i,a,b) find a matching location
+# R'(j,b^(-1),c) such that a reduced diagram only
+# containing R and R' exists
+FindMatchingLocation := function(loc, c)
+    local locs, b, loc2;
+
+    b := OutLetter(loc);
+    locs := Locations(Presentation(loc));
+
+    for loc2 in locs do
+        if (InLetter(loc2) = PregroupInverse(b))
+           and (OutLetter(loc2) = c)
+           and CheckReducedDiagram(loc, loc2) then
+            return loc2;
+        fi;
+    od;
+    return fail;
+end;
+
+# Given a pregroup presentation as the input, find all places
 # B is true if a place will always occur on the boundary
 InstallMethod(Places, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
@@ -126,13 +145,10 @@ function(pres)
             # Colour is "green"
             # find location R'(j,b^(-1),c) and check that a diagram that
             # meets at the edge b doesn't collapse.
-            for loc2 in locs do
-                if InLetter(loc2) = PregroupInverse(b) and OutLetter(loc2) = c then
-                    if CheckReducedDiagram(loc, loc2) then
-                        Add(places, NewPlace(loc, c, "green", false));
-                    fi;
-                fi;
-            od;
+
+            if FindMatchingLocation(loc, c) <> fail then
+                Add(places, NewPlace(loc, c, "green", false));
+            fi;
         od;
     od;
     # Hack
