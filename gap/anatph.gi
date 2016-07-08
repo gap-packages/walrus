@@ -535,30 +535,6 @@ function(lbg, loc)
     return __ID(loc);
 end);
 
-# This assumes all previous have been checked already!
-NextPlaces := function(loc1, loc2, l)
-    local P, res, i, j;
-
-    res := [];
-
-    i := Position(loc1) + l;
-    j := Position(loc2) - l - 1;
-
-    # Poor man's cyclic access
-    # TODO check correctness?
-    # mhm.
-    if Relator(loc1)[i] = PregroupInverse(Relator(loc2)[j]) then
-        for P in Places(Relator(loc1)) do
-            if Position(Location(P)) = i then
-                Add(res, P);
-            fi;
-        od;
-    fi;
-    return res;
-end;
-
-
-
 InstallMethod(OneStepReachablePlaces, "for a pregroup presentation",
               [IsPregroupPresentation],
 function(pres)
