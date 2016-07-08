@@ -30,6 +30,7 @@
 #  - Make the distance computation in LBG more efficient?
 #  - Check OneStepReachables
 #  - Check RSymTest
+#  - More efficient LocationBlobGraph
 #
 ########################################################################
 #
@@ -292,7 +293,6 @@ function(pres)
     return lpl;
 end);
 
-
 # Here we use rationals still
 InstallGlobalFunction(Vertex,
 function(pres, v1, place, v2)
@@ -551,16 +551,6 @@ function(pres)
 
     OneStepByPlace := [];
 
-    curv := List(places, function(x)
-                    if Colour(x) = "red" then
-                        return [ 0, 1.0 / 0.0 ];
-                    elif Colour(x) = "green" then
-                        return List([0..QuoInt(Exponent(Relator(x)), 2)], y -> [ y, 1.0 / 0.0 ]);
-                    else
-                        Error("invalid colour");
-                    fi;
-                end);
-
     OneStepRedCase := function(P)
         local Q, b, y, v, v2, Pl, Ql, res, xi1, xi2;
 
@@ -598,28 +588,30 @@ function(pres)
     # better indexing would make this more efficent,
     # not iterating over places
     ConsolidatedEdgePlaces := function(loc1, loc2)
-        local P, pos, res, i, j, l, r1, r2, e;
+        local P, pos, res, i, j, l, r1, r2, e, f;
 
         r1 := Relator(loc1);
         r2 := Relator(loc2);
 
-        res := Set([]);
-
-        pos := [];;
-
-        l := 1;
-
         i := Position(loc1);
         j := Position(loc2) - 1;
 
-        # Compute a list of positions on r1 that
-        # can be reached by a consolidated edge
+        res := [];
+        pos := [];
+
+        l := 1;
+
+        # Compute a list of positions on r1 and r2
+        # that can be reached by a consolidated edge
         # together with the length of that edge
+        Print("start: ");
         while (r1[i] = PregroupInverse(r2[j]))
               and (l < Length(r1)) do
-            Add(pos, [i, l]);
+            Add(pos, [i, j, l]);
+            Print(r1[1], ",", r2[j], ",");
             i := i + 1; j := j - 1; l := l + 1;
         od;
+        Print("\n");
 
         # need to be careful here with power/exponent rep of
         # relators, the positions we stored above are on the
@@ -628,10 +620,14 @@ function(pres)
         #T prettier soloution: we should be able to get the Location
         #T of relator[i] directly
         e := Length(Base(r1));
+        f := Length(Base(r2));
+
         for P in Places(Relator(loc1)) do
             for l in pos do
                 if Position(Location(P)) = ((l[1] - 1) mod e) + 1 then
-                    Add(res, [P,l[2]]);
+                    Add(res, [ P
+                             , Locations(r2)[((l[2] - 1) mod f) + 1]
+                             , l[3]]);
                 fi;
             od;
         od;
@@ -641,8 +637,8 @@ function(pres)
 
     # P is the place we're working on
     OneStepGreenCase := function(P)
-        local L, L2, b, c, loc, pls, is_consoledge, v, nu1, nu2, xi1, xi2,
-              R, R2, P2, P2s, P2P, i, j, next, res, len;
+        local L, L2, b, c, loc, pls, is_consoledge, v, v1, v2, xi1, xi2,
+              R, R2, P2, P2s, P2T, i, j, next, res, len;
         res := [];
 
         L := Location(P);
@@ -651,11 +647,10 @@ function(pres)
 
         # Every place that is instanciated with location that is in an instantiation of
         # a place P'.
-        # We're interested in consolidated edges between Relator(P) and Relator(pls) 
+        # We're interested in consolidated edges between Relator(P) and Relator(pls)
         # from the locations that P and pls are at.
         #
-        # Have to check that Relator(P) and Relator(pls) don't entirely cancel (is this
-        # assumed to be only the case when Relator(P) = Relator(pls)^{-1})
+        # Do we have to check that Relator(P) and Relator(pls) don't entirely cancel?
         for pls in Places(pres) do
             L2 := Location(pls); # This is the location on R'
             R2 := Relator(L2);
@@ -671,27 +666,22 @@ function(pres)
                 # currently see a use in doing so
                 P2s := ConsolidatedEdgePlaces(L, L2);
 
-                for P2P in P2s do
-                    P2 := P2P[1];  # Place reachable on R1 by consolidated edge
-                    len := P2P[2]; # length of consolidated edge
+                for P2T in P2s do
+                    P2 := P2T[1];  # Place reachable on R1 by consolidated edge
+                    len := P2T[3]; # length of consolidated edge
+                    v1 := LBGVertexForLoc(lbg, P2T[2]);
                     v := LBGVertexForLoc(lbg, Location(P2));
-                    for nu1 in DigraphInEdges(lbg, v) do
-                        for nu2 in DigraphOutEdges(lbg, v) do
-                            if Colour(nu2) = Colour(P2) then
-                                xi1 := Vertex(nu1, P2, nu2);
-                                if Colour(P2) = "green" then
-                                    Add(res, [P2,len,xi1]);
-                                elif Colour(P2) = "red" then
-                                    #X is this application of OneStepRedCase correct?
-                                    next := OneStepRedCase(P2);
-                                    Append(res, List(next, x -> [x[1], len + 1, x[3] + xi1]));
-                                    #Append(OneStepByPlace[__ID(P)], List(next, x -> [x[1], l + 1, x[3] + xi1]));
-                                    # Add(OneStepByPlace[__ID(P)], [Q,l+1,xi1 + xi2])
-                                else
-                                    Error("Invalid colour");
-                                fi;
-                            fi;
-                        od;
+                    for v2 in DigraphOutEdges(lbg, v) do
+                        xi1 := Vertex(pres, v1, P2, v2);
+                        if Colour(P2) = "green" then
+                            Add(res, [P2,len,xi1]);
+                        elif Colour(P2) = "red" then
+                            #X is this application of OneStepRedCase correct?
+                            next := OneStepRedCase(P2);
+                            Append(res, List(next, x -> [x[1], len + 1, x[3] + xi1]));
+                        else
+                            Error("Invalid colour");
+                        fi;
                     od;
                 od;
             fi
