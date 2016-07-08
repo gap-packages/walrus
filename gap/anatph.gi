@@ -303,6 +303,8 @@ function(pres, v1, place, v2)
           loc,   # Location(place)
           min;   # Minimal curvature
 
+    Print("v1: ", ViewString(v1), " place: ", ViewString(place), " v2: ", ViewString(v2), "\n");
+    
     if not IsPregroupPlace(place) then
         Error("Vertex: <place> needs to be a place!");
     fi;
@@ -333,6 +335,8 @@ function(pres, v1, place, v2)
     # -Xi is the negative curvature, i.e. positive (yeah, I know)
     min := infinity;
     for trp in lpl do
+        Print("trp: ", trp, "\n");
+        
         if (trp[1] in DigraphInEdges(lbg, v)) and
            (trp[2] in DigraphOutEdges(lbg, v)) and
            (trp[3] < min) then
@@ -535,6 +539,13 @@ function(lbg, loc)
     return __ID(loc);
 end);
 
+#T 
+InstallGlobalFunction(LBGVertexForIntermult,
+function(lbg, ip)
+    return PositionProperty( DigraphVertexLabels(lbg)
+                           , x -> x = ['I', ip] );
+end);
+
 InstallMethod(OneStepReachablePlaces, "for a pregroup presentation",
               [IsPregroupPresentation],
 function(pres)
@@ -552,7 +563,7 @@ function(pres)
     OneStepByPlace := [];
 
     OneStepRedCase := function(P)
-        local Q, b, y, v, v2, Pl, Ql, res, xi1, xi2;
+        local Q, b, y, v, v1, v2, Pl, Ql, res, xi1, xi2;
 
         res := [];
         Pl := Location(P);
@@ -569,10 +580,8 @@ function(pres)
                         v := LBGVertexForLoc(lbg, Location(Q));
                         for v2 in OutNeighboursOfVertex(lbg, v) do
                             xi1 := Blob(pres, y, binv, Letter(P));
-                            xi2 := Vertex(pres, [y, binv], Q, v2);
-                            # Note that xi1, xi2 are negative
-                            # Here we only have 0 offset
-                            # Add(OneStepByPlace[__ID(P)], [Q, 1, xi1 + xi2]);
+                            v1 := LBGVertexForIntermult(lbg, [y, binv]);
+                            xi2 := Vertex(pres, v1, Q, v2);
                             Add(res, [Q, 1, xi1 + xi2]);
                         od;
                     fi;
@@ -593,6 +602,10 @@ function(pres)
         r1 := Relator(loc1);
         r2 := Relator(loc2);
 
+        if r1 = Inverse(r2) then
+            return [];
+        fi;
+
         i := Position(loc1);
         j := Position(loc2) - 1;
 
@@ -604,14 +617,11 @@ function(pres)
         # Compute a list of positions on r1 and r2
         # that can be reached by a consolidated edge
         # together with the length of that edge
-        Print("start: ");
         while (r1[i] = PregroupInverse(r2[j]))
               and (l < Length(r1)) do
             Add(pos, [i, j, l]);
-            Print(r1[1], ",", r2[j], ",");
             i := i + 1; j := j - 1; l := l + 1;
         od;
-        Print("\n");
 
         # need to be careful here with power/exponent rep of
         # relators, the positions we stored above are on the
@@ -671,10 +681,11 @@ function(pres)
                     len := P2T[3]; # length of consolidated edge
                     v1 := LBGVertexForLoc(lbg, P2T[2]);
                     v := LBGVertexForLoc(lbg, Location(P2));
-                    for v2 in DigraphOutEdges(lbg, v) do
+                    for v2 in OutNeighboursOfVertex(lbg, v) do
                         xi1 := Vertex(pres, v1, P2, v2);
+                        Print("vertex: ", xi1, "\n");
                         if Colour(P2) = "green" then
-                            Add(res, [P2,len,xi1]);
+                            Add(res, [P2, len, xi1]);
                         elif Colour(P2) = "red" then
                             #X is this application of OneStepRedCase correct?
                             next := OneStepRedCase(P2);
