@@ -28,11 +28,25 @@ InstallMethod(Inverse, "for a pregroup relator",
                                 , base := List(Reversed(r!.base), PregroupInverse)
                                 , exponent := r!.exponent )
                             ));
-
 InstallMethod(Presentation,
               "for pregroup relators",
               [IsPregroupRelator],
               r -> r!.pres);
+
+InstallMethod(Locations, "for a pregroup relator",
+              [IsPregroupRelator],
+function(r)
+    local loc;
+    if not IsBound(r!.locations) then
+        r!.locations := [];
+        for loc in Locations(Presentation(r)) do
+            if Relator(loc) = r then
+                Add(r!.locations, loc);
+            fi;
+        od;
+    fi;
+    return r!.locations;
+end);
 
 # Cyclic access good?
 InstallMethod(\[\], "for a pregroup relator",
@@ -68,8 +82,6 @@ function(r)
     od;
     return res;
 end);
-
-
 
 InstallMethod(ViewString, "for a pregroup relator",
     [IsPregroupRelator],
