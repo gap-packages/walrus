@@ -611,7 +611,7 @@ function(pres)
         # One of the relators is completely cancelled by the other
         # this should probably not happen?
         if (l = Length(r1)) or (l = Length(r2)) then
-            Print("Relator cancelled completely, disregarding\n");
+            Print("Relators ", ViewString(r1), " and ", ViewString(r2), " cancelled completely, disregarding\n");
             return [];
         fi;
 
@@ -708,7 +708,7 @@ end);
 # The RSym tester
 # The epsilon is chosen by the user
 InstallMethod(RSymTest, "for a pregroup presentation, and a float",
-              [IsPregroupPresentation, IsFloat],
+              [IsPregroupPresentation, IsObject],
 function(pres, eps)
     local i, j, rel, R,
           places, Ps, P, Q, Pq,
@@ -716,6 +716,8 @@ function(pres, eps)
           L,
           zeta,
           xi, osr, psip, pp;
+    # Make sure epsilon is a float
+    eps := Float(eps);
     zeta := Maximum(Int(Round((6 * (1 + eps)) + 1/2)),
                        LengthLongestRelator(pres));
     Print("RSymTest start\n");
@@ -736,13 +738,13 @@ function(pres, eps)
             for i in [1..zeta] do
                 for Pq in L do      # Pq is for "PlaceQuadruple", which is
                                     # a silly name
-                    Print("pq: ", Pq, ", i: ", i, ", ", Length(L), "\n");
                     if Pq[3] = i - 1 then  # Reachable in i - 1 steps
                         for osrp in osr[__ID(Pq[1])] do
                             if Pq[2] + osrp[2] <= Length(rel) then
                                 psip := Float(Pq[4])
                                         + osrp[2] * (1 + eps) / Length(rel)
-                                        + osrp[3];
+                                        # storing positive values -> subtract here
+                                        - osrp[3];
                                 if psip < 0.0 then
                                 elif (Float(Pq[4]) > 0.0) and
                                      (osrp[1] = Ps) and
@@ -751,6 +753,7 @@ function(pres, eps)
                                 else
                                     pp := PositionProperty(L, x -> (x[1] = osrp[1]) and (x[2] = Pq[2]));
                                     if pp = fail then
+                                        Print("it is not, adding\n");
                                         Add(L, [osrp[1], Pq[2] + osrp[2], i, psip] );
                                     else
                                         # Can there be more than one such entry?
