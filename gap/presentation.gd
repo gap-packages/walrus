@@ -17,7 +17,7 @@ DeclareObject(
                ],
                []);
 
-DeclareOperation("RSymTest", [IsPregroupPresentation, IsFloat]);
+DeclareOperation("RSymTest", [IsPregroupPresentation, IsObject]);
 
 # DeclareOperation( "Blob", [IsPregroupPresentation, IsPregroupElement, IsPregroupElement, IsPregroupElement ])
 
