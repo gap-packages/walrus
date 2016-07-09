@@ -302,9 +302,6 @@ function(pres, v1, place, v2)
           lpl,   # L_P list
           loc,   # Location(place)
           min;   # Minimal curvature
-
-    Print("v1: ", ViewString(v1), " place: ", ViewString(place), " v2: ", ViewString(v2), "\n");
-    
     if not IsPregroupPlace(place) then
         Error("Vertex: <place> needs to be a place!");
     fi;
@@ -317,16 +314,6 @@ function(pres, v1, place, v2)
     lpl := PlaceTriples(pres)[__ID(place)];
     loc := Location(place);
 
-    #X Find the vertex in LBG that is labelled by Location(place)
-    #X Better vertex indexing is necessary in digraphs: we need
-    #X bijective labelling map.
-    #X at the moment as a hack we could use __ID(), i.e.
-    # v = __ID(loc);
-    #for v in DigraphVertices(lbg) do
-    #    if DigraphVertexLabel(lbg, v) = loc then
-    #        break;
-    #    fi;
-    #od;
     v := __ID(loc);
     if DigraphVertexLabel(lbg, v) <> loc then
         Error("This is a bug\n");
@@ -335,10 +322,8 @@ function(pres, v1, place, v2)
     # -Xi is the negative curvature, i.e. positive (yeah, I know)
     min := infinity;
     for trp in lpl do
-        Print("trp: ", trp, "\n");
-        
-        if (trp[1] in DigraphInEdges(lbg, v)) and
-           (trp[2] in DigraphOutEdges(lbg, v)) and
+        if (trp[1] in InNeighboursOfVertex(lbg, v)) and
+           (trp[2] in OutNeighboursOfVertex(lbg, v)) and
            (trp[3] < min) then
             min := trp[3];
         fi;
@@ -623,6 +608,13 @@ function(pres)
             i := i + 1; j := j - 1; l := l + 1;
         od;
 
+        # One of the relators is completely cancelled by the other
+        # this should probably not happen?
+        if (l = Length(r1)) or (l = Length(r2)) then
+            Print("Relator cancelled completely, disregarding\n");
+            return [];
+        fi;
+
         # need to be careful here with power/exponent rep of
         # relators, the positions we stored above are on the
         # relator, to get to positions for locations, we need
@@ -683,7 +675,6 @@ function(pres)
                     v := LBGVertexForLoc(lbg, Location(P2));
                     for v2 in OutNeighboursOfVertex(lbg, v) do
                         xi1 := Vertex(pres, v1, P2, v2);
-                        Print("vertex: ", xi1, "\n");
                         if Colour(P2) = "green" then
                             Add(res, [P2, len, xi1]);
                         elif Colour(P2) = "red" then
@@ -695,8 +686,7 @@ function(pres)
                         fi;
                     od;
                 od;
-            fi
-            ;
+            fi;
         od;
         return res;
     end;
@@ -733,8 +723,10 @@ function(pres, eps)
     osr := OneStepReachablePlaces(pres);
 
     for rel in Relators(pres) do
+        Print("relator: ", ViewString(rel), "\n");
         places := Places(rel);
         for Ps in places do
+            Print("  start place: ", ViewString(Ps), "\n");
             L := [ [Ps, 0, 0, 0] ]; # This list is called L in the paper
             # The meaning of the components of the quadruples q is
             # - q[1] is a place 
@@ -744,14 +736,15 @@ function(pres, eps)
             for i in [1..zeta] do
                 for Pq in L do      # Pq is for "PlaceQuadruple", which is
                                     # a silly name
+                    Print("pq: ", Pq, ", i: ", i, ", ", Length(L), "\n");
                     if Pq[3] = i - 1 then  # Reachable in i - 1 steps
                         for osrp in osr[__ID(Pq[1])] do
                             if Pq[2] + osrp[2] <= Length(rel) then
-                                psip := Pq[4]
+                                psip := Float(Pq[4])
                                         + osrp[2] * (1 + eps) / Length(rel)
                                         + osrp[3];
                                 if psip < 0.0 then
-                                elif (Pq[4] > 0.0) and
+                                elif (Float(Pq[4]) > 0.0) and
                                      (osrp[1] = Ps) and
                                      (Pq[2] + osrp[2] = Length(rel)) then
                                     return [fail, L];
@@ -761,7 +754,7 @@ function(pres, eps)
                                         Add(L, [osrp[1], Pq[2] + osrp[2], i, psip] );
                                     else
                                         # Can there be more than one such entry?
-                                        if L[pp][4] > psip then
+                                        if Float(L[pp][4]) > psip then
                                             L[pp][3] := i;
                                             L[pp][4] := psip;
                                         fi;
