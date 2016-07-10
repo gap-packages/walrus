@@ -11,16 +11,17 @@
 #  - notes on the implementation (design decisions etc)
 #
 # TODO (technical)
-#  - MakeIsReducedDiagram a method
+#  - MakeIsReducedDiagram an operation
 #  - Sort out families of elements etc
 #  - what to do about the __ID hack?
 #  - What to do about float vs rational?
-#  - provide a way to label of generators
+#  - provide a way to label generators
 #  - Introduce an InfoLevel and log things with info levels, remove Print
 #    statements
 #  - Put relators of different presentations into different families
 #  - Check whether some sub-functions could be cleaned out from functions
 #    and would become more generally useful
+#  - Better indexing of locations on relator/places
 #
 # TODO (mathematical/functional)
 #  - Write tests
@@ -531,6 +532,13 @@ function(lbg, ip)
                            , x -> x = ['I', ip] );
 end);
 
+NextPosition := function(loc)
+    local m;
+    m := Length(Base(Relator(loc)));
+    return (Position(loc) mod m) + 1;
+end;
+
+
 InstallMethod(OneStepReachablePlaces, "for a pregroup presentation",
               [IsPregroupPresentation],
 function(pres)
@@ -553,19 +561,18 @@ function(pres)
         res := [];
         Pl := Location(P);
 
-        for Q in Places(pres) do
+        for Q in Places(Relator(P)) do
             # same relator, one position up
             Ql := Location(Q);
-            if (Relator(Q) = Relator(P))
-               and (Position(Ql) = Position(Pl) + 1)
+            if (Position(Ql) = NextPosition(Pl))
                and (InLetter(Ql) = OutLetter(Pl)) then
                 for y in gens do
                     binv := PregroupInverse(InLetter(Ql));
                     if IsIntermultPair(y, binv) then
                         v := LBGVertexForLoc(lbg, Location(Q));
+                        xi1 := Blob(pres, y, binv, Letter(P));
+                        v1 := LBGVertexForIntermult(lbg, [y, binv]);
                         for v2 in OutNeighboursOfVertex(lbg, v) do
-                            xi1 := Blob(pres, y, binv, Letter(P));
-                            v1 := LBGVertexForIntermult(lbg, [y, binv]);
                             xi2 := Vertex(pres, v1, Q, v2);
                             Add(res, [Q, 1, xi1 + xi2]);
                         od;
@@ -611,7 +618,9 @@ function(pres)
         # One of the relators is completely cancelled by the other
         # this should probably not happen?
         if (l = Length(r1)) or (l = Length(r2)) then
-            Print("Relators ", ViewString(r1), " and ", ViewString(r2), " cancelled completely, disregarding\n");
+            Info(InfoANATPH, 20
+                 , "Relators ", ViewString(r1), " and ", ViewString(r2)
+                 , " cancelled completely, disregarding");
             return [];
         fi;
 
@@ -680,7 +689,7 @@ function(pres)
                         elif Colour(P2) = "red" then
                             #X is this application of OneStepRedCase correct?
                             next := OneStepRedCase(P2);
-                            Append(res, List(next, x -> [x[1], len + 1, x[3] + xi1]));
+                            Append(res, List(next, x -> [x[1], len + 1, xi1 + x[3]]));
                         else
                             Error("Invalid colour");
                         fi;
@@ -720,15 +729,19 @@ function(pres, eps)
     eps := Float(eps);
     zeta := Maximum(Int(Round((6 * (1 + eps)) + 1/2)),
                        LengthLongestRelator(pres));
-    Print("RSymTest start\n");
-    Print("zeta: ", zeta, "\n");
+    Info(InfoANATPH, 10
+         , "RSymTest start");
+    Info(InfoANATPH, 10
+         , "zeta: ", zeta);
     osr := OneStepReachablePlaces(pres);
 
     for rel in Relators(pres) do
-        Print("relator: ", ViewString(rel), "\n");
+        Info(InfoANATPH, 20
+             , "relator: ", ViewString(rel));
         places := Places(rel);
         for Ps in places do
-            Print("  start place: ", ViewString(Ps), "\n");
+            Info(InfoANATPH, 20
+                 , "  start place: ", ViewString(Ps));
             L := [ [Ps, 0, 0, 0] ]; # This list is called L in the paper
             # The meaning of the components of the quadruples q is
             # - q[1] is a place 
@@ -738,6 +751,9 @@ function(pres, eps)
             for i in [1..zeta] do
                 for Pq in L do      # Pq is for "PlaceQuadruple", which is
                                     # a silly name
+                    Info(InfoANATPH, 30
+                         , STRINGIFY("L = ", ViewString(L)));
+                    
                     if Pq[3] = i - 1 then  # Reachable in i - 1 steps
                         for osrp in osr[__ID(Pq[1])] do
                             if Pq[2] + osrp[2] <= Length(rel) then
@@ -745,6 +761,13 @@ function(pres, eps)
                                         + osrp[2] * (1 + eps) / Length(rel)
                                         # storing positive values -> subtract here
                                         - osrp[3];
+                                Info(InfoANATPH, 30
+                                     , STRINGIFY("psi' = "
+                                                , Float(Pq[4]), " + "
+                                                , osrp[2] * (1+eps) / Length(rel), " - "
+                                                , osrp[3], " = "
+                                                , psip)
+                                    );
                                 if psip < 0.0 then
                                 elif (Float(Pq[4]) > 0.0) and
                                      (osrp[1] = Ps) and
@@ -753,7 +776,6 @@ function(pres, eps)
                                 else
                                     pp := PositionProperty(L, x -> (x[1] = osrp[1]) and (x[2] = Pq[2]));
                                     if pp = fail then
-                                        Print("it is not, adding\n");
                                         Add(L, [osrp[1], Pq[2] + osrp[2], i, psip] );
                                     else
                                         # Can there be more than one such entry?
