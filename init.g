@@ -5,6 +5,8 @@
 #
 ReadPackage("anatph", "gap/type-helpers.gd");
 
+DeclareInfoClass( "InfoANATPH" );
+
 ReadPackage("anatph", "gap/util.gd");
 ReadPackage("anatph", "gap/pregroup.gd");
 ReadPackage("anatph", "gap/relator.gd");
