@@ -2,9 +2,8 @@ gap> START_TEST("ANATPH: basic tests");
 
 # TriangleGroup(3,3,3) is not hyperbolic so this should fail
 # (and it currently doesn't)
-gap> RSymTest(TriangleGroup(3,3,3), 1/3);
-[ fail, [] ]
-
+gap> RSymTest(TriangleGroup(3,3,3), 1/3)[1];
+fail
 
 # TriangleGroup(2,3,7) is hyperbolic
 gap> RSymTest(TriangleGroup(2,3,7), 1/6);
