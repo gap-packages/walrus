@@ -32,6 +32,8 @@
 #  - Check OneStepReachables
 #  - Check RSymTest
 #  - More efficient LocationBlobGraph
+#    at the moment distances in LBG dominate runtime if the pregroup
+#    is rather large
 #
 ########################################################################
 #
