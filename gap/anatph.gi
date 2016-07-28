@@ -534,10 +534,11 @@ function(lbg, ip)
                            , x -> x = ['I', ip] );
 end);
 
+#T Pull out? Make an Operation on relators?
 NextPosition := function(loc)
     local m;
     m := Length(Base(Relator(loc)));
-    return (Position(loc) mod m) + 1;
+    return ((Position(loc) - 1) mod m) + 1;
 end;
 
 
@@ -585,11 +586,13 @@ function(pres)
         return res;
     end;
 
-    # Compute places reachable from loc1 on Relator(loc1) by a
-    # consolidated edge between Relator(loc1) and Relator(loc2)
+    # Compute a list of
+    #  - places reachable from loc1 on Relator(loc1), and
+    #  - the corresponding location on Relator(loc2)
+    # by a consolidated edge between Relator(loc1) and Relator(loc2)
+    #
     # At the moment we assume that OutLetter(loc1) = InLetter(loc2),
-    # better indexing would make this more efficent,
-    # not iterating over places
+    # better indexing would make this more efficent.
     ConsolidatedEdgePlaces := function(loc1, loc2)
         local P, pos, res, i, j, l, r1, r2, e, f;
 
@@ -613,7 +616,7 @@ function(pres)
         # together with the length of that edge
         while (r1[i] = PregroupInverse(r2[j]))
               and (l < Length(r1)) do
-            Add(pos, [i, j, l]);
+            Add(pos, [i + 1, j - 1, l]);
             i := i + 1; j := j - 1; l := l + 1;
         od;
 
@@ -635,7 +638,7 @@ function(pres)
         e := Length(Base(r1));
         f := Length(Base(r2));
 
-        for P in Places(Relator(loc1)) do
+        for P in Places(r1) do
             for l in pos do
                 if Position(Location(P)) = ((l[1] - 1) mod e) + 1 then
                     Add(res, [ P
@@ -690,7 +693,10 @@ function(pres)
                             Add(res, [P2, len, xi1]);
                         elif Colour(P2) = "red" then
                             #X is this application of OneStepRedCase correct?
+                            Info(InfoANATPH, 30, STRINGIFY("OneStepRedCase: ", ViewString(P2), "\n"));
                             next := OneStepRedCase(P2);
+                            Info(InfoANATPH, 30, STRINGIFY( "next: ", List(next, ViewString), "\n"));
+                            
                             Append(res, List(next, x -> [x[1], len + 1, xi1 + x[3]]));
                         else
                             Error("Invalid colour");
