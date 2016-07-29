@@ -563,27 +563,22 @@ function(pres)
 
         for Q in Places(Relator(P)) do
             # same relator, one position up
-            Print("place:", ViewString(Q),"\n");
             Ql := Location(Q);
             if (Position(Ql) = NextPosition(Pl))
                and (InLetter(Ql) = OutLetter(Pl)) then
                 for y in gens do
-                    Print("  gen: ", y, "\n");
                     binv := PregroupInverse(InLetter(Ql));
                     if IsIntermultPair(y, binv) then
                         v := LBGVertexForLoc(lbg, Location(Q));
                         xi1 := Blob(pres, y, binv, Letter(P));
                         v1 := LBGVertexForIntermult(lbg, [y, binv]);
                         for v2 in OutNeighboursOfVertex(lbg, v) do
-                            Print("    outneighbour: ", v2, "\n");
                             lv2 := DigraphVertexLabel(lbg, v2);
-                            Print("    label: ", ViewString(lv2), "\n");
                             if (IsPregroupLocation(lv2)
                                 and Colour(Q) = "green") or
                                (IsList(lv2)
                                 and Colour(Q) = "red") then
                                 xi2 := Vertex(pres, v1, Q, v2);
-                                Print("Adding: ", ViewString(Q), ", \n\n");
                                 l := PositionProperty(res, x -> x[1] = Q);
                                 if l = fail then
                                     Add(res, [Q, 1, xi1 + xi2]);
