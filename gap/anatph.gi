@@ -22,6 +22,8 @@
 #  - Check whether some sub-functions could be cleaned out from functions
 #    and would become more generally useful
 #  - Better indexing of locations on relator/places
+#  - Better datastructure for storing one step reachables
+#    (basically a hashmap from orb I think) plus wrapper functions
 #
 # TODO (mathematical/functional)
 #  - Write tests
@@ -322,8 +324,8 @@ function(pres, v1, place, v2)
         Error("This is a bug\n");
     fi;
 
-    # -Xi is the negative curvature, i.e. positive (yeah, I know)
-    min := infinity;
+    # The largest possible negative curvature is 1/3
+    min := 1/3;
     for trp in lpl do
         if (trp[1] in InNeighboursOfVertex(lbg, v)) and
            (trp[2] in OutNeighboursOfVertex(lbg, v)) and
@@ -332,17 +334,11 @@ function(pres, v1, place, v2)
         fi;
     od;
 
-    # Since floating point infinity gets in the way we only convert to
-    # it late.
-    if min = infinity then
-        min := 1.0 / 0.0;
-    fi;
-
     # This is a negative curvature, i.e. a positive value.
     return min;
 end);
 
-#T redo
+#T redo and move to pregroup files
 ReduceUPregroupWord := function(word)
     local rw, rw2, i, j, one;
 
@@ -538,7 +534,8 @@ end);
 NextPosition := function(loc)
     local m;
     m := Length(Base(Relator(loc)));
-    return ((Position(loc) - 1) mod m) + 1;
+    # This looks weird, our list indices are 1-based
+    return (Position(loc) mod m) + 1;
 end;
 
 
@@ -559,25 +556,43 @@ function(pres)
     OneStepByPlace := [];
 
     OneStepRedCase := function(P)
-        local Q, b, y, v, v1, v2, Pl, Ql, res, xi1, xi2;
+        local Q, b, y, v, v1, v2, lv2, Pl, Ql, res, xi1, xi2, binv, l;
 
         res := [];
         Pl := Location(P);
 
         for Q in Places(Relator(P)) do
             # same relator, one position up
+            Print("place:", ViewString(Q),"\n");
             Ql := Location(Q);
             if (Position(Ql) = NextPosition(Pl))
                and (InLetter(Ql) = OutLetter(Pl)) then
                 for y in gens do
+                    Print("  gen: ", y, "\n");
                     binv := PregroupInverse(InLetter(Ql));
                     if IsIntermultPair(y, binv) then
                         v := LBGVertexForLoc(lbg, Location(Q));
                         xi1 := Blob(pres, y, binv, Letter(P));
                         v1 := LBGVertexForIntermult(lbg, [y, binv]);
                         for v2 in OutNeighboursOfVertex(lbg, v) do
-                            xi2 := Vertex(pres, v1, Q, v2);
-                            Add(res, [Q, 1, xi1 + xi2]);
+                            Print("    outneighbour: ", v2, "\n");
+                            lv2 := DigraphVertexLabel(lbg, v2);
+                            Print("    label: ", ViewString(lv2), "\n");
+                            if (IsPregroupLocation(lv2)
+                                and Colour(Q) = "green") or
+                               (IsList(lv2)
+                                and Colour(Q) = "red") then
+                                xi2 := Vertex(pres, v1, Q, v2);
+                                Print("Adding: ", ViewString(Q), ", \n\n");
+                                l := PositionProperty(res, x -> x[1] = Q);
+                                if l = fail then
+                                    Add(res, [Q, 1, xi1 + xi2]);
+                                else
+                                    if xi1 + xi2 < res[l][3] then
+                                        res[l][3] := xi1 + xi2;
+                                    fi;
+                                fi;
+                            fi;
                         od;
                     fi;
                 od;
@@ -654,7 +669,7 @@ function(pres)
     # P is the place we're working on
     OneStepGreenCase := function(P)
         local L, L2, b, c, loc, pls, is_consoledge, v, v1, v2, xi1, xi2,
-              R, R2, P2, P2s, P2T, i, j, next, res, len;
+              R, R2, P2, P2s, P2T, i, j, next, res, len, n, l;
         res := [];
 
         L := Location(P);
@@ -690,14 +705,30 @@ function(pres)
                     for v2 in OutNeighboursOfVertex(lbg, v) do
                         xi1 := Vertex(pres, v1, P2, v2);
                         if Colour(P2) = "green" then
-                            Add(res, [P2, len, xi1]);
+                            l := PositionProperty(res, x -> (x[1] = P2) and x[2] = l);
+                            if l = fail then
+                                Add(res, [P2, len, xi1]);
+                            else
+                                if res[l][3] > xi1 then
+                                    res[l][3] := xi1;
+                                fi;
+                            fi;
                         elif Colour(P2) = "red" then
                             #X is this application of OneStepRedCase correct?
                             Info(InfoANATPH, 30, STRINGIFY("OneStepRedCase: ", ViewString(P2), "\n"));
                             next := OneStepRedCase(P2);
                             Info(InfoANATPH, 30, STRINGIFY( "next: ", List(next, ViewString), "\n"));
-                            
-                            Append(res, List(next, x -> [x[1], len + 1, xi1 + x[3]]));
+
+                            for n in next do
+                                l := PositionProperty(res, x -> (x[1] = n[1]) and (x[2] = len + 1));
+                                if l = fail then
+                                    Add(res, [n[1], len + 1, xi1 + n[3]]);
+                                else
+                                    if res[l][3] > xi1 + n[3] then
+                                        res[l][3] := xi1 + n[3];
+                                    fi;
+                                fi;
+                            od;
                         else
                             Error("Invalid colour");
                         fi;
@@ -735,7 +766,7 @@ function(pres, eps)
           xi, osr, psip, pp;
     # Make sure epsilon is a float
     eps := Float(eps);
-    zeta := Maximum(Int(Round((6 * (1 + eps)) + 1/2)),
+    zeta := Minimum(Int(Round((6 * (1 + eps)) + 1/2)),
                        LengthLongestRelator(pres));
     Info(InfoANATPH, 10
          , "RSymTest start");
@@ -757,11 +788,10 @@ function(pres, eps)
             # - q[3] is the number of steps that q[1] is from Ps
             # - q[4] is a curvature value
             for i in [1..zeta] do
+                Info(InfoANATPH, 30
+                     , STRINGIFY("L = ", ViewString(L)));
                 for Pq in L do      # Pq is for "PlaceQuadruple", which is
                                     # a silly name
-                    Info(InfoANATPH, 30
-                         , STRINGIFY("L = ", ViewString(L)));
-                    
                     if Pq[3] = i - 1 then  # Reachable in i - 1 steps
                         for osrp in osr[__ID(Pq[1])] do
                             if Pq[2] + osrp[2] <= Length(rel) then
@@ -782,12 +812,13 @@ function(pres, eps)
                                      (Pq[2] + osrp[2] = Length(rel)) then
                                     return [fail, L];
                                 else
-                                    pp := PositionProperty(L, x -> (x[1] = osrp[1]) and (x[2] = Pq[2]));
+                                    pp := PositionProperty(L, x -> (x[1] = osrp[1])
+                                                              and (x[2] = Pq[2] + osrp[2]));
                                     if pp = fail then
                                         Add(L, [osrp[1], Pq[2] + osrp[2], i, psip] );
                                     else
                                         # Can there be more than one such entry?
-                                        if Float(L[pp][4]) > psip then
+                                        if psip > Float(L[pp][4]) then
                                             L[pp][3] := i;
                                             L[pp][4] := psip;
                                         fi;
