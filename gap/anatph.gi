@@ -34,9 +34,6 @@
 #  - Make the distance computation in LBG more efficient?
 #  - Check OneStepReachables
 #  - Check RSymTest
-#  - More efficient LocationBlobGraph
-#    at the moment distances in LBG dominate runtime if the pregroup
-#    is rather large
 #
 ########################################################################
 #
@@ -103,10 +100,11 @@ end);
 
 # Alternative to LocationBlobGraph, only has pairs, coloured Green for location pair
 # and red for intermult pair
+# a bit hacky though
 InstallMethod(VertexGraph, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local v, vd, vg, e, loc, pg, p, ploc, imp;
+    local v, vd, vg, e, loc, loc2, pg, p, ploc, ploc2, imp;
 
     pg := Pregroup(pres);
 
@@ -132,9 +130,15 @@ function(pres)
     e := function(a,b)
         if (a[3] = 0) and (b[3] = 0) then # both vertices are green
             if PregroupInverse(a[2]) = b[1] then # There are locations R(i,a,b) and R'(j,b^-1,c)
-                # Check for diagram with faces R, R' sharing b 
-
-                return true; # (really weight 1)
+                ploc := LookupDictionary(vd, a);
+                ploc2 := LookupDictionary(vd, b);
+                for loc in ploc do
+                    for loc2 in ploc2 do
+                        if CheckReducedDiagram(loc, loc2) then
+                            return true;
+                        fi;
+                    od;
+                od;
             fi;
         elif (a[3] = 0) and (b[3] = 1) then # a is green, b is red
             if PregroupInverse(a[2]) = b[1] then # There is location R(i,a,b)
@@ -246,7 +250,6 @@ function(pres)
     return vtl;
 end);
 
-# Here we use rationals still
 InstallGlobalFunction(Vertex,
 function(pres, v1, v, v2)
     local vt, t;
@@ -257,6 +260,8 @@ function(pres, v1, v, v2)
             return t[3];
         fi;
     od;
+    return 1/3;
+    # Or should it?
     Error("This shouldn't happen");
     return fail;
 end);
@@ -441,16 +446,16 @@ function(pres, a, b, c)
     return 5/14;
 end);
 
-InstallGlobalFunction(LBGVertexForLoc,
-function(lbg, loc)
-    return __ID(loc);
-end);
-
-#T 
-InstallGlobalFunction(LBGVertexForIntermult,
-function(lbg, ip)
-    return PositionProperty( DigraphVertexLabels(lbg)
-                           , x -> x = ['I', ip] );
+# TODO: Use a map
+InstallGlobalFunction(VertexFor,
+function(vg, trip)
+    local v;
+    for v in DigraphVertices(vg) do
+        if DigraphVertexLabel(vg, v) = trip then
+            return v;
+        fi;
+    od;
+    return fail;
 end);
 
 #T Pull out? Make an Operation on relators?
@@ -465,7 +470,7 @@ end;
 InstallMethod(OneStepReachablePlaces, "for a pregroup presentation",
               [IsPregroupPresentation],
 function(pres)
-    local rel, pl, P, Q, places, osr, curv, pows, lbg, gens, b, c, binv, rels
+    local rel, pl, P, Q, places, osr, curv, pows, gens, b, c, binv, rels, vg
           , OneStepRedCase
           , OneStepGreenCase
           , OneStepByPlace
@@ -473,7 +478,7 @@ function(pres)
 
     gens := Generators(pres);
     places := Places(pres);
-    lbg := LocationBlobGraph(pres);
+    vg := VertexGraph(pres);
     rels := Relators(pres);
 
     OneStepByPlace := [];
@@ -492,23 +497,17 @@ function(pres)
                 for y in gens do
                     binv := PregroupInverse(InLetter(Ql));
                     if IsIntermultPair(y, binv) then
-                        v := LBGVertexForLoc(lbg, Location(Q));
+                        v1 := VertexFor(vg, [y, binv, 1]);
+                        v := VertexFor(vg, [InLetter(Location(Q)), OutLetter(Location(Q)), 0]);
                         xi1 := Blob(pres, y, binv, Letter(P));
-                        v1 := LBGVertexForIntermult(lbg, [y, binv]);
-                        for v2 in OutNeighboursOfVertex(lbg, v) do
-                            lv2 := DigraphVertexLabel(lbg, v2);
-                            if (IsPregroupLocation(lv2)
-                                and Colour(Q) = "green") or
-                               (IsList(lv2)
-                                and Colour(Q) = "red") then
-                                xi2 := Vertex(pres, v1, Q, v2);
-                                l := PositionProperty(res, x -> x[1] = Q);
-                                if l = fail then
-                                    Add(res, [Q, 1, xi1 + xi2]);
-                                else
-                                    if xi1 + xi2 < res[l][3] then
-                                        res[l][3] := xi1 + xi2;
-                                    fi;
+                        for v2 in OutNeighboursOfVertex(vg, v) do
+                            xi2 := Vertex(pres, v1, v, v2);
+                            l := PositionProperty(res, x -> x[1] = Q);
+                            if l = fail then
+                                Add(res, [Q, 1, xi1 + xi2]);
+                            else
+                                if xi1 + xi2 < res[l][3] then
+                                    res[l][3] := xi1 + xi2;
                                 fi;
                             fi;
                         od;
@@ -617,11 +616,12 @@ function(pres)
 
                 for P2T in P2s do
                     P2 := P2T[1];  # Place reachable on R1 by consolidated edge
+                    # P2T[2] location on R2 reachable by the edge
                     len := P2T[3]; # length of consolidated edge
-                    v1 := LBGVertexForLoc(lbg, P2T[2]);
-                    v := LBGVertexForLoc(lbg, Location(P2));
-                    for v2 in OutNeighboursOfVertex(lbg, v) do
-                        xi1 := Vertex(pres, v1, P2, v2);
+                    v1 := VertexFor(vg, [ InLetter(P2T[2]), OutLetter(P2T[2]), 0 ]);
+                    v := VertexFor(vg, [ InLetter(Location(P2)), OutLetter(Location(P2)), 0 ]);
+                    for v2 in OutNeighboursOfVertex(vg, v) do
+                        xi1 := Vertex(pres, v1, v, v2);
                         if Colour(P2) = "green" then
                             l := PositionProperty(res, x -> (x[1] = P2) and x[2] = l);
                             if l = fail then
@@ -731,7 +731,6 @@ function(pres, eps)
                                 elif (Float(Pq[4]) > 0.0) and
                                      (osrp[1] = Ps) and
                                      (Pq[2] + osrp[2] = Length(rel)) then
-                                    Error("Fail");
                                     return [fail, L, Pq];
                                 else
                                     pp := PositionProperty(L, x -> (x[1] = osrp[1])

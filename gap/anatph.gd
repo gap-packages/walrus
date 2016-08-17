@@ -24,8 +24,6 @@ DeclareGlobalFunction("Blob");
 
 # Location blob graph has by convention set of locations first
 # in vertex set for quick lookup
-#T prettier
-DeclareGlobalFunction("LBGVertexForLoc");
-DeclareGlobalFunction("LBGVertexForIntermult");
+DeclareGlobalFunction("VertexFor");
 
 
