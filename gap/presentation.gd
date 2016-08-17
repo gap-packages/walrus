@@ -8,7 +8,7 @@ DeclareObject(
                ["Pregroup", "Generators",
                 "Relators", "RelatorsAndInverses",
                 "Locations", "Places", "Bases", "Powers", "Roots",
-                "LocationBlobGraph", "LocationBlobGraphDistances",
+                "VertexGraph", "VertexGraphDistances", "VertexTriples",
                 "RLetters", "PlaceTriples"
 #                , "ShortRedBlobs"
                 , "ShortRedBlobIndex"

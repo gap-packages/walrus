@@ -100,69 +100,74 @@ function(l1, l2)
     return false;
 end);
 
-# Location blob graph
-# vertices: locations and intermult pairs
-# directed edges:
-# Here "I" means "IntermultPair"
-#  - I(a,b) -> R(j,b^(-1),c)
-#  - R(i,a,b) -> I(b^(-1),c)
-#  - R(i,a,b) -> R'(j,b^(-1),c) if there is a reduced diagram that has
-#                               faces labelled R and R'
-#XXX This is horribly inefficient, since we are much sparser
-#    on edges than |v|^2
-InstallMethod(LocationBlobGraph, "for a pregroup presentation",
+
+# Alternative to LocationBlobGraph, only has pairs, coloured Green for location pair
+# and red for intermult pair
+InstallMethod(VertexGraph, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local v, e, lbg;
+    local v, vd, vg, e, loc, pg, p, ploc, imp;
 
-    v := ShallowCopy(Locations(pres));
-    Append(v, List(IntermultPairs(Pregroup(pres)), x -> ['I', x]));
+    pg := Pregroup(pres);
 
-    # Edge relation for LocationBlobGraph
+    # 0 - green, 1 - red
+    v := Set([]);
+    vd := NewDictionary([One(pg), One(pg), 0], true);
+    for loc in Locations(pres) do
+        p := [InLetter(loc), OutLetter(loc), 0];
+        ploc := LookupDictionary(vd, p);
+        if ploc = fail then
+            AddDictionary(vd, p, [loc]);
+            AddSet(v, p);
+        else
+            Add(ploc, loc);
+        fi;
+    od;
+    for imp in IntermultPairs(pg) do
+        p := [imp[1],imp[2], 1];
+        AddDictionary(vd, p, []);
+        AddSet(v, p);
+    od;
+
     e := function(a,b)
-        if IsPregroupLocation(a) then
-            if IsPregroupLocation(b) then
-                if OutLetter(a) = PregroupInverse(InLetter(b)) and
-                   CheckReducedDiagram(a, b) then
-                    return true;
-                fi;
-            elif IsList(b) then # IsList is a hack to recognise intermult pairs
-                if OutLetter(a) = PregroupInverse(b[2][1]) then
-                    return true;
-                fi;
-            else
-                Error("This shouldn't happen");
+        if (a[3] = 0) and (b[3] = 0) then # both vertices are green
+            if PregroupInverse(a[2]) = b[1] then # There are locations R(i,a,b) and R'(j,b^-1,c)
+                # Check for diagram with faces R, R' sharing b 
+
+                return true; # (really weight 1)
             fi;
-        elif IsList(a) then
-            if IsPregroupLocation(b) then
-                if PregroupInverse(a[2][2]) = InLetter(b) then
-                    return true;
-                fi;
+        elif (a[3] = 0) and (b[3] = 1) then # a is green, b is red
+            if PregroupInverse(a[2]) = b[1] then # There is location R(i,a,b)
+                return true; # weight 1
+            fi;
+        elif (a[3] = 1) and (b[3] = 0) then # a is red, b is green
+            if PregroupInverse(a[2]) = b[1] then #
+                return true; # weight 0
             fi;
         fi;
-
         return false;
     end;
 
-    lbg := Digraph(v,e);
-    SetDigraphVertexLabels(lbg, v);
-    return lbg;
+    vg := Digraph(v,e);
+    SetDigraphVertexLabels(vg, v);
+    return vg;
 end);
 
-# Can we analyse connected components?
-# At the moment this is the slowest bit of the algorithm
-InstallMethod(LocationBlobGraphDistances, "for a pregroup presentation",
+InstallMethod(VertexGraphDistances, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local lbg, wt, f;
+    local vg, wt, f;
 
-    lbg := LocationBlobGraph(pres);
+    vg := VertexGraph(pres);
     wt := function(i,j)
-        if IsPregroupLocation(DigraphVertexLabel(lbg, i))
-           and (IsPregroupLocation(DigraphVertexLabel(lbg, j)) or
-                IsList(DigraphVertexLabel(lbg,j))) then
+        local a,b;
+        a := DigraphVertexLabel(vg, i);
+
+        if (a[3] = 0) then # edges originating at green vertex
+                           # have weight 1
             return 1;
-        else
+        elif (a[3] = 1) then # edges originating at red vertex
+                             # have weight 0
             return 0;
         fi;
     end;
@@ -176,127 +181,69 @@ function(pres)
         fi;
     end;
     # Can there be more than one such entry?
-    return DigraphFloydWarshall(lbg, f, infinity, -1 );
+    return DigraphFloydWarshall(vg, f, infinity, -1 );
 end);
 
-#XXX This can probably be simplified. Refer to section 7.3 for the
-#    description
-InstallMethod(PlaceTriples, "for a pregroup presentation",
-              [IsPregroupPresentation],
+InstallMethod(VertexTriples, "for a pregroup presentation",
+            [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local v, v1, v2, lv, lv1, lv2,
-          d, #
-          dist,
-          p,
-          ps,
-          pls,
-          lp,
-          lps,
-          lpl,
-          lbg,
-          lbgd,
-          locs,
-          places, xi;
+    local v, v1, v2, v1l, v2l, vl, vg, lv, vgd, dist, vtl;
 
-    locs := Locations(pres);
-    places := Places(pres);
-    pls := Places(pres);
-    lbg := LocationBlobGraph(pres);
-    lbgd := LocationBlobGraphDistances(pres);
+    vg := VertexGraph(pres);
+    vgd := VertexGraphDistances(pres);
+    vtl := [];
 
-    lpl := List([1..Length(places)], x -> []);
+    for v in DigraphVertices(vg) do
+        lv := [];
+        vtl[v] := lv;
 
-    # All locations are vertices in the LocationBlobGraph
-    # And actually, since we put the locations *first* we could
-    # stop this loop as soon as we run out of locations?
-    for v in DigraphVertices(lbg) do
-        lv := DigraphVertexLabel(lbg, v);
-        if IsPregroupLocation(lv) then
-            for v1 in InNeighboursOfVertex(lbg, v) do
-                lv1 := DigraphVertexLabel(lbg, v1);
-                for v2 in OutNeighboursOfVertex(lbg, v) do
-                    lv2 := DigraphVertexLabel(lbg, v2);
-
-                    # we have v1 -> v -> v2
-                    if IsPregroupLocation(lv1) then
-                        if IsPregroupLocation(lv2) then   # v1 and v2 are locations
-                            for p in Places(lv) do        # places that have location v
-                                # InLetter(lv2) = OutLetter(lv) is
-                                # holds by construction of LocationBlobGraph
-                                if (Letter(p) = OutLetter(lv2))
-                                   and (Colour(p) = "green") then
-                                    if Boundary(p) = false then
-                                        if lbgd[v2][v1] = 0 then
-                                            Add(lpl[__ID(p)], [v1, v2, 1/6]);
-                                        elif lbgd[v2][v1] = 1 then
-                                            Add(lpl[__ID(p)], [v1, v2, 1/4]);
-                                        elif lbgd[v2][v1] = 2 then
-                                            Add(lpl[__ID(p)], [v1, v2, 3/10]);
-                                        else
-                                            Add(lpl[__ID(p)], [v1, v2, 1/3]);
-                                        fi;
-                                    else
-                                        Add(lpl[__ID(p)], [v1,v2, 1/3]);
-                                    fi;
-                                fi;
-                            od;
-                        elif IsList(lv2) then # v1 location, v2 intermult
-                            for p in Places(lv) do
-                                if (Letter(p) = lv2[2]) # tis is probably true by LBG construction?
-                                   and (Colour(p) = "red") then
-                                    if Boundary(p) = false then
-                                        if lbgd[v2][v1] = 0 then
-                                            Add(lpl[__ID(p)], [v1, v2, 0]);
-                                        elif lbgd[v2][v1] = 1 then
-                                            Add(lpl[__ID(p)], [v1, v2, 1/6]);
-                                        else
-                                            Add(lpl[__ID(p)], [v1, v2, 1/4]);
-                                        fi;
-                                    else
-                                        Add(lpl[__ID(p)], [v1, v2, 1/4]);
-                                    fi;
-                                fi;
-                            od;
-                        else
-                            Error("this shouldn't happen");
-                        fi;
-                    elif IsList(lv1) then # v1 intermult pair
-                        if IsPregroupLocation(lv2) then
-                            for p in Places(lv) do
-                                if (Letter(p) = OutLetter(lv2))
-                                   and (Colour(p) = "green") then
-                                    if Boundary(p) = false then
-                                        if lbgd[v2][v1] = 0 then
-                                            Add(lpl[__ID(p)], [v1, v2, 0]);
-                                        elif lbgd[v2][v1] = 1 then
-                                            Add(lpl[__ID(p)], [v1, v2, 1/6]);
-                                        else
-                                            Add(lpl[__ID(p)], [v1, v2, 1/4]);
-                                        fi;
-                                    else
-                                        Add(lpl[__ID(p)], [v1, v2, 1/4]);
-                                    fi;
-                                fi;
-                            od;
-                        elif IsList(lv2) then # Both intermult pair
-                            for p in Places(lv) do
-                                if Colour(p) = "red" then
-                                    if Boundary(p) = false then
-                                        Add(lpl[__ID(p)], [v1, v2, 0]);
-                                    else
-                                        Add(lpl[__ID(p)], [v1, v2, 1/4]);
-                                    fi;
-                                fi;
-                            od;
-                        else
-                            Error("this shouldn't happen");
-                        fi;
+        vl := DigraphVertexLabel(vg, v);
+        for v1 in InNeighboursOfVertex(vg, v) do
+            v1l := DigraphVertexLabel(vg, v1);
+            for v2 in OutNeighboursOfVertex(vg, v) do
+                v2l := DigraphVertexLabel(vg, v2);
+                dist := vgd[v2][v1];
+                if (v1l[3] = 0) and (v2l[3] = 0) then
+                    if dist = 1 then
+                        Add(lv, [v1, v2, 1/6]);
+                    elif dist = 2 then
+                        Add(lv, [v1, v2, 1/4]);
+                    elif dist = 3 then
+                        Add(lv, [v1, v2, 3/10]);
+                    elif dist > 3 then
+                        Add(lv, [v1, v2, 1/3]);
+                    else
+                        Error("this shouldn't happen");
                     fi;
-                od;
+                elif (v1l[3] = 0) and (v2l[3] = 1) then
+                    if dist = 0 then
+                        Add(lv, [v1,v2,0]);
+                    elif dist = 1 then
+                        Add(lv, [v1,v2,1/6]);
+                    elif dist > 1 then
+                        Add(lv, [v1,v2,1/4]);
+                    else
+                        Error("this shouldn't happen");
+                    fi;
+                elif (v1l[3] = 1) and (v2l[3] = 0) then
+                    if dist = 1 then
+                        Add(lv, [v1,v2,0]);
+                    elif dist = 2 then
+                        Add(lv, [v1,v2,1/6]);
+                    elif dist > 2 then
+                        Add(lv, [v1,v2,1/4]);
+                    else
+                        Error("this shouldn't happen");
+                    fi;
+                elif (v1l[3] = 1) and (v2l[3] = 1) then
+                    Add(lv, [v1,v2,0]);
+                else
+                    Error("this should not happen");
+                fi;
             od;
-        fi;
+        od;
     od;
-    return lpl;
+    return vtl;
 end);
 
 # Here we use rationals still
