@@ -24,11 +24,12 @@
 #  - Better indexing of locations on relator/places
 #  - Better datastructure for storing one step reachables
 #    (basically a hashmap from orb I think) plus wrapper functions
+#  - PlaceQuadruples should be an object or a record
 #
 # TODO (mathematical/functional)
 #  - Write tests
 #  - Interleaving
-#  - Preparing the presentation
+#  - Preparing the presentation (User choosing Pregroup/removing generators, relators)
 #  - check LocationBlobGraph + distances
 #  - Make the distance computation in LBG more efficient?
 #  - Check OneStepReachables
@@ -771,12 +772,15 @@ function(pres, eps)
 
     for rel in Relators(pres) do
         Info(InfoANATPH, 20
-             , "relator: ", ViewString(rel));
+             , "relator: ", ViewString(rel), "\n");
         places := Places(rel);
         for Ps in places do
             Info(InfoANATPH, 20
-                 , "  start place: ", ViewString(Ps));
+                 , "  start place: "
+                 , ViewString(Ps)
+                 , "\n" );
             L := [ [Ps, 0, 0, 0] ]; # This list is called L in the paper
+            # This is the list of possible decompositions
             # The meaning of the components of the quadruples q is
             # - q[1] is a place 
             # - q[2] is the distance of q[1] from Ps
@@ -784,7 +788,7 @@ function(pres, eps)
             # - q[4] is a curvature value
             for i in [1..zeta] do
                 Info(InfoANATPH, 30
-                     , STRINGIFY("L = ", ViewString(L)));
+                     , STRINGIFY("L = ", ViewString(L)), "\n");
                 for Pq in L do      # Pq is for "PlaceQuadruple", which is
                                     # a silly name
                     if Pq[3] = i - 1 then  # Reachable in i - 1 steps
@@ -805,7 +809,8 @@ function(pres, eps)
                                 elif (Float(Pq[4]) > 0.0) and
                                      (osrp[1] = Ps) and
                                      (Pq[2] + osrp[2] = Length(rel)) then
-                                    return [fail, L];
+                                    Error("Fail");
+                                    return [fail, L, Pq];
                                 else
                                     pp := PositionProperty(L, x -> (x[1] = osrp[1])
                                                               and (x[2] = Pq[2] + osrp[2]));
@@ -824,6 +829,7 @@ function(pres, eps)
                     fi;
                 od;
             od;
+            Print("L: ", ViewString(L), "\n");
         od;
     od;
 
