@@ -248,42 +248,17 @@ end);
 
 # Here we use rationals still
 InstallGlobalFunction(Vertex,
-function(pres, v1, place, v2)
-    local v,     # Vertex in locationblobgraph
-          trp,   # triple
-          lbg,   # LocationBlobGraph
-          lpl,   # L_P list
-          loc,   # Location(place)
-          min;   # Minimal curvature
-    if not IsPregroupPlace(place) then
-        Error("Vertex: <place> needs to be a place!");
-    fi;
+function(pres, v1, v, v2)
+    local vt, t;
 
-    lbg := LocationBlobGraph(pres);
-
-    # This is the list L_P, the place triples
-    # are at the moment indexed the same way
-    # as places in the presentation
-    lpl := PlaceTriples(pres)[__ID(place)];
-    loc := Location(place);
-
-    v := __ID(loc);
-    if DigraphVertexLabel(lbg, v) <> loc then
-        Error("This is a bug\n");
-    fi;
-
-    # The largest possible negative curvature is 1/3
-    min := 1/3;
-    for trp in lpl do
-        if (trp[1] in InNeighboursOfVertex(lbg, v)) and
-           (trp[2] in OutNeighboursOfVertex(lbg, v)) and
-           (trp[3] < min) then
-            min := trp[3];
+    vt := VertexTriples(pres)[v];
+    for t in vt do
+        if (t[1] = v1) and (t[2] = v2) then
+            return t[3];
         fi;
     od;
-
-    # This is a negative curvature, i.e. a positive value.
-    return min;
+    Error("This shouldn't happen");
+    return fail;
 end);
 
 #T redo and move to pregroup files
