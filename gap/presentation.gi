@@ -135,19 +135,14 @@ function(pres)
         for c in Generators(pres) do
             # Colour is "red"
             if IsIntermultPair(PregroupInverse(b), c) then
-                if IsRLetter(pres, c) then
-                    Add(places, NewPlace(loc, c, "red", false));
-                else
-                    Add(places, NewPlace(loc, c, "red", true));
-                fi;
-                # Add(places, NewPlace(loc,c,"red", not IsRLetter(pres,c)));
+                Add(places, NewPlace(loc, c, "red"));
             fi;
             # Colour is "green"
             # find location R'(j,b^(-1),c) and check that a diagram that
             # meets at the edge b doesn't collapse.
 
             if FindMatchingLocation(loc, c) <> fail then
-                Add(places, NewPlace(loc, c, "green", false));
+                Add(places, NewPlace(loc, c, "green"));
             fi;
         od;
     od;

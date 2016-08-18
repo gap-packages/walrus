@@ -4,8 +4,8 @@
 
 ## Places
 InstallGlobalFunction(NewPlace,
-function(loc, c, colour, boundary)
-    return Objectify(IsPregroupPlaceType, [loc,c,colour,boundary]);
+function(loc, c, colour)
+    return Objectify(IsPregroupPlaceType, [loc,c,colour]);
 end);
 
 InstallMethod(Location
@@ -28,11 +28,6 @@ InstallMethod(Colour
              , [IsPregroupPlaceRep],
              p -> p![3]);
 
-InstallMethod(Boundary
-             , "for a pregroup place"
-             , [IsPregroupPlaceRep],
-             p -> p![4]);
-
 InstallMethod(__ID
              , "for a pregroup place"
              , [IsPregroupPlace],
@@ -45,7 +40,6 @@ function(p)
     return STRINGIFY("(", ViewString(p![1]),
                      ",", ViewString(p![2]),
                      ",", ViewString(p![3]),
-                     ",", ViewString(p![4]),
                      ")");
 end);
 
@@ -55,7 +49,6 @@ InstallMethod(\=
 function(p1, p2)
     return (p1![1] = p2![1])
            and (p1![2] = p2![2])
-           and (p1![3] = p2![3])
-           and (p1![4] = p2![4]);
+           and (p1![3] = p2![3]);
 end);
 
