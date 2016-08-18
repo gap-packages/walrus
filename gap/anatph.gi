@@ -139,6 +139,7 @@ function(pres)
                         fi;
                     od;
                 od;
+                return false;
             fi;
         elif (a[3] = 0) and (b[3] = 1) then # a is green, b is red
             if PregroupInverse(a[2]) = b[1] then # There is location R(i,a,b)
@@ -200,52 +201,55 @@ function(pres)
     for v in DigraphVertices(vg) do
         lv := [];
         vtl[v] := lv;
-
         vl := DigraphVertexLabel(vg, v);
-        for v1 in InNeighboursOfVertex(vg, v) do
-            v1l := DigraphVertexLabel(vg, v1);
-            for v2 in OutNeighboursOfVertex(vg, v) do
-                v2l := DigraphVertexLabel(vg, v2);
-                dist := vgd[v2][v1];
-                if (v1l[3] = 0) and (v2l[3] = 0) then
-                    if dist = 1 then
-                        Add(lv, [v1, v2, 1/6]);
-                    elif dist = 2 then
-                        Add(lv, [v1, v2, 1/4]);
-                    elif dist = 3 then
-                        Add(lv, [v1, v2, 3/10]);
-                    elif dist > 3 then
-                        Add(lv, [v1, v2, 1/3]);
-                    else
-                        Error("this shouldn't happen");
-                    fi;
-                elif (v1l[3] = 0) and (v2l[3] = 1) then
-                    if dist = 0 then
-                        Add(lv, [v1,v2,0]);
-                    elif dist = 1 then
-                        Add(lv, [v1,v2,1/6]);
-                    elif dist > 1 then
-                        Add(lv, [v1,v2,1/4]);
-                    else
-                        Error("this shouldn't happen");
-                    fi;
-                elif (v1l[3] = 1) and (v2l[3] = 0) then
-                    if dist = 1 then
-                        Add(lv, [v1,v2,0]);
-                    elif dist = 2 then
-                        Add(lv, [v1,v2,1/6]);
-                    elif dist > 2 then
-                        Add(lv, [v1,v2,1/4]);
-                    else
-                        Error("this shouldn't happen");
-                    fi;
-                elif (v1l[3] = 1) and (v2l[3] = 1) then
-                    Add(lv, [v1,v2,0]);
-                else
-                    Error("this should not happen");
-                fi;
-            od;
-        od;
+        # Only green vertices
+        if (vl[3] = 0) then
+          for v1 in InNeighboursOfVertex(vg, v) do
+              v1l := DigraphVertexLabel(vg, v1);
+              for v2 in OutNeighboursOfVertex(vg, v) do
+                  v2l := DigraphVertexLabel(vg, v2);
+                  dist := vgd[v2][v1];
+                  if (v1l[3] = 0) and (v2l[3] = 0) then
+                      if dist = 1 then
+                          Add(lv, [v1, v2, 1/6]);
+                      elif dist = 2 then
+                          Add(lv, [v1, v2, 1/4]);
+                      elif dist = 3 then
+                          Add(lv, [v1, v2, 3/10]);
+                      elif dist > 3 then
+                          Add(lv, [v1, v2, 1/3]);
+                      else
+                          Error("this shouldn't happen");
+                      fi;
+                  elif (v1l[3] = 0) and (v2l[3] = 1) then
+                      if dist = 0 then
+                          Add(lv, [v1,v2,0]);
+                      elif dist = 1 then
+                          Add(lv, [v1,v2,1/6]);
+                      elif dist > 1 then
+                          Add(lv, [v1,v2,1/4]);
+                      else
+                          Error("this shouldn't happen");
+                      fi;
+                  elif (v1l[3] = 1) and (v2l[3] = 0) then
+                      if dist = 1 then
+                          Add(lv, [v1,v2,0]);
+                      elif dist = 2 then
+                          Add(lv, [v1,v2,1/6]);
+                      elif dist > 2 then
+                          Add(lv, [v1,v2,1/4]);
+                      else
+                          Error("this shouldn't happen");
+                      fi;
+                  elif (v1l[3] = 1) and (v2l[3] = 1) then
+                      Add(lv, [v1,v2,0]);
+                      # what if dist=infinity (i.e. no path)
+                  else
+                      Error("this should not happen");
+                  fi;
+              od;
+          od;
+        fi;
     od;
     return vtl;
 end);
@@ -260,6 +264,10 @@ function(pres, v1, v, v2)
             return t[3];
         fi;
     od;
+    Print("for ", [v1,v,v2], " fallback?\n");
+    if (v1 = v) or (v = v2) then
+        Error("wat?");
+    fi;
     return 1/3;
     # Or should it?
     Error("This shouldn't happen");
@@ -458,6 +466,11 @@ function(vg, trip)
     return fail;
 end);
 
+# This is really "NoCheck"
+LocationByPosition := function(rel, pos)
+    return Locations(rel)[((pos - 1) mod Length(Base(rel))) + 1];
+end;
+
 #T Pull out? Make an Operation on relators?
 NextPosition := function(loc)
     local m;
@@ -465,7 +478,6 @@ NextPosition := function(loc)
     # This looks weird, our list indices are 1-based
     return (Position(loc) mod m) + 1;
 end;
-
 
 InstallMethod(OneStepReachablePlaces, "for a pregroup presentation",
               [IsPregroupPresentation],
@@ -548,7 +560,7 @@ function(pres)
         # together with the length of that edge
         while (r1[i] = PregroupInverse(r2[j]))
               and (l < Length(r1)) do
-            Add(pos, [i + 1, j - 1, l]);
+            Add(pos, [i+1, j, l]);
             i := i + 1; j := j - 1; l := l + 1;
         od;
 
@@ -573,6 +585,10 @@ function(pres)
         for P in Places(r1) do
             for l in pos do
                 if Position(Location(P)) = ((l[1] - 1) mod e) + 1 then
+                    # Hack.
+                    while l[2] < 0 do
+                        l[2] := l[2] + Length(r2);
+                    od;
                     Add(res, [ P
                              , Locations(r2)[((l[2] - 1) mod f) + 1]
                              , l[3]]);
@@ -750,7 +766,6 @@ function(pres, eps)
                     fi;
                 od;
             od;
-            Print("L: ", ViewString(L), "\n");
         od;
     od;
 
