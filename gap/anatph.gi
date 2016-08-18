@@ -505,7 +505,7 @@ function(pres)
             # same relator, one position up
             Ql := Location(Q);
             if (Position(Ql) = NextPosition(Pl))
-               and (InLetter(Ql) = OutLetter(Pl)) then
+               and (InLetter(Ql) = OutLetter(Pl)) then # this should never fail, maybe assert
                 for y in gens do
                     binv := PregroupInverse(InLetter(Ql));
                     if IsIntermultPair(y, binv) then
@@ -543,9 +543,10 @@ function(pres)
         r1 := Relator(loc1);
         r2 := Relator(loc2);
 
-        if r1 = Inverse(r2) then
-            return [];
-        fi;
+# If relators are not ligned up, they can be next to each other!
+#        if r1 = Inverse(r2) then
+#            return [];
+#        fi;
 
         i := Position(loc1);
         j := Position(loc2) - 1;
@@ -700,7 +701,7 @@ function(pres, eps)
           xi, osr, psip, pp;
     # Make sure epsilon is a float
     eps := Float(eps);
-    zeta := Minimum(Int(Round((6 * (1 + eps)) + 1/2)),
+    zeta := Minimum(Int(Round((6 * (1 + eps)) + 1/2)) - 1,
                        LengthLongestRelator(pres));
     Info(InfoANATPH, 10
          , "RSymTest start");
@@ -755,6 +756,7 @@ function(pres, eps)
                                         Add(L, [osrp[1], Pq[2] + osrp[2], i, psip] );
                                     else
                                         # Can there be more than one such entry?
+                                        # Colva says no.
                                         if psip > Float(L[pp][4]) then
                                             L[pp][3] := i;
                                             L[pp][4] := psip;
