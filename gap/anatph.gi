@@ -25,6 +25,9 @@
 #  - Better datastructure for storing one step reachables
 #    (basically a hashmap from orb I think) plus wrapper functions
 #  - PlaceQuadruples should be an object or a record
+#  - Add proper error messages for "This shouldn't happen" with a pointer
+#    towards the github issue tracker
+
 #
 # TODO (mathematical/functional)
 #  - Write tests
@@ -258,6 +261,9 @@ InstallGlobalFunction(Vertex,
 function(pres, v1, v, v2)
     local vt, t;
 
+    #if v1 = fail then
+    #    Error("v1 was fail");
+    #fi;
     vt := VertexTriples(pres)[v];
     for t in vt do
         if (t[1] = v1) and (t[2] = v2) then

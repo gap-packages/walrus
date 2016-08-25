@@ -4,4 +4,5 @@
 # can give "IsPregroupPresentation" for method selection
 DeclareGlobalFunction("TriangleGroup");
 DeclareGlobalFunction("TriSH");
+DeclareGlobalFunction("RandomPregroupPresentation");
 
