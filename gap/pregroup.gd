@@ -18,7 +18,7 @@ DeclareGlobalFunction("PregroupByTableNC");
 DeclareGlobalFunction("PregroupByTable");
 
 DeclareOperation("[]", [IsPregroupTableRep, IsInt]);
-# DeclareAttribute("Size", IsPregroup);
+ DeclareAttribute("Size", IsPregroup);
 DeclareAttribute("IntermultPairs", IsPregroup);
 DeclareAttribute("IntermultPairsIds", IsPregroup);
 DeclareAttribute("IntermultMap", IsPregroup);
@@ -48,5 +48,5 @@ DeclareAttribute("__ID", IsElementOfPregroup);
 #T subgroup in the end to get intermult pairs and interleaving
 #T and all that
 DeclareGlobalFunction("PregroupFromFreeProduct");
-
+DeclareGlobalFunction("PregroupOfFreeGroup");
 
