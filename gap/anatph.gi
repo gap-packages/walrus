@@ -415,10 +415,11 @@ function(pres)
 end);
 
 # This should become an operation
-#InstallMethod(Blob, "for a pregroup presentation, an element, an element, and an element"
-#             , [ IsPregroupPresentation, IsPregroupElement, IsPregroupElement, IsPregroupElement ]
-#             , function(pres, a, b, c) end);
-InstallGlobalFunction(Blob,
+InstallMethod(Blob, "for a pregroup presentation, an element, an element, and an element"
+              , [ IsPregroupPresentation
+                , IsPregroupElement
+                , IsPregroupElement
+                , IsPregroupElement ],
 function(pres, a, b, c)
     local it;
 

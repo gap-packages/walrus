@@ -15,6 +15,10 @@ DeclareObject( "IsPregroupPresentation",
                 , "LengthLongestRelator"
                ],
                []);
+DeclareOperation("Blob",
+                 [IsPregroupPresentation,
+                  IsPregroupElement, IsPregroupElement, IsPregroupElement]);
+
 DeclareOperation("RSymTest", [IsPregroupPresentation, IsObject]);
 
 # IsPregroup -> [IsPregroupRelator] -> IsPregroupPresentation
