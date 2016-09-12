@@ -28,6 +28,11 @@ InstallMethod(Colour
              , [IsPregroupPlaceRep],
              p -> p![3]);
 
+InstallMethod(NextPlaces
+             , "for a pregroup place"
+             , [IsPregroupPlaceRep],
+             p -> Places(NextLocation(Location(p))));
+
 InstallMethod(__ID
              , "for a pregroup place"
              , [IsPregroupPlace],

@@ -13,7 +13,8 @@ DeclareOperation("Merge", [IsANAMap, IsANAMap]);
 DeclareOperation("Keys", [IsANAMap]);
 DeclareOperation("Merge", [IsANAMap, IsANAMap] );
 
-
+#X Make this into a proper datastructure
+DeclareGlobalFunction("CyclicSubList");
 DeclareGlobalFunction("IndexMinEnter");
 DeclareGlobalFunction("EnterAllSubwords");
 

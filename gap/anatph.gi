@@ -314,26 +314,6 @@ ReduceUPregroupWord := function(word)
     return rw2;
 end;
 
-# In reality we only need a list indexed by triples, so we
-# will quite probably end up with a tree where the leaves have
-# weights as labels.
-CyclicSubList := function(l, pos, len)
-    local r, i, j, llen;
-
-    llen := Length(l);
-    r := [];
-    i := pos; j := 1;
-    while j <= len do
-        r[j] := l[i];
-        i := i + 1; j := j + 1;
-        if i > llen then
-            i := 1;
-        fi;
-    od;
-
-    return r;
-end;
-
 #XXX Computes triples (a,b,c) that are infixes 
 #    of strings found here with appropriate numbers
 InstallMethod(ShortRedBlobIndex, "for a pregroup presentation",
@@ -417,9 +397,9 @@ end);
 # This should become an operation
 InstallMethod(Blob, "for a pregroup presentation, an element, an element, and an element"
               , [ IsPregroupPresentation
-                , IsPregroupElement
-                , IsPregroupElement
-                , IsPregroupElement ],
+                , IsElementOfPregroup
+                , IsElementOfPregroup
+                , IsElementOfPregroup ],
 function(pres, a, b, c)
     local it;
 
@@ -478,31 +458,24 @@ function(pres)
     OneStepByPlace := [];
 
     OneStepRedCase := function(P)
-        local Q, b, y, v, v1, v2, lv2, Pl, Ql, res, xi1, xi2, binv, l;
+        local Q, b, y, v, v1, v2, lv2, res, xi1, xi2, binv, l;
 
         res := NewANAMap();
 
-        Pl := Location(P);
-
-        for Q in Places(Relator(P)) do
+        for Q in NextPlaces(P) do
             # same relator, one position up
-            Ql := Location(Q);
-            if (Position(Ql) = NextPosition(Pl))
-               and (InLetter(Ql) = OutLetter(Pl)) then # this should never fail, maybe assert
-                for y in gens do
-                    binv := PregroupInverse(InLetter(Ql));
-                    if IsIntermultPair(y, binv) then
-                        v1 := VertexFor(vg, [y, binv, 1]);
-                        v := VertexFor(vg, [InLetter(Location(Q)), OutLetter(Location(Q)), 0]);
-                        xi1 := Blob(pres, y, binv, Letter(P));
-                        for v2 in OutNeighboursOfVertex(vg, v) do
-                            xi2 := Vertex(pres, v1, v, v2);
-                            AddOrUpdate(res, Q, 1, xi1 + xi2);
-                        od;
-
-                    fi;
-                od;
-            fi;
+            for y in gens do
+                binv := PregroupInverse(InLetter(Location(Q)));
+                if IsIntermultPair(y, binv) then
+                    v1 := VertexFor(vg, [y, binv, 1]);
+                    v := VertexFor(vg, [InLetter(Location(Q)), OutLetter(Location(Q)), 0]);
+                    xi1 := Blob(pres, y, binv, Letter(P));
+                    for v2 in OutNeighboursOfVertex(vg, v) do
+                        xi2 := Vertex(pres, v1, v, v2);
+                        AddOrUpdate(res, Q, 1, xi1 + xi2);
+                    od;
+                fi;
+            od;
         od;
         # Note this list is not necessarily dense atm.
         return res;

@@ -57,9 +57,29 @@ function(map1, map2)
     return map1;
 end);
 
+# In reality we only need a list indexed by triples, so we
+# will quite probably end up with a tree where the leaves have
+# weights as labels.
+InstallGlobalFunction(CyclicSubList,
+function(l, pos, len)
+    local r, i, j, llen;
+
+    llen := Length(l);
+    r := [];
+    i := pos; j := 1;
+    while j <= len do
+        r[j] := l[i];
+        i := i + 1; j := j + 1;
+        if i > llen then
+            i := 1;
+        fi;
+    od;
+
+    return r;
+end);
+
 InstallGlobalFunction( IndexMinEnter,
-#T this is very ad-hoc
-IndexMinEnter := function(idx, key, value)
+function(idx, key, value)
     local i, it;
 
     it := idx;

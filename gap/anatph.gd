@@ -19,7 +19,7 @@ DeclareGlobalFunction("Vertex");
 
 
 DeclareGlobalFunction("ShortBlobWords");
-DeclareGlobalFunction("Blob");
+# DeclareGlobalFunction("Blob");
 # DeclareGlobalFunction("RSymTester");
 
 # Location blob graph has by convention set of locations first

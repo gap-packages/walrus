@@ -44,6 +44,19 @@ function(l)
     return places;
 end);
 
+InstallMethod(NextLocation, "for a location",
+              [ IsPregroupLocationRep ],
+function(l)
+    local loc;
+
+    loc := Locations(l![1]);
+    if l![2] < Length(loc) then
+        return loc[l![2] + 1];
+    else
+        return loc[1];
+    fi;
+end);
+
 # Two locations are the same if they are on the same
 # relator at the same index
 InstallMethod(\=, "for a location and a location",
