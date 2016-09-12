@@ -57,4 +57,32 @@ function(map1, map2)
     return map1;
 end);
 
+InstallGlobalFunction( IndexMinEnter,
+#T this is very ad-hoc
+IndexMinEnter := function(idx, key, value)
+    local i, it;
 
+    it := idx;
+    for i in key do
+        if not IsBound(it[i]) then
+            it[i] := [];
+        fi;
+        it := it[i];
+    od;
+
+    if it = [] then
+        it[1] := value;
+    else
+        it[1] := Minimum(it[1], value);
+    fi;
+end);
+
+InstallGlobalFunction( EnterAllSubwords,
+function(idx, word, value)
+    local i, pos, ww;
+    pos := [1..Length(word)];
+    ww := List(word, x -> __ID(x));
+    for i in pos do
+        IndexMinEnter(idx, ww{ CyclicSubList(pos, i, 3) }, value);
+    od;
+end);

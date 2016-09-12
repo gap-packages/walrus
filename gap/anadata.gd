@@ -13,3 +13,8 @@ DeclareOperation("Merge", [IsANAMap, IsANAMap]);
 DeclareOperation("Keys", [IsANAMap]);
 DeclareOperation("Merge", [IsANAMap, IsANAMap] );
 
+
+DeclareGlobalFunction("IndexMinEnter");
+DeclareGlobalFunction("EnterAllSubwords");
+
+
