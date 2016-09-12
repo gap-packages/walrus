@@ -121,13 +121,14 @@ end);
 
 BindGlobal("_VARIANCE",
 function(v)
-    local q;
+    local q, avg;
     if Length(v) = 1 then
         q := 1;
     else
         q := Length(v) - 1;
     fi;
-    return Sum(List(v, x -> (x - Average(v))^2)) / (q);
+    avg := Average(v);
+    return Sum(List(v, x -> (x - avg)^2)) / (q);
 end);
 
 BindGlobal("AnalyseBenchmarkResult",
@@ -178,7 +179,7 @@ function(r)
 end);
     
 BindGlobal("StandardBenchmarks",
-function(nsamples)
+function(nsamples, prn)
     local d, ngens, rlen, nrels, r;
     
     Print("running standard benchmarks for anatph, ", nsamples, " each\n");
@@ -199,7 +200,7 @@ function(nsamples)
                                                   , nrels
                                                   , rlen
                                                   , nsamples
-                                                  , function(x...) end # suppress printing
+                                                  , prn
                      );
                 Print(StringBenchResult(AnalyseBenchmarkResult(r)));
             od;
@@ -217,7 +218,7 @@ function(nsamples)
                                             , nrels
                                             , rlen
                                             , nsamples
-                                            , function(x...) end # suppress printing
+                                            , prn
                      );
             Print(StringBenchResult(AnalyseBenchmarkResult(r)));
         od;

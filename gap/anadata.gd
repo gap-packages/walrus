@@ -5,7 +5,11 @@ BindGlobal("ANAMapFamily", NewFamily("ANAMapFamily"));
 
 DeclareRepresentation("IsANAMapListRep", IsANAMap and IsPositionalObjectRep, []);
 
-BindGLobal("ANAMapListType", NewType( ANAMapFamily, IsANAMapListRep));
+BindGlobal("ANAMapListType", NewType( ANAMapFamily, IsANAMapListRep));
 
 DeclareGlobalFunction("NewANAMap");
-DeclareOperation("AddOrUpdate", [AnaMAP, IsObject, IsObject]);
+DeclareOperation("AddOrUpdate", [IsANAMap, IsObject, IsObject, IsObject]);
+DeclareOperation("Merge", [IsANAMap, IsANAMap]);
+DeclareOperation("Keys", [IsANAMap]);
+DeclareOperation("Merge", [IsANAMap, IsANAMap] );
+

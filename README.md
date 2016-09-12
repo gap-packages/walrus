@@ -12,3 +12,4 @@ the algorithm correctly yet. Do not yet trust output of the provided code.
 If you do play with it and find problems, let me know, file an issue, or send me an email, and I will
 be happy to discuss.
 
+This branch is an attempt at making the datastructures more appropriate

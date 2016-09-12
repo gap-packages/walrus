@@ -27,6 +27,9 @@
 #  - PlaceQuadruples should be an object or a record
 #  - Add proper error messages for "This shouldn't happen" with a pointer
 #    towards the github issue tracker
+#  - Make a reasonably standard format (and exporter/importer) to exchange
+#    pregroup presentations so we can move them between GAP/other
+#    implementations for cross-checking
 
 #
 # TODO (mathematical/functional)
@@ -504,7 +507,8 @@ function(pres)
     OneStepRedCase := function(P)
         local Q, b, y, v, v1, v2, lv2, Pl, Ql, res, xi1, xi2, binv, l;
 
-        res := [];
+        res := NewANAMap();
+
         Pl := Location(P);
 
         for Q in Places(Relator(P)) do
@@ -520,19 +524,14 @@ function(pres)
                         xi1 := Blob(pres, y, binv, Letter(P));
                         for v2 in OutNeighboursOfVertex(vg, v) do
                             xi2 := Vertex(pres, v1, v, v2);
-                            l := PositionProperty(res, x -> x[1] = Q);
-                            if l = fail then
-                                Add(res, [Q, 1, xi1 + xi2]);
-                            else
-                                if xi1 + xi2 < res[l][3] then
-                                    res[l][3] := xi1 + xi2;
-                                fi;
-                            fi;
+                            AddOrUpdate(res, Q, 1, xi1 + xi2);
                         od;
+
                     fi;
                 od;
             fi;
         od;
+        # Note this list is not necessarily dense atm.
         return res;
     end;
 
@@ -610,7 +609,7 @@ function(pres)
     OneStepGreenCase := function(P)
         local L, L2, b, c, loc, pls, is_consoledge, v, v1, v2, xi1, xi2,
               R, R2, P2, P2s, P2T, i, j, next, res, len, n, l;
-        res := [];
+        res := NewANAMap();
 
         L := Location(P);
         b := OutLetter(L);
@@ -646,29 +645,12 @@ function(pres)
                     for v2 in OutNeighboursOfVertex(vg, v) do
                         xi1 := Vertex(pres, v1, v, v2);
                         if Colour(P2) = "green" then
-                            l := PositionProperty(res, x -> (x[1] = P2) and x[2] = l);
-                            if l = fail then
-                                Add(res, [P2, len, xi1]);
-                            else
-                                if res[l][3] > xi1 then
-                                    res[l][3] := xi1;
-                                fi;
-                            fi;
+                            AddOrUpdate(res, P2, len, xi1);
                         elif Colour(P2) = "red" then
-                            #X is this application of OneStepRedCase correct?
-                            Info(InfoANATPH, 30, STRINGIFY("OneStepRedCase: ", ViewString(P2), "\n"));
                             next := OneStepRedCase(P2);
-                            Info(InfoANATPH, 30, STRINGIFY( "next: ", List(next, ViewString), "\n"));
-
-                            for n in next do
-                                l := PositionProperty(res, x -> (x[1] = n[1]) and (x[2] = len + 1));
-                                if l = fail then
-                                    Add(res, [n[1], len + 1, xi1 + n[3]]);
-                                else
-                                    if res[l][3] > xi1 + n[3] then
-                                        res[l][3] := xi1 + n[3];
-                                    fi;
-                                fi;
+                            # testhack
+                            for n in BoundPositions(next![1]) do
+                                AddOrUpdate(res, places[n], len + 1, xi1 + next![1][n][1]);
                             od;
                         else
                             Error("Invalid colour");

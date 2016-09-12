@@ -13,5 +13,6 @@ ReadPackage("anatph", "gap/relator.gd");
 ReadPackage("anatph", "gap/presentation.gd");
 ReadPackage("anatph", "gap/location.gd");
 ReadPackage("anatph", "gap/place.gd");
+ReadPackage("anatph", "gap/anadata.gd");
 ReadPackage("anatph", "gap/anatph.gd");
 ReadPackage("anatph", "gap/examples.gd");
