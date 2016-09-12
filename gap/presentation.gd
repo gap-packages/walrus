@@ -1,8 +1,7 @@
 #
 # anatph: A new approach to proving hyperbolicity
 #
-DeclareObject(
-               "IsPregroupPresentation",
+DeclareObject( "IsPregroupPresentation",
                IsObject,
                IsComponentObjectRep and IsAttributeStoringRep,
                ["Pregroup", "Generators",
@@ -16,11 +15,7 @@ DeclareObject(
                 , "LengthLongestRelator"
                ],
                []);
-
 DeclareOperation("RSymTest", [IsPregroupPresentation, IsObject]);
 
-# DeclareOperation( "Blob", [IsPregroupPresentation, IsPregroupElement, IsPregroupElement, IsPregroupElement ])
-
+# IsPregroup -> [IsPregroupRelator] -> IsPregroupPresentation
 DeclareGlobalFunction("NewPregroupPresentation");
-#X elements family?
-

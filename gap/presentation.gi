@@ -84,8 +84,7 @@ function(pres)
     locs := [];
     for rel in RelatorsAndInverses(pres) do
         w := Base(rel);
-        Add(locs, NewLocation(rel, 1, w[Length(w)], w[1]));
-        Append(locs, List([2..Length(w)], i -> NewLocation(rel, i, w[i-1], w[i])));
+        Append(locs, List([1..Length(w)], i -> NewLocation(rel, i)));
     od;
 
     # Hack

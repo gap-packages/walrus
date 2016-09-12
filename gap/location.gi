@@ -2,9 +2,11 @@
 # anatph: A new approach to proving hyperbolicity
 #
 ## Locations
+
+# NewLocation : IsPregroupRelator -> Int -> IsPregroupLocation
 InstallGlobalFunction(NewLocation,
-function(R,i,a,b)
-    return Objectify(IsPregroupLocationType, [R,i,a,b]);
+function(R,i)
+    return Objectify(IsPregroupLocationType, [R,i]);
 end);
 
 InstallMethod(Relator, "for a location",
@@ -17,12 +19,13 @@ InstallMethod(Position, "for a location",
 
 InstallMethod(InLetter, "for a location",
               [ IsPregroupLocationRep ],
-              l -> l![3]);
+              l -> l![1][l![2] - 1]);
 
 InstallMethod(OutLetter, "for a location",
               [ IsPregroupLocationRep ],
-              l -> l![4]);
+              l -> l![1][l![2]]);
 
+#X Get rid of this
 InstallMethod(__ID, "for a location",
               [ IsPregroupLocationRep ],
               l -> l![5]);
@@ -41,11 +44,13 @@ function(l)
     return places;
 end);
 
-# Probably want to make a better comparison
+# Two locations are the same if they are on the same
+# relator at the same index
 InstallMethod(\=, "for a location and a location",
               [ IsPregroupLocationRep, IsPregroupLocationRep],
 function(l,r)
-    return ForAll([1..4], i -> l![i] = r![i]);
+    return (l![1] = r![1])
+           and (l![2] = r![2]);
 end);
 
 InstallMethod(Presentation, "for a location",
@@ -57,7 +62,7 @@ InstallMethod(ViewString, "for a location",
 function(l)
     return STRINGIFY(ViewString(l![1]), "("
                      , l![2], ","
-                     , ViewString(l![3]), ","
-                     , ViewString(l![4]), ")"
+                     , ViewString(InLetter(l)), ","
+                     , ViewString(OutLetter(l)), ")"
                     );
 end);

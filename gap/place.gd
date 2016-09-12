@@ -6,6 +6,7 @@ DeclareObject(
                IsObject,
                IsPositionalObjectRep,
                ["Relator", "Presentation", "Location", "Letter", "Colour",
+                "NextPlaces",
                "__ID"],
                []);
 DeclareGlobalFunction("NewPlace");

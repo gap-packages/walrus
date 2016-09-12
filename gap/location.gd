@@ -5,7 +5,12 @@
 DeclareObject( "IsPregroupLocation",
                IsObject,
                IsPositionalObjectRep,
-               ["Relator", "Presentation", "Position", "InLetter", "OutLetter", 
-                "Places", "__ID" ],
+               ["Relator",
+                "Presentation",
+                "Position",
+                "InLetter", "OutLetter", 
+                "Places",
+                "__ID" ],
                []);
+# IsPregroupRelator -> 
 DeclareGlobalFunction("NewLocation");

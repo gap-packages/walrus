@@ -36,29 +36,19 @@ InstallMethod(Presentation,
 InstallMethod(Locations, "for a pregroup relator",
               [IsPregroupRelator],
 function(r)
-    local loc;
-    if not IsBound(r!.locations) then
-        r!.locations := [];
-        for loc in Locations(Presentation(r)) do
-            if Relator(loc) = r then
-                Add(r!.locations, loc);
-            fi;
-        od;
-    fi;
-    return r!.locations;
+    return List([1..Length(Base(r))], i -> NewLocation(r, i));
 end);
 
-# Cyclic access good?
 InstallMethod(\[\], "for a pregroup relator",
               [IsPregroupRelator and IsPregroupRelatorRep, IsInt],
 function(r, p)
     local i, l;
-    i := p - 1;
     l := Length(r!.base);
-    while i < 0 do
+    i := RemInt(p - 1, l);
+    if i < 0 then
         i := i + l;
-    od;
-    return r!.base[ RemInt(i, l) + 1];
+    fi;
+    return r!.base[i + 1];
 end);
 
 InstallMethod(Length, "for a pregroup relator",
@@ -68,6 +58,7 @@ function(r)
 end);
 
 # we could possibly store this on creation
+# But this is run at most once anyway
 InstallMethod(Places, "for a pregroup relator",
               [IsPregroupRelator],
 function(r)
@@ -100,7 +91,8 @@ end);
 InstallMethod(\=, "for a pregroup relator, and a pregroup relator",
               [IsPregroupRelator, IsPregroupRelator],
 function(l,r)
-    return (l!.base = r!.base) and (l!.exponent = r!.exponent);
+    return (l!.base = r!.base)
+           and (l!.exponent = r!.exponent);
 end);
 
 InstallMethod(\in, "for a generator and a pregroup relator",
