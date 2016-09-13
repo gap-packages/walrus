@@ -31,7 +31,13 @@ InstallMethod(Colour
 InstallMethod(NextPlaces
              , "for a pregroup place"
              , [IsPregroupPlaceRep],
-             p -> Places(NextLocation(Location(p))));
+function(p)
+    if not IsBound(p![6]) then
+        p![6] := Places(NextLocation(Location(p)));
+    fi;
+    return p![6];
+end);
+
 
 InstallMethod(__ID
              , "for a pregroup place"
