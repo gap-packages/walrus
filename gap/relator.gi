@@ -3,13 +3,14 @@
 #
 
 InstallGlobalFunction(NewPregroupRelator,
-function(pres, word)
+function(pres, word, id)
     local maxk;
     maxk := MaxPowerK(word);
     return Objectify(IsPregroupRelatorType,
                      rec( pres := pres
                         , base := maxk[1]
-                        , exponent := maxk[2] )
+                        , exponent := maxk[2]
+                        , __ID := id)
                     );
 end);
 
@@ -26,7 +27,8 @@ InstallMethod(Inverse, "for a pregroup relator",
               r -> Objectify(IsPregroupRelatorType,
                              rec( pres := r!.pres
                                 , base := List(Reversed(r!.base), PregroupInverse)
-                                , exponent := r!.exponent )
+                                , exponent := r!.exponent
+                                , __ID := -r!.__ID)
                             ));
 InstallMethod(Presentation,
               "for pregroup relators",
@@ -91,8 +93,11 @@ end);
 InstallMethod(\=, "for a pregroup relator, and a pregroup relator",
               [IsPregroupRelator, IsPregroupRelator],
 function(l,r)
-    return (l!.base = r!.base)
-           and (l!.exponent = r!.exponent);
+    # id is uniqe wrt pregroup presentation. We should probably
+    # make a family of relators for each presentation etc
+    # return l!.__ID = r!.__ID;
+    return (l!.exponent = r!.exponent)
+           and (l!.base = r!.base);
 end);
 
 InstallMethod(\in, "for a generator and a pregroup relator",
