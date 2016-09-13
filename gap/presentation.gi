@@ -5,10 +5,11 @@
 ## Presentations
 InstallGlobalFunction(NewPregroupPresentation,
 function(pg, rels)
-    local res;
+    local res, rel;
+
     res := rec();
     res.pg := pg;
-    res.rels := List(rels, x -> NewPregroupRelator(res, x));
+    res.rels := List([1..Length(rels)], x -> NewPregroupRelator(res, rels[x], x));
     return Objectify(IsPregroupPresentationType, res);
 end);
 
