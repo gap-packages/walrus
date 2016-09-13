@@ -23,17 +23,25 @@ function(map, place, length, val)
 end);
 
 
-
 InstallMethod(Keys, "for an anamap",
               [IsANAMap and IsANAMapListRep],
+              map -> BoundPositions(map![1])
+             );
+
+InstallMethod(Values, "for an anamap",
+              [IsANAMap and IsANAMapListRep],
 function(map)
-    local k, res;
+    local res, p, q, m;
+    m := map![1];
     res := [];
-    for k in map![1] do
-        Add(res, k);
+    for p in BoundPositions(m) do
+        for q in BoundPositions(m[p]) do
+            Add(res, [p,q,m[p][q]]);
+        od;
     od;
     return res;
 end);
+
 
 # this is essentially useless
 InstallMethod(Merge, "for an anamap",
@@ -55,6 +63,14 @@ function(map1, map2)
         fi;
     od;
     return map1;
+end);
+
+InstallMethod(ViewString, "for an anamap",
+              [IsANAMap],
+function(map)
+    return STRINGIFY("<an anamap with "
+                    , Length(BoundPositions(map![1]))
+                    , " bound positions>");
 end);
 
 # In reality we only need a list indexed by triples, so we

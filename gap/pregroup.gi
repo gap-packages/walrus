@@ -411,8 +411,6 @@ function(G1, G2, alm)
           sgpi, s1pi, s2pi, sgpp
           , eltn                          # Names for elements
     ;
-    Print("PregroupFromFreeProduct\n");
-    
 
     # Subgroup of G1 and G2 that we amalgamate
     sgpp := [()];

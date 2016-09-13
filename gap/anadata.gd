@@ -1,5 +1,7 @@
 # Dictionaries/Hashmaps/Lookuptables for anatph
 
+# Use type-helpers
+
 DeclareCategory("IsANAMap", IsObject and IsCollection);
 BindGlobal("ANAMapFamily", NewFamily("ANAMapFamily"));
 
@@ -11,6 +13,7 @@ DeclareGlobalFunction("NewANAMap");
 DeclareOperation("AddOrUpdate", [IsANAMap, IsObject, IsObject, IsObject]);
 DeclareOperation("Merge", [IsANAMap, IsANAMap]);
 DeclareOperation("Keys", [IsANAMap]);
+DeclareOperation("Values", [IsANAMap]);
 DeclareOperation("Merge", [IsANAMap, IsANAMap] );
 
 #X Make this into a proper datastructure

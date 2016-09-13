@@ -641,7 +641,9 @@ function(pres, eps)
          , "RSymTest start");
     Info(InfoANATPH, 10
          , "zeta: ", zeta);
-    osr := OneStepReachablePlaces(pres);
+
+    osr := List(OneStepReachablePlaces(pres), Values);
+
 
     for rel in Relators(pres) do
         Info(InfoANATPH, 20
@@ -652,7 +654,7 @@ function(pres, eps)
                  , "  start place: "
                  , ViewString(Ps)
                  , "\n" );
-            L := [ [Ps, 0, 0, 0] ]; # This list is called L in the paper
+            L := [ [__ID(Ps), 0, 0, 0] ]; # This list is called L in the paper
             # This is the list of possible decompositions
             # The meaning of the components of the quadruples q is
             # - q[1] is a place 
@@ -665,7 +667,7 @@ function(pres, eps)
                 for Pq in L do      # Pq is for "PlaceQuadruple", which is
                                     # a silly name
                     if Pq[3] = i - 1 then  # Reachable in i - 1 steps
-                        for osrp in osr[__ID(Pq[1])] do
+                        for osrp in osr[Pq[1]] do
                             if Pq[2] + osrp[2] <= Length(rel) then
                                 psip := Float(Pq[4])
                                         + osrp[2] * (1 + eps) / Length(rel)
