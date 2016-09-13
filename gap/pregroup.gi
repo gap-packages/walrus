@@ -15,7 +15,11 @@ function(enams, inv, table)
             , table := table );
     r.fam := NewFamily( "PregroupElementsFamily", IsElementOfPregroup );
     r.elt_t := NewType( r!.fam, IsElementOfPregroupRep );
-
+    r.elts := List( [1..Length(table)], i -> Objectify(r.elt_t, rec(parent := r, elt := i)));
+    r.invs := [];
+    for e in [1..Length(r.elts)] do
+        r.elts[e]!.inv := r.elts[inv(e)];
+    od;
     return Objectify(PregroupByTableType, r);
 end);
 
@@ -91,7 +95,7 @@ InstallMethod(\[\]
              , "for a pregroup in table rep"
              , [IsPregroupTableRep, IsInt],
 function(f,a)
-    return Objectify(f!.elt_t, rec( parent := f, elt := a ));
+    return f!.elts[a];
 end);
 
 InstallMethod(Iterator
@@ -102,15 +106,16 @@ function(pgp)
 
     r := rec( pgp := pgp
             , pos := 0
+            , length := Size(pgp)
             , NextIterator := function(iter)
-                if iter!.pos < Size(iter!.pgp) then
+                if iter!.pos < iter!.length then
                     iter!.pos := iter!.pos + 1;
                     return iter!.pgp[iter!.pos];
                 else
                     return fail;
                 fi;
             end
-            , IsDoneIterator := iter -> iter!.pos = Size(iter!.pgp)
+            , IsDoneIterator := iter -> iter!.pos = iter!.length
             , ShallowCopy := iter -> rec( pgp := iter!.pgp, pos := iter!.pos )
             );
 
@@ -220,9 +225,41 @@ function(pg)
     return map;
 end);
 
+InstallMethod(IntermultTable
+             , "for a pregroup in table rep"
+             , [IsPregroupTableRep],
+function(pg)
+    local i, j, k, map;
+
+    map := [];
+    for i in [1..Size(pg)] do
+        map[i] := [false];
+    od;
+
+    for i in [2..Length(pg!.enams)] do
+        for j in [2..Length(pg!.enams)] do
+            map[i][j] := false;
+            if (i <> pg!.inv(j)) then
+                if (pg!.table[i][j] > 0) then
+                    map[i][j] := true;
+                else
+                    for k in [2..Length(pg!.enams)] do
+                        if (pg!.table[i][k] > 0) and
+                          (pg!.table[pg!.inv(k)][j] > 0) then
+                            map[i][j] := true;
+                            break;
+                        fi;
+                    od;
+                fi;
+            fi;
+        od;
+    od;
+    return map;
+end);
+
 InstallMethod(One, "for a pregroup",
               [IsPregroup],
-              pg -> pg[1]);
+              pg -> pg!.elts[1]);
 
 #
 # Pregroup elements
@@ -263,7 +300,7 @@ function(x,y)
     r := pg!.table[x!.elt][y!.elt];
 
     if r > 0 then
-        return Objectify(pg!.elt_t, rec( parent := pg, elt := r ));
+        return pg!.elts[r];
     else
         return fail;
     fi;
@@ -300,13 +337,7 @@ InstallMethod(PregroupInverse
              , "for pregroup elements"
              , [ IsElementOfPregroupRep ]
              , 0,
-function(a)
-    local pg;
-
-    pg := PregroupOf(a);
-
-    return Objectify(pg!.elt_t, rec( parent := pg, elt := pg!.inv(a!.elt) ) );
-end);
+             a -> a!.inv);
 
 InstallMethod(PregroupElementId
              , "for pregroup elements"
@@ -345,6 +376,8 @@ InstallMethod(IsIntermultPair
 function(a,b)
     local x, nontriv;
 
+    return IntermultTable(a!.parent)[__ID(a)][__ID(b)];
+    
     if a = PregroupInverse(b) then
         return false;
     elif IsDefinedMultiplication(a, b) then
@@ -378,6 +411,8 @@ function(G1, G2, alm)
           sgpi, s1pi, s2pi, sgpp
           , eltn                          # Names for elements
     ;
+    Print("PregroupFromFreeProduct\n");
+    
 
     # Subgroup of G1 and G2 that we amalgamate
     sgpp := [()];

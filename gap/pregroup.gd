@@ -10,7 +10,7 @@
 DeclareCategory("IsPregroup", IsObject and IsCollection);
 BindGlobal("PregroupFamily", NewFamily("PregroupFamily"));
 
-DeclareRepresentation("IsPregroupTableRep", IsPregroup and IsComponentObjectRep, []);
+DeclareRepresentation("IsPregroupTableRep", IsPregroup and IsComponentObjectRep and IsAttributeStoringRep, []);
 BindGlobal("PregroupByTableType",
            NewType( PregroupFamily, IsPregroupTableRep));
 
@@ -22,6 +22,7 @@ DeclareOperation("[]", [IsPregroupTableRep, IsInt]);
 DeclareAttribute("IntermultPairs", IsPregroup);
 DeclareAttribute("IntermultPairsIds", IsPregroup);
 DeclareAttribute("IntermultMap", IsPregroup);
+DeclareAttribute("IntermultTable", IsPregroup);
 DeclareAttribute("One", IsPregroup);
 
 
