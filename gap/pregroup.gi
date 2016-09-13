@@ -8,7 +8,7 @@
 # a (partial) multiplication table
 InstallGlobalFunction(PregroupByTableNC,
 function(enams, inv, table)
-    local r;
+    local r,e;
 
     r := rec( enams := enams
             , inv := inv
