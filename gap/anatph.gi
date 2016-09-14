@@ -458,19 +458,30 @@ function(pres)
     OneStepByPlace := [];
 
     OneStepRedCase := function(P)
-        local Q, b, y, v, v1, v2, lv2, res, xi1, xi2, binv, l;
+        local Q, Ql
+              , b, c, y
+              , Lp
+              , v, v1, v2
+              , res
+              , xi1, xi2, binv, l, onv;
 
         res := NewANAMap();
+        Lp := Letter(P);
 
         for Q in NextPlaces(P) do
             # same relator, one position up
+            Ql := Location(Q);
+            b := InLetter(Ql);
+            c := OutLetter(Ql);
+            binv := PregroupInverse(b);
+            v := VertexFor(vg, [b, c, 0]);
+            onv := OutNeighboursOfVertex(vg, v);
+
             for y in gens do
-                binv := PregroupInverse(InLetter(Location(Q)));
                 if IsIntermultPair(y, binv) then
                     v1 := VertexFor(vg, [y, binv, 1]);
-                    v := VertexFor(vg, [InLetter(Location(Q)), OutLetter(Location(Q)), 0]);
-                    xi1 := Blob(pres, y, binv, Letter(P));
-                    for v2 in OutNeighboursOfVertex(vg, v) do
+                    xi1 := Blob(pres, y, binv, Lp);
+                    for v2 in onv do
                         xi2 := Vertex(pres, v1, v, v2);
                         AddOrUpdate(res, Q, 1, xi1 + xi2);
                     od;
