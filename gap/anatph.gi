@@ -283,37 +283,6 @@ function(pres, v1, v, v2)
     return fail;
 end);
 
-#T redo and move to pregroup files
-ReduceUPregroupWord := function(word)
-    local rw, rw2, i, j, one;
-
-    if Length(word) = 0 then
-        return [];
-    fi;
-
-    one := PregroupOf(word[1])[1];
-    rw := ShallowCopy(word);
-
-    for i in [2..Length(rw)] do
-        if rw[i-1] * rw[i] <> fail then
-            rw[i] := rw[i-1] * rw[i];
-            rw[i-1] := one;
-        fi;
-    od;
-
-    i := 1; j := 1;
-    rw2 := [];
-    while i <= Length(rw) do
-        if rw[i] <> one then
-            rw2[j] := rw[i];
-            j := j + 1;
-        fi;
-        i := i + 1;
-    od;
-
-    return rw2;
-end;
-
 #XXX Computes triples (a,b,c) that are infixes 
 #    of strings found here with appropriate numbers
 InstallMethod(ShortRedBlobIndex, "for a pregroup presentation",

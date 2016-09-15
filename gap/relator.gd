@@ -26,3 +26,4 @@ DeclareObject(
     );
 DeclareGlobalFunction("NewPregroupRelator");
 
+DeclareGlobalFunction("ReduceUPregroupWord");
