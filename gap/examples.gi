@@ -240,7 +240,7 @@ ProfileSinglePres := function(len)
     r := RandomPregroupPresentation(Pregroup(trish_13_7), 2, len);
     t := NanosecondsSinceEpoch();
     ProfileLineByLine("anatph.gz");
-    OneStepReachablePlaces(r);
+    RSymTest(r, 1/12);
     UnprofileLineByLine();
     OutputAnnotatedCodeCoverageFiles("anatph.gz", "/home/makx/tmp/anatph");
     t := NanosecondsSinceEpoch() - t;
