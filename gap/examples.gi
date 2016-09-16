@@ -226,7 +226,7 @@ function(nsamples, prn)
 
 end);
 
-BenchmarkSinglePres := function(len)
+BenchmarkSinglePresOSR := function(len)
     local r,t;
     r := RandomPregroupPresentation(Pregroup(trish_13_7), 2, len);
     t := NanosecondsSinceEpoch();
@@ -235,12 +235,12 @@ BenchmarkSinglePres := function(len)
     return t / 1000000000.;
 end;
 
-ProfileSinglePres := function(len)
+ProfileSinglePresOSR := function(len)
     local r,t;
     r := RandomPregroupPresentation(Pregroup(trish_13_7), 2, len);
     t := NanosecondsSinceEpoch();
     ProfileLineByLine("anatph.gz");
-    RSymTest(r, 1/12);
+    OneStepReachablePlaces(r);
     UnprofileLineByLine();
     OutputAnnotatedCodeCoverageFiles("anatph.gz", "/home/makx/tmp/anatph");
     t := NanosecondsSinceEpoch() - t;
