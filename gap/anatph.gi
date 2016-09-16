@@ -110,7 +110,7 @@ end);
 InstallMethod(VertexGraph, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local v, vd, vg, e, loc, loc2, pg, p, ploc, ploc2, imp;
+    local v, vd, vg, e, loc, loc2, pg, p, ploc, ploc2, imp, i, backmap;
 
     pg := Pregroup(pres);
 
@@ -158,9 +158,21 @@ function(pres)
         fi;
         return false;
     end;
-
+    backmap := rec( l := EmptyPlist(Size(pg) * Size(pg) * 2)
+                  , mapf := function(t)
+                        local len;
+                        len := Size(pg);
+                        return __ID(t[1]) * (len * 2)
+                               + __ID(t[2]) * 2
+                               + t[3];
+                    end
+                  );
+    for i in [1..Length(v)] do
+        backmap.l[backmap.mapf(v[i])] := i;
+    od;
     vg := Digraph(v,e);
     SetDigraphVertexLabels(vg, v);
+    vg!.backmap := backmap;
     return vg;
 end);
 
@@ -205,7 +217,8 @@ function(pres)
     vtl := [];
 
     for v in DigraphVertices(vg) do
-        lv := HTCreate([0,0]);
+        lv := [];
+        # HTCreate([0,0]);
         vtl[v] := lv;
 
         vl := DigraphVertexLabel(vg, v);
@@ -218,38 +231,38 @@ function(pres)
                   dist := vgd[v2][v1];
                   if (v1l[3] = 0) and (v2l[3] = 0) then
                       if dist = 1 then
-                          HTAdd(lv, [v1, v2], 1/6);
+                          Add(lv, [v1, v2, 1/6]);
                       elif dist = 2 then
-                          HTAdd(lv, [v1, v2], 1/4);
+                          Add(lv, [v1, v2, 1/4]);
                       elif dist = 3 then
-                          HTAdd(lv, [v1, v2], 3/10);
+                          Add(lv, [v1, v2, 3/10]);
                       elif dist > 3 then
-                          HTAdd(lv, [v1, v2], 1/3);
+                          Add(lv, [v1, v2, 1/3]);
                       else
                           Error("this shouldn't happen");
                       fi;
                   elif (v1l[3] = 0) and (v2l[3] = 1) then
                       if dist = 0 then
-                          HTAdd(lv, [v1,v2], 0);
+                          Add(lv, [v1,v2, 0]);
                       elif dist = 1 then
-                          HTAdd(lv, [v1,v2], 1/6);
+                          Add(lv, [v1,v2, 1/6]);
                       elif dist > 1 then
-                          HTAdd(lv, [v1,v2], 1/4);
+                          Add(lv, [v1,v2, 1/4]);
                       else
                           Error("this shouldn't happen");
                       fi;
                   elif (v1l[3] = 1) and (v2l[3] = 0) then
                       if dist = 1 then
-                          HTAdd(lv, [v1,v2], 0);
+                          Add(lv, [v1,v2, 0]);
                       elif dist = 2 then
-                          HTAdd(lv, [v1,v2], 1/6);
+                          Add(lv, [v1,v2, 1/6]);
                       elif dist > 2 then
-                          HTAdd(lv, [v1,v2], 1/4);
+                          Add(lv, [v1,v2, 1/4]);
                       else
                           Error("this shouldn't happen");
                       fi;
                   elif (v1l[3] = 1) and (v2l[3] = 1) then
-                      HTAdd(lv, [v1,v2], 0);
+                      Add(lv, [v1,v2, 0]);
                       # what if dist=infinity (i.e. no path)
                   else
                       Error("this should not happen");
@@ -265,6 +278,14 @@ InstallGlobalFunction(Vertex,
 function(pres, v1, v, v2)
     local vt, t;
 
+#   t := HTValue(VertexTriples(pres)[v], [v1,v2]);
+#   if t <> fail then
+#       return t;
+#   else
+#       return 1/3;
+#   fi;
+    
+                
     #if v1 = fail then
     #    Error("v1 was fail");
     #fi;
@@ -389,13 +410,17 @@ end);
 # TODO: Use a map
 InstallGlobalFunction(VertexFor,
 function(vg, trip)
-    local v;
-    for v in DigraphVertices(vg) do
-        if DigraphVertexLabel(vg, v) = trip then
-            return v;
-        fi;
-    od;
-    return fail;
+    return vg!.backmap.l[vg!.backmap.mapf(trip)];
+
+    # Linear scan, is not too bad as long 
+    # Pregroup is small
+#   local v;
+#   for v in DigraphVertices(vg) do
+#       if DigraphVertexLabel(vg, v) = trip then
+#           return v;
+#       fi;
+#   od;
+#   return fail;
 end);
 
 # This is really "NoCheck"
