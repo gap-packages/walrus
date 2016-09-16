@@ -217,8 +217,7 @@ function(pres)
     vtl := [];
 
     for v in DigraphVertices(vg) do
-        lv := [];
-        # HTCreate([0,0]);
+        lv := HTCreate([0,0]);
         vtl[v] := lv;
 
         vl := DigraphVertexLabel(vg, v);
@@ -231,38 +230,38 @@ function(pres)
                   dist := vgd[v2][v1];
                   if (v1l[3] = 0) and (v2l[3] = 0) then
                       if dist = 1 then
-                          Add(lv, [v1, v2, 1/6]);
+                          HTAdd(lv, [v1, v2], 1/6);
                       elif dist = 2 then
-                          Add(lv, [v1, v2, 1/4]);
+                          HTAdd(lv, [v1, v2], 1/4);
                       elif dist = 3 then
-                          Add(lv, [v1, v2, 3/10]);
+                          HTAdd(lv, [v1, v2], 3/10);
                       elif dist > 3 then
-                          Add(lv, [v1, v2, 1/3]);
+                          HTAdd(lv, [v1, v2], 1/3);
                       else
                           Error("this shouldn't happen");
                       fi;
                   elif (v1l[3] = 0) and (v2l[3] = 1) then
                       if dist = 0 then
-                          Add(lv, [v1,v2, 0]);
+                          HTAdd(lv, [v1,v2], 0);
                       elif dist = 1 then
-                          Add(lv, [v1,v2, 1/6]);
+                          HTAdd(lv, [v1,v2], 1/6);
                       elif dist > 1 then
-                          Add(lv, [v1,v2, 1/4]);
+                          HTAdd(lv, [v1,v2], 1/4);
                       else
                           Error("this shouldn't happen");
                       fi;
                   elif (v1l[3] = 1) and (v2l[3] = 0) then
                       if dist = 1 then
-                          Add(lv, [v1,v2, 0]);
+                          HTAdd(lv, [v1,v2], 0);
                       elif dist = 2 then
-                          Add(lv, [v1,v2, 1/6]);
+                          HTAdd(lv, [v1,v2], 1/6);
                       elif dist > 2 then
-                          Add(lv, [v1,v2, 1/4]);
+                          HTAdd(lv, [v1,v2], 1/4);
                       else
                           Error("this shouldn't happen");
                       fi;
                   elif (v1l[3] = 1) and (v2l[3] = 1) then
-                      Add(lv, [v1,v2, 0]);
+                      HTAdd(lv, [v1,v2], 0);
                       # what if dist=infinity (i.e. no path)
                   else
                       Error("this should not happen");
@@ -278,12 +277,12 @@ InstallGlobalFunction(Vertex,
 function(pres, v1, v, v2)
     local vt, t;
 
-#   t := HTValue(VertexTriples(pres)[v], [v1,v2]);
-#   if t <> fail then
-#       return t;
-#   else
-#       return 1/3;
-#   fi;
+   t := HTValue(VertexTriples(pres)[v], [v1,v2]);
+   if t <> fail then
+       return t;
+   else
+       return 1/3;
+   fi;
     
                 
     #if v1 = fail then
