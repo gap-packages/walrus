@@ -10,6 +10,7 @@ function(pres, word, id)
                      rec( pres := pres
                         , base := maxk[1]
                         , exponent := maxk[2]
+                        , baselen := Length(maxk[1])
                         , __ID := id)
                     );
 end);
@@ -28,6 +29,7 @@ InstallMethod(Inverse, "for a pregroup relator",
                              rec( pres := r!.pres
                                 , base := List(Reversed(r!.base), PregroupInverse)
                                 , exponent := r!.exponent
+                                , baselen := r!.baselen
                                 , __ID := -r!.__ID)
                             ));
 InstallMethod(Presentation,
@@ -38,17 +40,16 @@ InstallMethod(Presentation,
 InstallMethod(Locations, "for a pregroup relator",
               [IsPregroupRelator],
 function(r)
-    return List([1..Length(Base(r))], i -> NewLocation(r, i));
+    return List([1..r!.baselen], i -> NewLocation(r, i));
 end);
 
 InstallMethod(\[\], "for a pregroup relator",
               [IsPregroupRelator and IsPregroupRelatorRep, IsInt],
 function(r, p)
     local i, l;
-    l := Length(r!.base);
-    i := RemInt(p - 1, l);
+    i := RemInt(p - 1, r!.baselen);
     if i < 0 then
-        i := i + l;
+        i := i + r!.baselen;
     fi;
     return r!.base[i + 1];
 end);
@@ -56,7 +57,7 @@ end);
 InstallMethod(Length, "for a pregroup relator",
     [IsPregroupRelator],
 function(r)
-    return Length(r!.base) * r!.exponent;
+    return r!.baselen * r!.exponent;
 end);
 
 # we could possibly store this on creation
