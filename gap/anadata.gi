@@ -94,23 +94,42 @@ function(l, pos, len)
     return r;
 end);
 
+coordinateF := function(ql, key)
+    local i, cc, res;
+    cc := 1;
+    res := 0;
+    for i in [1..Length(ql)] do
+        res := res + cc * (key[i] - 1);
+        cc := cc * ql[i];
+    od;
+    return res + 1;
+end;
+
+
 InstallGlobalFunction( IndexMinEnter,
 function(idx, key, value)
-    local i, it;
+    local it;
 
-    it := idx;
-    for i in key do
-        if not IsBound(it[i]) then
-            it[i] := [];
-        fi;
-        it := it[i];
-    od;
+    it := coordinateF(idx[Length(idx)], key);
+    idx[it] := Minimum(idx[it], value);
+    return;
 
-    if it = [] then
-        it[1] := value;
-    else
-        it[1] := Minimum(it[1], value);
+
+    it := HTUpdate(idx, key, value);
+    if it = fail then
+        HTAdd(idx, key, value);
+    elif it < value then
+        HTUpdate(idx, key, it);
     fi;
+
+    return;
+
+#   it := HTValue(idx, key);
+#   if it = fail then
+#       HTAdd(idx, k, value);
+#   elif value < it then
+#       HTUpdate(idx, key, value);
+#   fi;
 end);
 
 InstallGlobalFunction( EnterAllSubwords,
@@ -122,3 +141,6 @@ function(idx, word, value)
         IndexMinEnter(idx, ww{ CyclicSubList(pos, i, 3) }, value);
     od;
 end);
+
+
+

@@ -110,7 +110,7 @@ end);
 InstallMethod(VertexGraph, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local v, vd, vg, e, loc, loc2, pg, p, ploc, ploc2, imp, i, backmap;
+    local v, vd, vg, e, loc, loc2, pg, p, ploc, ploc2, imp, i, backmap, len;
 
     pg := Pregroup(pres);
 
@@ -158,17 +158,14 @@ function(pres)
         fi;
         return false;
     end;
-    backmap := rec( l := EmptyPlist(Size(pg) * Size(pg) * 2)
-                  , mapf := function(t)
-                        local len;
-                        len := Size(pg);
-                        return __ID(t[1]) * (len * 2)
-                               + __ID(t[2]) * 2
-                               + t[3];
-                    end
-                  );
+    len := Size(pg);
+    backmap := ListWithIdenticalEntries(len * len * 2 + 1, 0);
+    backmap[Length(backmap)] := [len, len, 2];
     for i in [1..Length(v)] do
-        backmap.l[backmap.mapf(v[i])] := i;
+        backmap[
+                 coordinateF( backmap[Length(backmap)]
+                            , [__ID(v[i][1]), __ID(v[i][2]), v[i][3] + 1] )
+            ] := i;
     od;
     vg := Digraph(v,e);
     SetDigraphVertexLabels(vg, v);
@@ -315,7 +312,11 @@ function(pres)
     pg := Pregroup(pres);
     n := Size(pg);
     imm := IntermultMap(pg);
-    index := [];
+
+    index := ListWithIdenticalEntries(n ^ 3 + 1, 5/14);
+    index[Length(index)] := [n,n,n];
+        #HTCreate([0,0,0], rec( hashlen := NextPrimeInt(Size(Pregroup(pres)) ^ 3 )));
+
     cand := [[2..n]];
 
     nonrletts := [];
@@ -391,9 +392,18 @@ InstallMethod(Blob, "for a pregroup presentation, an element, an element, and an
                 , IsElementOfPregroup
                 , IsElementOfPregroup ],
 function(pres, a, b, c)
-    local it;
+    local it, v, n;
 
+    n := Size(Pregroup(pres));
     it := ShortRedBlobIndex(pres);
+    return it[coordinateF([n,n,n], [__ID(a), __ID(b), __ID(c)])];
+
+    v := HTValue(it, [__ID(a), __ID(b), __ID(c)]);
+    if v = fail then
+        v := 5/14;
+    fi;
+    return v;
+
     if IsBound(it[__ID(a)]) then
         it := it[__ID(a)];
         if IsBound(it[__ID(b)]) then
@@ -409,7 +419,9 @@ end);
 # TODO: Use a map
 InstallGlobalFunction(VertexFor,
 function(vg, trip)
-    return vg!.backmap.l[vg!.backmap.mapf(trip)];
+    local ltrip;
+    ltrip := [__ID(trip[1]), __ID(trip[2]), trip[3] + 1];
+    return vg!.backmap[coordinateF(vg!.backmap[Length(vg!.backmap)], ltrip)];
 
     # Linear scan, is not too bad as long 
     # Pregroup is small
