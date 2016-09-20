@@ -526,68 +526,6 @@ function(pres)
         until (OutLetter(r1_loc) <> InLetter(r2_loc))
               or (length = (r1_length - 1));
         return res;
-
-#       # Old code left here for reference. to be deleted
-#
-#       # local P, pos, res, i, j, l, r1, r2, e, f, length, r1_loc, r2_loc, r1_length;
-#       r1 := Relator(loc1);
-#       r2 := Relator(loc2);
-#
-# If relators are not ligned up, they can be next to each other!
-#        if r1 = Inverse(r2) then
-#            return [];
-#        fi;
-#
-#       i := Position(loc1);
-#       j := Position(loc2) - 1;
-#
-#       res := [];
-#       pos := [];
-#
-#       l := 1;
-#
-#       # Compute a list of positions on r1 and r2
-#       # that can be reached by a consolidated edge
-#       # together with the length of that edge
-#       while (r1[i] = PregroupInverse(r2[j]))
-#             and (l < Length(r1)) do
-#           Add(pos, [i+1, j, l]);
-#           i := i + 1; j := j - 1; l := l + 1;
-#       od;
-#
-#       # One of the relators is completely cancelled by the other
-#       # this should probably not happen?
-#       if (l = Length(r1)) or (l = Length(r2)) then
-#           Info(InfoANATPH, 20
-#                , "Relators ", ViewString(r1), " and ", ViewString(r2)
-#                , " cancelled completely, disregarding");
-#           return [];
-#       fi;
-#
-#       # need to be careful here with power/exponent rep of
-#       # relators, the positions we stored above are on the
-#       # relator, to get to positions for locations, we need
-#       # to do the modulo dance.
-#       #T prettier soloution: we should be able to get the Location
-#       #T of relator[i] directly
-#       e := Length(Base(r1));
-#       f := Length(Base(r2));
-#
-#       for P in Places(r1) do
-#           for l in pos do
-#               if Position(Location(P)) = ((l[1] - 1) mod e) + 1 then
-#                   # Hack.
-#                   while l[2] < 0 do
-#                       l[2] := l[2] + Length(r2);
-#                   od;
-#                   Add(res, [ P
-#                            , Locations(r2)[((l[2] - 1) mod f) + 1]
-#                            , l[3]]);
-#               fi;
-#           od;
-#       od;
-#
-#       return res;
     end;
 
     # P is the place we're working on
