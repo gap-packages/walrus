@@ -45,10 +45,10 @@
 #
 # Some notes on the implementation
 #
-# - Stored curvature is always "negative curvature", so in most cases a 
+# - Stored curvature is always "negative curvature", so in most cases a
 #   positive value.
 # - Curvature values are stored as rationals at first, later converted to
-#   floats. This might not be the best way to do this (we might want to 
+#   floats. This might not be the best way to do this (we might want to
 #   always use rationals or always use floats)
 #
 
@@ -280,8 +280,8 @@ function(pres, v1, v, v2)
    else
        return 1/3;
    fi;
-    
-                
+
+
     #if v1 = fail then
     #    Error("v1 was fail");
     #fi;
@@ -301,7 +301,7 @@ function(pres, v1, v, v2)
     return fail;
 end);
 
-#XXX Computes triples (a,b,c) that are infixes 
+#XXX Computes triples (a,b,c) that are infixes
 #    of strings found here with appropriate numbers
 InstallMethod(ShortRedBlobIndex, "for a pregroup presentation",
               [IsPregroupPresentation],
@@ -423,7 +423,7 @@ function(vg, trip)
     ltrip := [__ID(trip[1]), __ID(trip[2]), trip[3] + 1];
     return vg!.backmap[coordinateF(vg!.backmap[Length(vg!.backmap)], ltrip)];
 
-    # Linear scan, is not too bad as long 
+    # Linear scan, is not too bad as long
     # Pregroup is small
 #   local v;
 #   for v in DigraphVertices(vg) do
@@ -620,7 +620,7 @@ function(pres, eps)
             L := [ [__ID(Ps), 0, 0, 0] ]; # This list is called L in the paper
             # This is the list of possible decompositions
             # The meaning of the components of the quadruples q is
-            # - q[1] is a place 
+            # - q[1] is a place
             # - q[2] is the distance of q[1] from Ps
             # - q[3] is the number of steps that q[1] is from Ps
             # - q[4] is a curvature value
