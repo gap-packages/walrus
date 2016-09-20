@@ -434,19 +434,6 @@ function(vg, trip)
 #   return fail;
 end);
 
-# This is really "NoCheck"
-LocationByPosition := function(rel, pos)
-    return Locations(rel)[((pos - 1) mod Length(Base(rel))) + 1];
-end;
-
-#T Pull out? Make an Operation on relators?
-NextPosition := function(loc)
-    local m;
-    m := Length(Base(Relator(loc)));
-    # This looks weird, our list indices are 1-based
-    return (Position(loc) mod m) + 1;
-end;
-
 InstallMethod(OneStepReachablePlaces, "for a pregroup presentation",
               [IsPregroupPresentation],
 function(pres)
@@ -502,9 +489,6 @@ function(pres)
     #  - places reachable from loc1 on Relator(loc1), and
     #  - the corresponding location on Relator(loc2)
     # by a consolidated edge between Relator(loc1) and Relator(loc2)
-    #
-    # At the moment we assume that OutLetter(loc1) = InLetter(loc2),
-    # better indexing would make this more efficent.
     ConsolidatedEdgePlaces := function(loc1, loc2)
         local res, length, r1_loc, r2_loc, r1_length;
 
