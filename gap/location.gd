@@ -11,6 +11,7 @@ DeclareObject( "IsPregroupLocation",
                , "InLetter", "OutLetter"
                , "Places"
                , "NextLocation"
+               , "PrevLocation"
                , "__ID" ],
                []);
 # IsPregroupRelator -> 

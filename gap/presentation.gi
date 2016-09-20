@@ -5,12 +5,16 @@
 ## Presentations
 InstallGlobalFunction(NewPregroupPresentation,
 function(pg, rels)
-    local res, rel;
+    local res;
 
-    res := rec();
-    res.pg := pg;
+    res := rec( pg := pg );
     res.rels := List([1..Length(rels)], x -> NewPregroupRelator(res, rels[x], x));
-    return Objectify(IsPregroupPresentationType, res);
+    # Orgh. Make sure Locations and Places are all computed for the moment
+    Objectify(IsPregroupPresentationType, res);
+    Locations(res);
+    Places(res);
+
+    return res;
 end);
 
 InstallMethod(ViewString
@@ -84,11 +88,11 @@ function(pres)
 
     locs := [];
     for rel in RelatorsAndInverses(pres) do
-        w := Base(rel);
-        Append(locs, List([1..Length(w)], i -> NewLocation(rel, i)));
+        Append(locs, Locations(rel));
     od;
 
     # Hack
+    # In particular this ID is ID within presentation
     for i in [1..Length(locs)] do
         locs[i]![5] := i;
     od;

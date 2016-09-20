@@ -471,7 +471,7 @@ function(pres)
               , res
               , xi1, xi2, binv, l, onv;
 
-        res := NewANAMap();
+        res := NewANAMap(pres);
         Lp := Letter(P);
 
         for Q in NextPlaces(P) do
@@ -506,73 +506,95 @@ function(pres)
     # At the moment we assume that OutLetter(loc1) = InLetter(loc2),
     # better indexing would make this more efficent.
     ConsolidatedEdgePlaces := function(loc1, loc2)
-        local P, pos, res, i, j, l, r1, r2, e, f;
+        local res, length, r1_loc, r2_loc, r1_length;
 
-        r1 := Relator(loc1);
-        r2 := Relator(loc2);
+        res := [];
+        length := 0;
 
+        r1_loc := loc1;
+        r2_loc := PrevLocation(loc2);
+        r1_length := Length(Relator(loc1));
+
+        if OutLetter(r1_loc) <> InLetter(r2_loc) then
+            return [];
+        fi;
+        repeat
+            length := length + 1;
+            Append(res, List(Places(r1_loc), x->[x, r2_loc, length]));
+            r1_loc := NextLocation(r1_loc);
+            r2_loc := PrevLocation(r2_loc);
+        until (OutLetter(r1_loc) <> InLetter(r2_loc))
+              or (length = (r1_length - 1));
+        return res;
+
+#       # Old code left here for reference. to be deleted
+#
+#       # local P, pos, res, i, j, l, r1, r2, e, f, length, r1_loc, r2_loc, r1_length;
+#       r1 := Relator(loc1);
+#       r2 := Relator(loc2);
+#
 # If relators are not ligned up, they can be next to each other!
 #        if r1 = Inverse(r2) then
 #            return [];
 #        fi;
-
-        i := Position(loc1);
-        j := Position(loc2) - 1;
-
-        res := [];
-        pos := [];
-
-        l := 1;
-
-        # Compute a list of positions on r1 and r2
-        # that can be reached by a consolidated edge
-        # together with the length of that edge
-        while (r1[i] = PregroupInverse(r2[j]))
-              and (l < Length(r1)) do
-            Add(pos, [i+1, j, l]);
-            i := i + 1; j := j - 1; l := l + 1;
-        od;
-
-        # One of the relators is completely cancelled by the other
-        # this should probably not happen?
-        if (l = Length(r1)) or (l = Length(r2)) then
-            Info(InfoANATPH, 20
-                 , "Relators ", ViewString(r1), " and ", ViewString(r2)
-                 , " cancelled completely, disregarding");
-            return [];
-        fi;
-
-        # need to be careful here with power/exponent rep of
-        # relators, the positions we stored above are on the
-        # relator, to get to positions for locations, we need
-        # to do the modulo dance.
-        #T prettier soloution: we should be able to get the Location
-        #T of relator[i] directly
-        e := Length(Base(r1));
-        f := Length(Base(r2));
-
-        for P in Places(r1) do
-            for l in pos do
-                if Position(Location(P)) = ((l[1] - 1) mod e) + 1 then
-                    # Hack.
-                    while l[2] < 0 do
-                        l[2] := l[2] + Length(r2);
-                    od;
-                    Add(res, [ P
-                             , Locations(r2)[((l[2] - 1) mod f) + 1]
-                             , l[3]]);
-                fi;
-            od;
-        od;
-
-        return res;
+#
+#       i := Position(loc1);
+#       j := Position(loc2) - 1;
+#
+#       res := [];
+#       pos := [];
+#
+#       l := 1;
+#
+#       # Compute a list of positions on r1 and r2
+#       # that can be reached by a consolidated edge
+#       # together with the length of that edge
+#       while (r1[i] = PregroupInverse(r2[j]))
+#             and (l < Length(r1)) do
+#           Add(pos, [i+1, j, l]);
+#           i := i + 1; j := j - 1; l := l + 1;
+#       od;
+#
+#       # One of the relators is completely cancelled by the other
+#       # this should probably not happen?
+#       if (l = Length(r1)) or (l = Length(r2)) then
+#           Info(InfoANATPH, 20
+#                , "Relators ", ViewString(r1), " and ", ViewString(r2)
+#                , " cancelled completely, disregarding");
+#           return [];
+#       fi;
+#
+#       # need to be careful here with power/exponent rep of
+#       # relators, the positions we stored above are on the
+#       # relator, to get to positions for locations, we need
+#       # to do the modulo dance.
+#       #T prettier soloution: we should be able to get the Location
+#       #T of relator[i] directly
+#       e := Length(Base(r1));
+#       f := Length(Base(r2));
+#
+#       for P in Places(r1) do
+#           for l in pos do
+#               if Position(Location(P)) = ((l[1] - 1) mod e) + 1 then
+#                   # Hack.
+#                   while l[2] < 0 do
+#                       l[2] := l[2] + Length(r2);
+#                   od;
+#                   Add(res, [ P
+#                            , Locations(r2)[((l[2] - 1) mod f) + 1]
+#                            , l[3]]);
+#               fi;
+#           od;
+#       od;
+#
+#       return res;
     end;
 
     # P is the place we're working on
     OneStepGreenCase := function(P)
         local L, L2, b, c, loc, pls, is_consoledge, v, v1, v2, xi1, xi2,
               R, R2, P2, P2s, P2T, i, j, next, res, len, n, l;
-        res := NewANAMap();
+        res := NewANAMap(pres);
 
         L := Location(P);
         b := OutLetter(L);
@@ -612,8 +634,10 @@ function(pres)
                         elif Colour(P2) = "red" then
                             next := OneStepRedCase(P2);
                             # testhack
-                            for n in BoundPositions(next![1]) do
-                                AddOrUpdate(res, places[n], len + 1, xi1 + next![1][n][1]);
+                            for n in Keys(next) do
+                                AddOrUpdate(res,
+                                            places[n[1]],
+                                            len + 1, xi1 + Lookup(next, places[n[1]], n[2]));
                             od;
                         else
                             Error("Invalid colour");

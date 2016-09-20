@@ -51,11 +51,26 @@ InstallMethod(NextLocation, "for a location",
 function(l)
     local loc;
 
+    # All locations on the relator that l is on
     loc := Locations(l![1]);
     if l![2] < Length(loc) then
         return loc[l![2] + 1];
     else
         return loc[1];
+    fi;
+end);
+
+InstallMethod(PrevLocation, "for a location",
+              [ IsPregroupLocationRep ],
+function(l)
+    local loc;
+
+    # All locations on the relator that l is on
+    loc := Locations(l![1]);
+    if l![2] > 1 then
+        return loc[l![2] - 1];
+    else
+        return loc[Length(loc)];
     fi;
 end);
 

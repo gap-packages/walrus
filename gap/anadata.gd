@@ -14,6 +14,7 @@ DeclareOperation("AddOrUpdate", [IsANAMap, IsObject, IsObject, IsObject]);
 DeclareOperation("Merge", [IsANAMap, IsANAMap]);
 DeclareOperation("Keys", [IsANAMap]);
 DeclareOperation("Values", [IsANAMap]);
+DeclareOperation("Lookup", [IsANAMap, IsObject, IsObject]);
 DeclareOperation("Merge", [IsANAMap, IsANAMap] );
 
 #X Make this into a proper datastructure

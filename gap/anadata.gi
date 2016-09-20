@@ -1,31 +1,62 @@
 
+coordinateF := function(ql, key)
+    local i, cc, res;
+    cc := 1;
+    res := 0;
+    for i in [1..Length(ql)] do
+        res := res + cc * (key[i] - 1);
+        cc := cc * ql[i];
+    od;
+    return res + 1;
+end;
+
 InstallGlobalFunction(NewANAMap,
-function()
-    return Objectify(ANAMapListType, [[]]);
+function(pres)
+    local res, x, y;
+
+    x := Length(Places(pres));
+    y := Maximum(List(Relators(pres), Length));
+
+    res := [];
+
+    res[1] := ListWithIdenticalEntries(x * y + 1, infinity);
+    res[2] := [x,y];
+    res[3] := [];
+
+    return Objectify(ANAMapListType, res);
 end);
 
 # Far from universal of course.
 InstallMethod(AddOrUpdate, "for an anamap",
               [IsANAMap and IsANAMapListRep, IsPregroupPlace, IsInt, IsRat ],
 function(map, place, length, val)
-    if IsBound(map![1][__ID(place)]) then
-        if IsBound(map![1][__ID(place)][length]) then
-            if map![1][__ID(place)][length] > val then
-                map![1][__ID(place)][length] := val;
-            fi;
-        else
-            map![1][__ID(place)][length] := val;
-        fi;
-    else
-        map![1][__ID(place)] := [];
-        map![1][__ID(place)][length] := val;
+    local coord, v;
+
+    coord := coordinateF(map![2], [__ID(place), length]);
+    v := map![1][coord];
+    map![1][coord] := Minimum(v, val);
+    if v = infinity then
+        AddSet(map![3], [__ID(place), length]);
     fi;
+    
+#   if IsBound(map![1][__ID(place)]) then
+#       if IsBound(map![1][__ID(place)][length]) then
+#           if map![1][__ID(place)][length] > val then
+#               map![1][__ID(place)][length] := val;
+#           fi;
+#       else
+#           map![1][__ID(place)][length] := val;
+#       fi;
+#   else
+#       map![1][__ID(place)] := [];
+#       map![1][__ID(place)][length] := val;
+#   fi;
 end);
 
 
 InstallMethod(Keys, "for an anamap",
               [IsANAMap and IsANAMapListRep],
-              map -> BoundPositions(map![1])
+              map -> map![3]
              );
 
 InstallMethod(Values, "for an anamap",
@@ -41,6 +72,16 @@ function(map)
     od;
     return res;
 end);
+
+InstallMethod(Lookup, "for an anamap",
+              [IsANAMap and IsANAMapListRep, IsPregroupPlace, IsInt],
+function(map, place, length)
+    local coord;
+
+    coord := coordinateF(map![2], [__ID(place), length]);
+    return map![1][coord];
+end);
+
 
 
 # this is essentially useless
@@ -93,18 +134,6 @@ function(l, pos, len)
 
     return r;
 end);
-
-coordinateF := function(ql, key)
-    local i, cc, res;
-    cc := 1;
-    res := 0;
-    for i in [1..Length(ql)] do
-        res := res + cc * (key[i] - 1);
-        cc := cc * ql[i];
-    od;
-    return res + 1;
-end;
-
 
 InstallGlobalFunction( IndexMinEnter,
 function(idx, key, value)

@@ -4,15 +4,16 @@
 
 InstallGlobalFunction(NewPregroupRelator,
 function(pres, word, id)
-    local maxk;
+    local maxk, rel;
     maxk := MaxPowerK(word);
-    return Objectify(IsPregroupRelatorType,
+    rel := Objectify(IsPregroupRelatorType,
                      rec( pres := pres
                         , base := maxk[1]
                         , exponent := maxk[2]
                         , baselen := Length(maxk[1])
                         , __ID := id)
                     );
+    return rel;
 end);
 
 InstallMethod(Base, "for a pregroup relator",
@@ -96,7 +97,7 @@ InstallMethod(\=, "for a pregroup relator, and a pregroup relator",
 function(l,r)
     # id is uniqe wrt pregroup presentation. We should probably
     # make a family of relators for each presentation etc
-    # return l!.__ID = r!.__ID;
+    return l!.__ID = r!.__ID;
     return (l!.exponent = r!.exponent)
            and (l!.base = r!.base);
 end);
