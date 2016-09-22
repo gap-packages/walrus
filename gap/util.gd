@@ -3,3 +3,6 @@
 #
 DeclareGlobalFunction("MaxPowerK");
 DeclareGlobalFunction("MaxPowerK2");
+
+DeclareGlobalFunction("AnatphTestStandard");
+

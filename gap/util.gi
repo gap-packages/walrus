@@ -67,3 +67,8 @@ function(rel)
     od;
 end);
 
+InstallGlobalFunction(AnatphTestStandard,
+function()
+    List(DirectoriesPackageLibrary("anatph", "tst/standard"), TestDirectory);
+end);
+
