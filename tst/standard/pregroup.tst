@@ -1,16 +1,20 @@
-gap> START_TEST("ANATPH: pregroup tests");
-gap> PregroupByTable("1xyY", x -> x^(2,3), [[1]]);
-Error, PregroupByTable: Length of enams does not match number of rows in table
-gap> PregroupByTable("1xyY", x -> x^(2,3), [[],[],[],[]]);
-Error, PregroupByTable: Multiplication table is not square
-gap> PregroupByTable("1xyY", x -> x^(2,3), [[1,2,3,4],[1,2,3,4],[1,2,3,4],[1,2,3,4]]);
-Error, PregroupByTable: 2*1 = 2 or 1*2 = 2 not satisfied
-gap> PregroupByTable("1xyY", x -> x^(2,3), [[1,2,3,4],[2,2,3,4],[3,2,3,4],[4,2,3,4]]);
-Error, PregroupByTable: inverses
-gap> p := PregroupByTable("1xyY", x -> x^(3,4), [[1,2,3,4],[2,1,0,0],[3,0,4,1],[4,0,1,3]]);
+gap> START_TEST("ANATPH: presentation tests");
+gap> T := TriangleGroup(2,3,7);
+<pregroup presentation with 3 generators and 1 relators>
+gap> Pregroup(T);
 <pregroup with 4 elements in table rep>
-gap> p[1] * p[2];
-'x'
-gap> p[2] * p[3];
-fail
-gap> STOP_TEST("ANATPH: pregroup tests", 1000);
+gap> Relators(T);
+[ <pregroup relator ([ "[ 2, (1,2) ]", "[ 3, (1,2,3) ]" ])^7> ]
+gap> RelatorsAndInverses(T);
+[ <pregroup relator ([ "[ 2, (1,2) ]", "[ 3, (1,2,3) ]" ])^7>, 
+  <pregroup relator ([ "[ 3, (1,3,2) ]", "[ 2, (1,2) ]" ])^7> ]
+gap> Locations(T);
+[ <pregroup relator ([ "[ 2, (1,2) ]", "[ 3, (1,2,3) ]" ])^7>(1,[ 3, (1,2,
+   3) ],[ 2, (1,2) ]), <pregroup relator ([ "[ 2, (1,2) ]", "[ 3, (1,2,
+   3) ]" ])^7>(2,[ 2, (1,2) ],[ 3, (1,2,3) ]), <pregroup relator ([ "[ 3, (1,
+   3,2) ]", "[ 2, (1,2) ]" ])^7>(1,[ 2, (1,2) ],[ 3, (1,3,2) ]), 
+  <pregroup relator ([ "[ 3, (1,3,2) ]", "[ 2, (1,2) ]" ])^7>(2,[ 3, (1,3,
+   2) ],[ 2, (1,2) ]) ]
+gap> Length(Places(T));
+4
+gap> STOP_TEST("ANATPH: presentation tests", 1000);
