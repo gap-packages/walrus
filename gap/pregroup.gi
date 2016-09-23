@@ -195,7 +195,7 @@ function(pg)
     return pairs;
 end);
 
-InstallMethod(IntermultPairsIds
+InstallMethod(IntermultPairsIDs
              , "for a pregroup in table rep"
              , [IsPregroupTableRep],
 function(pg)
@@ -222,7 +222,7 @@ function(pg)
     return pairs;
 end);
 
-InstallMethod(IntermultMap
+InstallMethod(IntermultMapIDs
              , "for a pregroup in table rep"
              , [IsPregroupTableRep],
 function(pg)
@@ -251,6 +251,13 @@ function(pg)
         od;
     od;
     return map;
+end);
+
+InstallMethod(IntermultMapIDs
+             , "for a pregroup in table rep"
+             , [IsPregroupTableRep],
+function(pg)
+    return List(IntermultMapIDs(pg), x -> List(x, i -> pg[i]));
 end);
 
 InstallMethod(IntermultTable

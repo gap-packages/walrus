@@ -21,12 +21,12 @@ DeclareGlobalFunction("PregroupInversesFromTable");
 DeclareOperation("[]", [IsPregroupTableRep, IsInt]);
  DeclareAttribute("Size", IsPregroup);
 DeclareAttribute("IntermultPairs", IsPregroup);
-DeclareAttribute("IntermultPairsIds", IsPregroup);
+DeclareAttribute("IntermultPairsIDs", IsPregroup);
 DeclareAttribute("IntermultMap", IsPregroup);
+DeclareAttribute("IntermultMapIDs", IsPregroup);
 DeclareAttribute("IntermultTable", IsPregroup);
 DeclareAttribute("One", IsPregroup);
 DeclareAttribute("PregroupElementNames", IsPregroup);
-
 
 
 # Elements of Pregroups

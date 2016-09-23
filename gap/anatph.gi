@@ -311,7 +311,7 @@ function(pres)
 
     pg := Pregroup(pres);
     n := Size(pg);
-    imm := IntermultMap(pg);
+    imm := IntermultMapIDs(pg);
 
     index := ListWithIdenticalEntries(n ^ 3 + 1, 5/14);
     index[Length(index)] := [n,n,n];
