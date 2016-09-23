@@ -10,7 +10,7 @@ InstallGlobalFunction(PregroupByTableNC,
 function(enams, inv, table)
     local r,e;
 
-    r := rec( enams := enams
+    r := rec( PregroupElementNames := enams
             , inv := inv
             , table := table );
     r.fam := NewFamily( "PregroupElementsFamily", IsElementOfPregroup );
@@ -20,7 +20,9 @@ function(enams, inv, table)
     for e in [1..Length(r.elts)] do
         r.elts[e]!.inv := r.elts[inv(e)];
     od;
-    return Objectify(PregroupByTableType, r);
+    Objectify(PregroupByTableType, r);
+    SetPregroupElementNames(r, enams);
+    return r;
 end);
 
 InstallGlobalFunction(PregroupInversesFromTable,
@@ -33,7 +35,7 @@ function(table)
             if table[i][j] = 1 then
                 if IsBound(inv[i]) then
                     if inv[i] <> j then
-                        Error("");
+                        Error("inverses not well-defined");
                     fi;
                 else
                     inv[i] := j;
@@ -41,12 +43,16 @@ function(table)
             fi;
         od;
     od;
-    return x -> x^PermList(inv);
+    inv := PermList(inv);
+    if inv = fail then
+        Error("inverses not well-defined");
+    fi;
+    return x -> x^inv;
 end);
 
 InstallGlobalFunction(PregroupByTable,
-function(enams, inv, table)
-    local nels, row, e, f, g, h;
+function(enams, table)
+    local nels, inv, row, e, f, g, h;
 
     # We assume that the length of the list of
     # element names is the number of elements
@@ -65,6 +71,8 @@ function(enams, inv, table)
             fi;
         od;
     od;
+
+    inv := PregroupInversesFromTable(table);
     for e in [1..nels] do
         if inv(inv(e)) <> e then
             Error("PregroupByTable: inv needs to be an involution");
@@ -147,14 +155,14 @@ InstallMethod(ViewString
              , "for a pregroup in table rep"
              , [IsPregroupTableRep],
 function(pg)
-    return STRINGIFY("<pregroup with ", Length(pg!.enams), " elements in table rep>");
+    return STRINGIFY("<pregroup with ", Size(pg), " elements in table rep>");
 end);
 
 InstallMethod(Size
              , "for a pregroup in table rep"
              , [IsPregroupTableRep],
 function(pg)
-    return Length(pg!.enams);
+    return Length(pg!.elts);
 end);
 
 #XXX at the moment [1,x] and [x,1] intermult, but I don't think
@@ -167,13 +175,13 @@ function(pg)
     local i, j, k, pairs;
 
     pairs := [];
-    for i in [2..Length(pg!.enams)] do
-        for j in [2..Length(pg!.enams)] do
+    for i in [2..Size(pg)] do
+        for j in [2..Size(pg)] do
             if (i <> pg!.inv(j)) then
                 if (pg!.table[i][j] > 0) then
                     Add(pairs, [pg[i],pg[j]]);
                 else
-                    for k in [2..Length(pg!.enams)] do
+                    for k in [2..Size(pg)] do
                         if (pg!.table[i][k] > 0) and
                            (pg!.table[pg!.inv(k)][j] > 0) then
                             Add(pairs, [pg[i],pg[j]]);
@@ -184,7 +192,6 @@ function(pg)
             fi;
         od;
     od;
-
     return pairs;
 end);
 
@@ -195,13 +202,13 @@ function(pg)
     local i, j, k, pairs;
 
     pairs := [];
-    for i in [2..Length(pg!.enams)] do
-        for j in [2..Length(pg!.enams)] do
+    for i in [2..Size(pg)] do
+        for j in [2..Size(pg)] do
             if (i <> pg!.inv(j)) then
                 if (pg!.table[i][j] > 0) then
                     Add(pairs, [i,j]);
                 else
-                    for k in [2..Length(pg!.enams)] do
+                    for k in [2..Size(pg)] do
                         if (pg!.table[i][k] > 0) and
                            (pg!.table[pg!.inv(k)][j] > 0) then
                             Add(pairs, [i,j]);
@@ -226,13 +233,13 @@ function(pg)
         map[i] := [];
     od;
 
-    for i in [2..Length(pg!.enams)] do
-        for j in [2..Length(pg!.enams)] do
+    for i in [2..Size(pg)] do
+        for j in [2..Size(pg)] do
             if (i <> pg!.inv(j)) then
                 if (pg!.table[i][j] > 0) then
                     Add(map[i], j);
                 else
-                    for k in [2..Length(pg!.enams)] do
+                    for k in [2..Size(pg)] do
                         if (pg!.table[i][k] > 0) and
                            (pg!.table[pg!.inv(k)][j] > 0) then
                             Add(map[i],j);
@@ -257,14 +264,14 @@ function(pg)
         map[i] := [false];
     od;
 
-    for i in [2..Length(pg!.enams)] do
-        for j in [2..Length(pg!.enams)] do
+    for i in [2..Size(pg)] do
+        for j in [2..Size(pg)] do
             map[i][j] := false;
             if (i <> pg!.inv(j)) then
                 if (pg!.table[i][j] > 0) then
                     map[i][j] := true;
                 else
-                    for k in [2..Length(pg!.enams)] do
+                    for k in [2..Size(pg)] do
                         if (pg!.table[i][k] > 0) and
                           (pg!.table[pg!.inv(k)][j] > 0) then
                             map[i][j] := true;
@@ -290,7 +297,7 @@ InstallMethod(ViewString
              , [IsElementOfPregroupRep],
 function(pge)
     if pge!.elt > 0 then
-        return pge!.parent!.enams[pge!.elt];
+        return PregroupElementNames(pge!.parent)[pge!.elt];
     else
         return "undefined";
     fi;
@@ -428,9 +435,8 @@ end);
 InstallGlobalFunction(PregroupFromFreeProduct,
 function(G1, G2, alm)
     local e1, e2, sgp, tbl, elts, nelts, a, b,
-          pa, pb, s1p, s2p, pr, invs,
-          sgpi, s1pi, s2pi, sgpp
-          , eltn                          # Names for elements
+          pa, pb, s1p, s2p, pr, sgpi, s1pi,
+          s2pi, sgpp, eltn       # Names for elements
     ;
 
     # Subgroup of G1 and G2 that we amalgamate
@@ -441,7 +447,6 @@ function(G1, G2, alm)
     s2p := List(Difference(Elements(G2), sgpp), x -> [3,x]);
     elts := Concatenation(sgp,s1p,s2p);
     eltn := List(elts, x -> ViewString(x));
-    invs := List(elts, x -> Position(elts, [x[1],x[2]^-1] ));
 
     nelts := Length(elts);
 
@@ -478,7 +483,7 @@ function(G1, G2, alm)
             tbl[pa][pb] := pr;
         od;
     od;
-    return PregroupByTable( eltn, x -> x ^ SortingPerm(invs), tbl);
+    return PregroupByTable(eltn, tbl);
 end);
 
 InstallGlobalFunction(PregroupOfFreeGroup,

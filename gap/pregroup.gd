@@ -25,6 +25,8 @@ DeclareAttribute("IntermultPairsIds", IsPregroup);
 DeclareAttribute("IntermultMap", IsPregroup);
 DeclareAttribute("IntermultTable", IsPregroup);
 DeclareAttribute("One", IsPregroup);
+DeclareAttribute("PregroupElementNames", IsPregroup);
+
 
 
 # Elements of Pregroups

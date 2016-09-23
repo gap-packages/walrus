@@ -235,9 +235,9 @@ BenchmarkSinglePresOSR := function(len)
     return t / 1000000000.;
 end;
 
-ProfileSinglePresOSR := function(len)
+ProfileSinglePresOSR := function(pg, nrel, len)
     local r,t;
-    r := RandomPregroupPresentation(Pregroup(trish_13_7), 2, len);
+    r := RandomPregroupPresentation(pg, nrel, len);
     t := NanosecondsSinceEpoch();
     ProfileLineByLine("anatph.gz");
     OneStepReachablePlaces(r);
