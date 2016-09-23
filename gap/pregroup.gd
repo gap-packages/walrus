@@ -29,6 +29,7 @@ DeclareAttribute("One", IsPregroup);
 DeclareAttribute("PregroupElementNames", IsPregroup);
 
 
+
 # Elements of Pregroups
 
 DeclareCategory("IsElementOfPregroup", IsMultiplicativeElement);
@@ -39,6 +40,7 @@ DeclareAttribute("PregroupOf", IsElementOfPregroup);
 DeclareOperation("IsDefinedMultiplication", [IsElementOfPregroup, IsElementOfPregroup]);
 DeclareOperation("IsIntermultPair", [IsElementOfPregroup, IsElementOfPregroup]);
 
+DeclareAttribute("IntermultMap", IsElementOfPregroup);
 DeclareAttribute("PregroupInverse", IsElementOfPregroup);
 DeclareAttribute("PregroupElementId", IsElementOfPregroup);
 DeclareAttribute("__ID", IsElementOfPregroup);

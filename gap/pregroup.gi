@@ -253,7 +253,7 @@ function(pg)
     return map;
 end);
 
-InstallMethod(IntermultMapIDs
+InstallMethod(IntermultMap
              , "for a pregroup in table rep"
              , [IsPregroupTableRep],
 function(pg)
@@ -299,6 +299,13 @@ InstallMethod(One, "for a pregroup",
 #
 # Pregroup elements
 #
+InstallMethod(IntermultMap
+             , "for a pregroup element"
+             , [IsElementOfPregroupRep],
+function(pge)
+    return IntermultMap(pge!.parent)[__ID(pge)];
+end);
+
 InstallMethod(ViewString
              , "for a pregroup element"
              , [IsElementOfPregroupRep],
