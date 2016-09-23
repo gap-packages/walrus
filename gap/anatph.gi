@@ -434,14 +434,42 @@ function(vg, trip)
 #   return fail;
 end);
 
+# Compute a list of
+#  - places reachable from loc1 on Relator(loc1), and
+#  - the corresponding location on Relator(loc2)
+# by a consolidated edge between Relator(loc1) and Relator(loc2)
+InstallGlobalFunction(ConsolidatedEdgePlaces,
+function(loc1, loc2)
+    local res, length, r1_loc, r2_loc, r1_length;
+
+    res := [];
+    length := 0;
+
+    r1_loc := loc1;
+    r2_loc := loc2;
+    r1_length := Length(Relator(loc1));
+
+    if OutLetter(r1_loc) <> PregroupInverse(InLetter(r2_loc)) then
+        Error("This shouldn't happen");
+#        return [];
+    fi;
+    repeat
+        length := length + 1;
+        Append(res, List(Places(r1_loc), x->[x, r2_loc, length]));
+        r1_loc := NextLocation(r1_loc);
+        r2_loc := PrevLocation(r2_loc);
+    until (OutLetter(r1_loc) <> PregroupInverse(InLetter(r2_loc)))
+          or (length = (r1_length - 1));
+    return res;
+end);
+
 InstallMethod(OneStepReachablePlaces, "for a pregroup presentation",
               [IsPregroupPresentation],
 function(pres)
     local rel, pl, P, Q, places, osr, curv, pows, gens, b, c, binv, rels, vg
           , OneStepRedCase
           , OneStepGreenCase
-          , OneStepByPlace
-          , ConsolidatedEdgePlaces;
+          , OneStepByPlace;
 
     gens := Generators(pres);
     places := Places(pres);
@@ -482,33 +510,6 @@ function(pres)
             od;
         od;
         # Note this list is not necessarily dense atm.
-        return res;
-    end;
-
-    # Compute a list of
-    #  - places reachable from loc1 on Relator(loc1), and
-    #  - the corresponding location on Relator(loc2)
-    # by a consolidated edge between Relator(loc1) and Relator(loc2)
-    ConsolidatedEdgePlaces := function(loc1, loc2)
-        local res, length, r1_loc, r2_loc, r1_length;
-
-        res := [];
-        length := 0;
-
-        r1_loc := loc1;
-        r2_loc := PrevLocation(loc2);
-        r1_length := Length(Relator(loc1));
-
-        if OutLetter(r1_loc) <> InLetter(r2_loc) then
-            return [];
-        fi;
-        repeat
-            length := length + 1;
-            Append(res, List(Places(r1_loc), x->[x, r2_loc, length]));
-            r1_loc := NextLocation(r1_loc);
-            r2_loc := PrevLocation(r2_loc);
-        until (OutLetter(r1_loc) <> InLetter(r2_loc))
-              or (length = (r1_length - 1));
         return res;
     end;
 
@@ -590,7 +591,7 @@ end);
 InstallMethod(RSymTest, "for a pregroup presentation, and a float",
               [IsPregroupPresentation, IsObject],
 function(pres, eps)
-    local i, j, rel, R,
+    local i, j, rel, R, pplaces,
           places, Ps, P, Q, Pq,
           osrp, # a one-step reachable place
           L,
@@ -605,8 +606,8 @@ function(pres, eps)
     Info(InfoANATPH, 10
          , "zeta: ", zeta);
 
-    osr := List(OneStepReachablePlaces(pres), Values);
-
+    pplaces := Places(pres);
+    osr := OneStepReachablePlaces(pres);
 
     for rel in Relators(pres) do
         Info(InfoANATPH, 20
@@ -630,17 +631,17 @@ function(pres, eps)
                 for Pq in L do      # Pq is for "PlaceQuadruple", which is
                                     # a silly name
                     if Pq[3] = i - 1 then  # Reachable in i - 1 steps
-                        for osrp in osr[Pq[1]] do
+                        for osrp in Keys(osr[Pq[1]]) do
                             if Pq[2] + osrp[2] <= Length(rel) then
                                 psip := Float(Pq[4])
                                         + osrp[2] * (1 + eps) / Length(rel)
                                         # storing positive values -> subtract here
-                                        - osrp[3];
+                                        - Lookup(osr[Pq[1]], pplaces[osrp[1]], osrp[2]);
                                 Info(InfoANATPH, 30
                                      , STRINGIFY("psi' = "
                                                 , Float(Pq[4]), " + "
                                                 , osrp[2] * (1+eps) / Length(rel), " - "
-                                                , osrp[3], " = "
+                                                , Lookup(osr[Pq[1]], pplaces[osrp[1]], osrp[2]), " = "
                                                 , psip)
                                     );
                                 if psip < 0.0 then

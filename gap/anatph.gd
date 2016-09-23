@@ -26,4 +26,6 @@ DeclareGlobalFunction("ShortBlobWords");
 # in vertex set for quick lookup
 DeclareGlobalFunction("VertexFor");
 
+DeclareGlobalFunction("ConsolidatedEdgePlaces");
+
 
