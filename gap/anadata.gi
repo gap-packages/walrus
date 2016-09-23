@@ -62,15 +62,7 @@ InstallMethod(Keys, "for an anamap",
 InstallMethod(Values, "for an anamap",
               [IsANAMap and IsANAMapListRep],
 function(map)
-    local res, p, q, m;
-    m := map![1];
-    res := [];
-    for p in BoundPositions(m) do
-        for q in BoundPositions(m[p]) do
-            Add(res, [p,q,m[p][q]]);
-        od;
-    od;
-    return res;
+    Error("not implemented");
 end);
 
 InstallMethod(Lookup, "for an anamap",
