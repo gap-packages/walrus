@@ -480,30 +480,34 @@ function(pres)
 
     OneStepRedCase := function(P)
         local Q, Ql
-              , b, c, y
+              , b, c, d, x, y
               , Lp
               , v, v1, v2
               , res
               , xi1, xi2, binv, l, onv;
 
         res := NewANAMap(pres);
-        Lp := Letter(P);
+        c := Letter(P);
 
         for Q in NextPlaces(P) do
             # same relator, one position up
             Ql := Location(Q);
-            b := InLetter(Ql);
-            c := OutLetter(Ql);
-            binv := PregroupInverse(b);
-            v := VertexFor(vg, [b, c, 0]);
+            b := InLetter(Ql); binv := PregroupInverse(b);
+            d := OutLetter(Ql);
+            x := Letter(Q);
+            v := VertexFor(vg, [b, d, 0]);
             onv := OutNeighboursOfVertex(vg, v);
 
             for y in IntermultMap(binv) do
                 v1 := VertexFor(vg, [y, binv, 1]);
-                xi1 := Blob(pres, y, binv, Lp);
+                xi1 := Blob(pres, y, binv, c);
                 for v2 in onv do
-                    xi2 := Vertex(pres, v1, v, v2);
-                    AddOrUpdate(res, Q, 1, xi1 + xi2);
+                    #T this check is new, and assuming the paper
+                    #T is accurate correct
+                    if DigraphVertexLabel(v2)[2] = x then
+                        xi2 := Vertex(pres, v1, v, v2);
+                        AddOrUpdate(res, Q, 1, xi1 + xi2);
+                    fi;
                 od;
             od;
         od;
