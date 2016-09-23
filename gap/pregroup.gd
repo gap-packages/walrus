@@ -16,6 +16,7 @@ BindGlobal("PregroupByTableType",
 
 DeclareGlobalFunction("PregroupByTableNC");
 DeclareGlobalFunction("PregroupByTable");
+DeclareGlobalFunction("PregroupInversesFromTable");
 
 DeclareOperation("[]", [IsPregroupTableRep, IsInt]);
  DeclareAttribute("Size", IsPregroup);

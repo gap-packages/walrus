@@ -23,6 +23,27 @@ function(enams, inv, table)
     return Objectify(PregroupByTableType, r);
 end);
 
+InstallGlobalFunction(PregroupInversesFromTable,
+function(table)
+    local i,j,inv;
+
+    inv := [];
+    for i in [1..Length(table)] do
+        for j in [1..Length(table[i])] do
+            if table[i][j] = 1 then
+                if IsBound(inv[i]) then
+                    if inv[i] <> j then
+                        Error("");
+                    fi;
+                else
+                    inv[i] := j;
+                fi;
+            fi;
+        od;
+    od;
+    return x -> x^PermList(inv);
+end);
+
 InstallGlobalFunction(PregroupByTable,
 function(enams, inv, table)
     local nels, row, e, f, g, h;
