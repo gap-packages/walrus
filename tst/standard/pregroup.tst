@@ -13,4 +13,7 @@ gap> p[1] * p[2];
 'x'
 gap> p[2] * p[3];
 fail
+gap> Read(Filename(DirectoriesPackageLibrary("anatph", "gap"), "small_pregroups.g")); 
+gap> pgps := List(small_pregroups[6], tbl -> PregroupByTable([1..6], PregroupInversesFromTable(tbl), tbl));;
+gap> Length(pgps);
 gap> STOP_TEST("ANATPH: pregroup tests", 1000);
