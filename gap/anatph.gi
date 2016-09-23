@@ -498,15 +498,13 @@ function(pres)
             v := VertexFor(vg, [b, c, 0]);
             onv := OutNeighboursOfVertex(vg, v);
 
-            for y in gens do
-                if IsIntermultPair(y, binv) then
-                    v1 := VertexFor(vg, [y, binv, 1]);
-                    xi1 := Blob(pres, y, binv, Lp);
-                    for v2 in onv do
-                        xi2 := Vertex(pres, v1, v, v2);
-                        AddOrUpdate(res, Q, 1, xi1 + xi2);
-                    od;
-                fi;
+            for y in IntermultMap(binv) do
+                v1 := VertexFor(vg, [y, binv, 1]);
+                xi1 := Blob(pres, y, binv, Lp);
+                for v2 in onv do
+                    xi2 := Vertex(pres, v1, v, v2);
+                    AddOrUpdate(res, Q, 1, xi1 + xi2);
+                od;
             od;
         od;
         # Note this list is not necessarily dense atm.
