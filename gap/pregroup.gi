@@ -151,6 +151,18 @@ function(pgp)
     return IteratorByFunctions(r);
 end);
 
+InstallMethod(PregroupElementNames
+             , "for a pregroup"
+             , [IsPregroupTableRep]
+             , p -> p!.elementnames );
+
+InstallMethod(SetPregroupElementNames
+             , "for a pregroup"
+             , [IsPregroupTableRep, IsList]
+             , function(p, n)
+                 p!.elementnames := n;
+             end );
+
 InstallMethod(ViewString
              , "for a pregroup in table rep"
              , [IsPregroupTableRep],

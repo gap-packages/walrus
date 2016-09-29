@@ -26,8 +26,9 @@ DeclareAttribute("IntermultMap", IsPregroup);
 DeclareAttribute("IntermultMapIDs", IsPregroup);
 DeclareAttribute("IntermultTable", IsPregroup);
 DeclareAttribute("One", IsPregroup);
-DeclareAttribute("PregroupElementNames", IsPregroup);
 
+DeclareOperation("SetPregroupElementNames", [IsPregroup, IsList]);
+DeclareOperation("PregroupElementNames", [IsPregroup]);
 
 
 # Elements of Pregroups
