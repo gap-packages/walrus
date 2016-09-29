@@ -453,20 +453,29 @@ function(loc1, loc2)
         Error("This shouldn't happen");
 #        return [];
     fi;
+
     repeat
-        length := length + 1;
-        Append(res, List(Places(r1_loc), x->[x, r2_loc, length]));
         r1_loc := NextLocation(r1_loc);
         r2_loc := PrevLocation(r2_loc);
+        length := length + 1;
+        Append(res, List(Places(r1_loc), x -> [x, r2_loc, length]));
     until (OutLetter(r1_loc) <> PregroupInverse(InLetter(r2_loc)))
-          or (length = (r1_length - 1));
-    return res;
+          or (length = r1_length);
+
+    # Meh.
+    if (length = r1_length) or
+       (length = Length(Relator(loc2))) then
+        return [];
+    else
+        return res;
+    fi;
 end);
 
 InstallMethod(OneStepReachablePlaces, "for a pregroup presentation",
               [IsPregroupPresentation],
 function(pres)
     local rel, pl, P, Q, places, osr, curv, pows, gens, b, c, binv, rels, vg
+          , _OneStepByPlaceCache
           , OneStepRedCase
           , OneStepGreenCase
           , OneStepByPlace;
@@ -476,7 +485,7 @@ function(pres)
     vg := VertexGraph(pres);
     rels := Relators(pres);
 
-    OneStepByPlace := [];
+    _OneStepByPlaceCache := EmptyPlist(Length(places));
 
     OneStepRedCase := function(P)
         local Q, Ql
@@ -504,7 +513,7 @@ function(pres)
                 for v2 in onv do
                     #T this check is new, and assuming the paper
                     #T is accurate correct
-                    if DigraphVertexLabel(v2)[2] = x then
+                    if DigraphVertexLabel(vg, v2)[2] = x then
                         xi2 := Vertex(pres, v1, v, v2);
                         AddOrUpdate(res, Q, 1, xi1 + xi2);
                     fi;
@@ -557,7 +566,7 @@ function(pres)
                         if Colour(P2) = "green" then
                             AddOrUpdate(res, P2, len, xi1);
                         elif Colour(P2) = "red" then
-                            next := OneStepRedCase(P2);
+                            next := OneStepByPlace(P2);
                             # testhack
                             for n in Keys(next) do
                                 AddOrUpdate(res,
@@ -574,18 +583,28 @@ function(pres)
         return res;
     end;
 
+    OneStepByPlace := function(P)
+        if not IsBound(_OneStepByPlaceCache[__ID(P)]) then
+            if Colour(P) = "red" then
+                _OneStepByPlaceCache[__ID(P)] := OneStepRedCase(P);
+            elif Colour(P) = "green" then
+                _OneStepByPlaceCache[__ID(P)] := OneStepGreenCase(P);
+            else
+                Error("Invalid colour for place ", P, "\n");
+            fi;
+        fi;
+        return _OneStepByPlaceCache[__ID(P)];
+    end;
+
     # for every place we compute a list of
     # one-step reachable places
     for P in Places(pres) do
-        if Colour(P) = "red" then
-            OneStepByPlace[__ID(P)] := OneStepRedCase(P);
-        elif Colour(P) = "green" then
-            OneStepByPlace[__ID(P)] := OneStepGreenCase(P);
-        else
-            Error("Invalid colour for place ", P, "\n");
-        fi;
+        OneStepByPlace(P);
     od;
-    return OneStepByPlace;
+
+    # Todo, place the cache in a datastructure attached to
+    # presentation
+    return _OneStepByPlaceCache;
 end);
 
 # The RSym tester
@@ -648,7 +667,7 @@ function(pres, eps)
                                     );
                                 if psip < 0.0 then
                                 elif (Float(Pq[4]) > 0.0) and
-                                     (osrp[1] = Ps) and
+                                     (osrp[1] = __ID(Ps)) and
                                      (Pq[2] + osrp[2] = Length(rel)) then
                                     return [fail, L, Pq];
                                 else
