@@ -531,7 +531,7 @@ function(n)
         tbl[2*i][2*i+1] := 1;
         tbl[2*i+1][2*i] := 1;
     od;
-    return PregroupByTable(eltn, x -> x^invs, tbl);
+    return PregroupByTable(eltn, tbl);
 end);
 
     
