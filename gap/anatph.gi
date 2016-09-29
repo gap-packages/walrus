@@ -471,142 +471,6 @@ function(loc1, loc2)
     fi;
 end);
 
-InstallMethod(OneStepReachablePlaces, "for a pregroup presentation",
-              [IsPregroupPresentation],
-function(pres)
-    local rel, pl, P, Q, places, osr, curv, pows, gens, b, c, binv, rels, vg
-          , _OneStepByPlaceCache
-          , OneStepRedCase
-          , OneStepGreenCase
-          , OneStepByPlace;
-
-    gens := Generators(pres);
-    places := Places(pres);
-    vg := VertexGraph(pres);
-    rels := Relators(pres);
-
-    _OneStepByPlaceCache := EmptyPlist(Length(places));
-
-    OneStepRedCase := function(P)
-        local Q, Ql
-              , b, c, d, x, y
-              , Lp
-              , v, v1, v2
-              , res
-              , xi1, xi2, binv, l, onv;
-
-        res := NewANAMap(pres);
-        c := Letter(P);
-
-        for Q in NextPlaces(P) do
-            # same relator, one position up
-            Ql := Location(Q);
-            b := InLetter(Ql); binv := PregroupInverse(b);
-            d := OutLetter(Ql);
-            x := Letter(Q);
-            v := VertexFor(vg, [b, d, 0]);
-            onv := OutNeighboursOfVertex(vg, v);
-
-            for y in IntermultMap(binv) do
-                v1 := VertexFor(vg, [y, binv, 1]);
-                xi1 := Blob(pres, y, binv, c);
-                for v2 in onv do
-                    #T this check is new, and assuming the paper
-                    #T is accurate correct
-                    if DigraphVertexLabel(vg, v2)[2] = x then
-                        xi2 := Vertex(pres, v1, v, v2);
-                        AddOrUpdate(res, Q, 1, xi1 + xi2);
-                    fi;
-                od;
-            od;
-        od;
-        # Note this list is not necessarily dense atm.
-        return res;
-    end;
-
-    # P is the place we're working on
-    OneStepGreenCase := function(P)
-        local L, L2, b, c, loc, pls, is_consoledge, v, v1, v2, xi1, xi2,
-              R, R2, P2, P2s, P2T, i, j, next, res, len, n, l;
-        res := NewANAMap(pres);
-
-        L := Location(P);
-        b := OutLetter(L);
-        c := Letter(P);
-
-        # Every place that is instanciated with location that is in an instantiation of
-        # a place P'.
-        # We're interested in consolidated edges between Relator(P) and Relator(pls)
-        # from the locations that P and pls are at.
-        #
-        # Do we have to check that Relator(P) and Relator(pls) don't entirely cancel?
-        for pls in Places(pres) do
-            L2 := Location(pls); # This is the location on R'
-            R2 := Relator(L2);
-
-            # L2 instantiates place on R2, have to test consolidated
-            #    edges between R and R2 starting from L/L2 on R/R2
-            #    respectively
-            if (InLetter(L2) = PregroupInverse(b))
-               and (OutLetter(L2) = c) then
-
-                # We compute all consolidated edge places,
-                # we could do this incrementally, but I don't
-                # currently see a use in doing so
-                P2s := ConsolidatedEdgePlaces(L, L2);
-
-                for P2T in P2s do
-                    P2 := P2T[1];  # Place reachable on R1 by consolidated edge
-                    # P2T[2] location on R2 reachable by the edge
-                    len := P2T[3]; # length of consolidated edge
-                    v1 := VertexFor(vg, [ InLetter(P2T[2]), OutLetter(P2T[2]), 0 ]);
-                    v := VertexFor(vg, [ InLetter(Location(P2)), OutLetter(Location(P2)), 0 ]);
-                    for v2 in OutNeighboursOfVertex(vg, v) do
-                        xi1 := Vertex(pres, v1, v, v2);
-                        if Colour(P2) = "green" then
-                            AddOrUpdate(res, P2, len, xi1);
-                        elif Colour(P2) = "red" then
-                            next := OneStepByPlace(P2);
-                            # testhack
-                            for n in Keys(next) do
-                                AddOrUpdate(res,
-                                            places[n[1]],
-                                            len + 1, xi1 + Lookup(next, places[n[1]], n[2]));
-                            od;
-                        else
-                            Error("Invalid colour");
-                        fi;
-                    od;
-                od;
-            fi;
-        od;
-        return res;
-    end;
-
-    OneStepByPlace := function(P)
-        if not IsBound(_OneStepByPlaceCache[__ID(P)]) then
-            if Colour(P) = "red" then
-                _OneStepByPlaceCache[__ID(P)] := OneStepRedCase(P);
-            elif Colour(P) = "green" then
-                _OneStepByPlaceCache[__ID(P)] := OneStepGreenCase(P);
-            else
-                Error("Invalid colour for place ", P, "\n");
-            fi;
-        fi;
-        return _OneStepByPlaceCache[__ID(P)];
-    end;
-
-    # for every place we compute a list of
-    # one-step reachable places
-    for P in Places(pres) do
-        OneStepByPlace(P);
-    od;
-
-    # Todo, place the cache in a datastructure attached to
-    # presentation
-    return _OneStepByPlaceCache;
-end);
-
 # The RSym tester
 # The epsilon is chosen by the user
 InstallMethod(RSymTest, "for a pregroup presentation, and a float",
@@ -617,7 +481,7 @@ function(pres, eps)
           osrp, # a one-step reachable place
           L,
           zeta,
-          xi, osr, psip, pp;
+          xi, psip, pp;
     # Make sure epsilon is a float
     eps := Float(eps);
     zeta := Minimum(Int(Round((6 * (1 + eps)) + 1/2)) - 1,
@@ -628,7 +492,6 @@ function(pres, eps)
          , "zeta: ", zeta);
 
     pplaces := Places(pres);
-    osr := OneStepReachablePlaces(pres);
 
     for rel in Relators(pres) do
         Info(InfoANATPH, 20
@@ -652,17 +515,17 @@ function(pres, eps)
                 for Pq in L do      # Pq is for "PlaceQuadruple", which is
                                     # a silly name
                     if Pq[3] = i - 1 then  # Reachable in i - 1 steps
-                        for osrp in Keys(osr[Pq[1]]) do
+                        for osrp in Keys(OneStepReachablePlaces(pplaces[Pq[1]])) do
                             if Pq[2] + osrp[2] <= Length(rel) then
                                 psip := Float(Pq[4])
                                         + osrp[2] * (1 + eps) / Length(rel)
                                         # storing positive values -> subtract here
-                                        - Lookup(osr[Pq[1]], pplaces[osrp[1]], osrp[2]);
+                                        - Lookup(OneStepReachablePlaces(pplaces[Pq[1]]), osrp[1], osrp[2]);
                                 Info(InfoANATPH, 30
                                      , STRINGIFY("psi' = "
                                                 , Float(Pq[4]), " + "
                                                 , osrp[2] * (1+eps) / Length(rel), " - "
-                                                , Lookup(osr[Pq[1]], pplaces[osrp[1]], osrp[2]), " = "
+                                                , Lookup(OneStepReachablePlaces(pplaces[Pq[1]]), osrp[1], osrp[2]), " = "
                                                 , psip)
                                     );
                                 if psip < 0.0 then
@@ -691,6 +554,5 @@ function(pres, eps)
             od;
         od;
     od;
-
     return true;
 end);

@@ -41,6 +41,123 @@ function(p)
     return p![6];
 end);
 
+InstallGlobalFunction(OneStepRedCase,
+function(P)
+    local Q, Ql
+          , b, c, d, x, y
+          , Lp
+          , v, v1, v2
+          , res
+          , xi1, xi2, binv, l, onv, pres, vg;
+
+    pres := Presentation(Relator(P));
+    res := NewANAMap(pres);
+    vg := VertexGraph(pres);
+
+    c := Letter(P);
+
+    for Q in NextPlaces(P) do
+        # same relator, one position up
+        Ql := Location(Q);
+        b := InLetter(Ql); binv := PregroupInverse(b);
+        d := OutLetter(Ql);
+        x := Letter(Q);
+        v := VertexFor(vg, [b, d, 0]);
+        onv := OutNeighboursOfVertex(vg, v);
+
+        for y in IntermultMap(binv) do
+            v1 := VertexFor(vg, [y, binv, 1]);
+            xi1 := Blob(pres, y, binv, c);
+            for v2 in onv do
+                #T this check is new, and assuming the paper
+                #T is accurate correct
+                if DigraphVertexLabel(vg, v2)[2] = x then
+                    xi2 := Vertex(pres, v1, v, v2);
+                    AddOrUpdate(res, __ID(Q), 1, xi1 + xi2);
+                fi;
+            od;
+        od;
+    od;
+    # Note this list is not necessarily dense atm.
+    return res;
+end);
+
+InstallGlobalFunction(OneStepGreenCase,
+function(P)
+ local L, L2, b, c, loc, pls, is_consoledge, v, v1, v2, xi1, xi2,
+          R, R2, P2, P2s, P2T, i, j, next, res, len, n, l, pres, vg;
+
+    pres := Presentation(Relator(P));
+    res := NewANAMap(pres);
+    vg := VertexGraph(pres);
+
+    L := Location(P);
+    b := OutLetter(L);
+    c := Letter(P);
+
+    # Every place that is instanciated with location that is in an instantiation of
+    # a place P'.
+    # We're interested in consolidated edges between Relator(P) and Relator(pls)
+    # from the locations that P and pls are at.
+    #
+    # Do we have to check that Relator(P) and Relator(pls) don't entirely cancel?
+    for pls in Places(pres) do
+        L2 := Location(pls); # This is the location on R'
+        R2 := Relator(L2);
+
+        # L2 instantiates place on R2, have to test consolidated
+        #    edges between R and R2 starting from L/L2 on R/R2
+        #    respectively
+        if (InLetter(L2) = PregroupInverse(b))
+            and (OutLetter(L2) = c) then
+
+            # We compute all consolidated edge places,
+            # we could do this incrementally, but I don't
+            # currently see a use in doing so
+            P2s := ConsolidatedEdgePlaces(L, L2);
+
+            for P2T in P2s do
+                P2 := P2T[1];  # Place reachable on R1 by consolidated edge
+                # P2T[2] location on R2 reachable by the edge
+                len := P2T[3]; # length of consolidated edge
+                v1 := VertexFor(vg, [ InLetter(P2T[2]), OutLetter(P2T[2]), 0 ]);
+                v := VertexFor(vg, [ InLetter(Location(P2)), OutLetter(Location(P2)), 0 ]);
+                for v2 in OutNeighboursOfVertex(vg, v) do
+                    xi1 := Vertex(pres, v1, v, v2);
+                    if Colour(P2) = "green" then
+                        AddOrUpdate(res, __ID(P2), len, xi1);
+                    elif Colour(P2) = "red" then
+                        next := OneStepRedCase(P2);
+                        # testhack
+                        for n in Keys(next) do
+                            AddOrUpdate(res, n[1],
+                                        len + 1, xi1 + Lookup(next, n[1], n[2]));
+                        od;
+                    else
+                        Error("Invalid colour");
+                    fi;
+                od;
+            od;
+        fi;
+    od;
+    return res;
+end);
+
+InstallMethod(OneStepReachablePlaces
+             , "for a pregroup place"
+             , [IsPregroupPlaceRep],
+function(p)
+    if not IsBound(p![7]) then
+        if Colour(p) = "red" then
+            p![7] := OneStepRedCase(p);
+        elif Colour(p) = "green" then
+            p![7] := OneStepGreenCase(p);
+        else
+            Error("Invalid colour for place ", p, "\n");
+        fi;
+    fi;
+    return p![7];
+end);
 
 InstallMethod(__ID
              , "for a pregroup place"

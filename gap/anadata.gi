@@ -28,15 +28,15 @@ end);
 
 # Far from universal of course.
 InstallMethod(AddOrUpdate, "for an anamap",
-              [IsANAMap and IsANAMapListRep, IsPregroupPlace, IsInt, IsRat ],
+              [IsANAMap and IsANAMapListRep, IsInt, IsInt, IsRat ],
 function(map, place, length, val)
     local coord, v;
 
-    coord := coordinateF(map![2], [__ID(place), length]);
+    coord := coordinateF(map![2], [place, length]);
     v := map![1][coord];
     map![1][coord] := Minimum(v, val);
     if v = infinity then
-        AddSet(map![3], [__ID(place), length]);
+        AddSet(map![3], [place, length]);
     fi;
     
 #   if IsBound(map![1][__ID(place)]) then
@@ -66,15 +66,13 @@ function(map)
 end);
 
 InstallMethod(Lookup, "for an anamap",
-              [IsANAMap and IsANAMapListRep, IsPregroupPlace, IsInt],
+              [IsANAMap and IsANAMapListRep, IsInt, IsInt],
 function(map, place, length)
     local coord;
 
-    coord := coordinateF(map![2], [__ID(place), length]);
+    coord := coordinateF(map![2], [place, length]);
     return map![1][coord];
 end);
-
-
 
 # this is essentially useless
 InstallMethod(Merge, "for an anamap",
