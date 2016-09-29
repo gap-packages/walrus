@@ -235,12 +235,12 @@ BenchmarkSinglePresOSR := function(len)
     return t / 1000000000.;
 end;
 
-ProfileSinglePresOSR := function(pg, nrel, len)
+ProfileSinglePresentation := function(eps, pg, nrel, len)
     local r,t;
     r := RandomPregroupPresentation(pg, nrel, len);
     t := NanosecondsSinceEpoch();
     ProfileLineByLine("anatph.gz");
-    OneStepReachablePlaces(r);
+    RSymTest(r, eps);
     UnprofileLineByLine();
     OutputAnnotatedCodeCoverageFiles("anatph.gz", "/home/makx/tmp/anatph");
     t := NanosecondsSinceEpoch() - t;
