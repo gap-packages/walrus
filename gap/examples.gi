@@ -8,6 +8,24 @@ Repeat := function(n, l);
     return ShallowCopy(Flat(ListWithIdenticalEntries(n,l)));
 end;
 
+# Jack Button's Group
+# -------------------
+#
+# With presentation <a,b,t | a^t = ab, b^t = ba>
+#
+# Alan Logan says this is hyperbolic, but noone wants to publish
+# this result alone. At the moment the tester fails though.
+#
+InstallGlobalFunction("JackButtonGroup",
+function()
+    local pg;
+
+    pg := PregroupOfFreeGroup(3);
+    SetPregroupElementNames(pg, "1aAbBtT");
+    return NewPregroupPresentaion(pg, [ pg_word( pg, [7,2,6,5,3])
+                                      , pg_word( pg, [7,2,6,3,5]) ]);
+end);
+
 # Triangle Groups
 # ---------------
 # As demonstrated in Proposition 9.4 of anatph, for l > 2 (and hence n > 3 if the
