@@ -12,4 +12,31 @@ the algorithm correctly yet. Do not yet trust output of the provided code.
 If you do play with it and find problems, let me know, file an issue, or send me an email, and I will
 be happy to discuss.
 
-This branch is an attempt at making the datastructures more appropriate
+Installation
+============
+
+This package should work on any recent [GAP](http://www.gap-system.org) release newer than 4.8.3.
+It depends on the package [digraphs](https://gap-packages.github.io/Digraphs), which itself depends
+on [io](https://gap-packages.github.io/io) and [orb](https://gap-packages.github.io/orb). All these
+packages are distributed with GAP but need compilation of GAP kernel extensions.
+
+Getting Started
+===============
+
+```gap
+gap> pg := PregroupOfFreeGroup(2);
+<pregroup with 5 elements in table rep>
+gap> pr := RandomPregroupPresentation(pg, 10, 50);
+<pregroup presentation with 4 generators and 10 relators>
+gap> RSymTest(pr, 1/6);
+true
+```
+
+```gap
+gap> pr := TriSH(7,13);
+<pregroup presentation with 3 generators and 2 relators>
+gap> RSymTest(pr, 1/6);
+[ fail, [ [ 1, 0, 0, 0 ], [ 1, 2, 1, 0. ], [ 1, 4, 1, 0.166667 ], [ 3, 1, 1, 0.0833333 ], [ 3, 3, 1, 0.25 ], [ 1, 6, 2, 0.333333 ], [ 3, 5, 2, 0.416667 ], 
+      [ 1, 8, 3, 0.5 ], [ 2, 6, 3, 0.25 ], [ 2, 8, 4, 0.416667 ], [ 3, 7, 3, 0.583333 ], [ 2, 4, 2, 0.0833333 ], [ 1, 10, 4, 0.666667 ], [ 2, 10, 4, 0.416667 ], [ 3, 9, 4, 0.75 ], 
+      [ 1, 12, 4, 0.666667 ], [ 2, 12, 4, 0.416667 ], [ 3, 11, 4, 0.75 ] ], [ 1, 10, 4, 0.666667 ] ]
+```
