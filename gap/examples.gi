@@ -22,8 +22,8 @@ function()
 
     pg := PregroupOfFreeGroup(3);
     SetPregroupElementNames(pg, "1aAbBtT");
-    return NewPregroupPresentaion(pg, [ pg_word( pg, [7,2,6,5,3])
-                                      , pg_word( pg, [7,2,6,3,5]) ]);
+    return NewPregroupPresentation(pg, [ pg_word( pg, [7,2,6,5,3])
+                                       , pg_word( pg, [7,2,6,3,5]) ]);
 end);
 
 # Triangle Groups
@@ -244,25 +244,23 @@ function(nsamples, prn)
 
 end);
 
-BenchmarkSinglePresOSR := function(len)
-    local r,t;
-    r := RandomPregroupPresentation(Pregroup(trish_13_7), 2, len);
+BenchmarkSinglePres := function(eps, pg, nrel, len)
+    local r,t,res;
+    r := RandomPregroupPresentation(pg, nrel, len);
     t := NanosecondsSinceEpoch();
-    OneStepReachablePlaces(r);
+    res := RSymTest(r, eps);
     t := NanosecondsSinceEpoch() - t;
-    return t / 1000000000.;
+    return [r, res, t / 1000000000.];
 end;
 
 ProfileSinglePresentation := function(eps, pg, nrel, len)
-    local r,t;
-    r := RandomPregroupPresentation(pg, nrel, len);
-    t := NanosecondsSinceEpoch();
+    local t;
+
     ProfileLineByLine("anatph.gz");
-    RSymTest(r, eps);
+    t := BenchmarkSinglePres(eps, pg, nrel, len);
     UnprofileLineByLine();
     OutputAnnotatedCodeCoverageFiles("anatph.gz", "/home/makx/tmp/anatph");
-    t := NanosecondsSinceEpoch() - t;
-    return t / 1000000000.;
+    return t;
 end;
 
 
