@@ -263,6 +263,19 @@ ProfileSinglePresentation := function(eps, pg, nrel, len)
     return t;
 end;
 
+# Benchmark the RSym tester with a presentation given <A>density</A>
+# and <A>length</A>
+BenchmarkGromovDensity := function(eps, ngens, length, density)
+    local pg, nrels;
+
+    pg := PregroupOfFreeGroup(ngens);
+    nrels := Int( (2 * ngens - 1)^Float(density * length ) );
+    Print("number of relators: ", nrels, "\n");
+    return BenchmarkSinglePres(eps
+                              , pg
+                              , nrels
+                              , length );
+end;
 
 
 
