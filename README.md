@@ -17,8 +17,11 @@ Installation
 
 This package should work on any recent [GAP](http://www.gap-system.org) release newer than 4.8.3.
 It depends on the package [digraphs](https://gap-packages.github.io/Digraphs), which itself depends
-on [io](https://gap-packages.github.io/io) and [orb](https://gap-packages.github.io/orb). All these
-packages are distributed with GAP but need compilation of GAP kernel extensions.
+on [io](https://gap-packages.github.io/io) and [orb](https://gap-packages.github.io/orb).i
+
+Currently, there is also a dependency on the package [profiling](https://gap-packages.github.io/profiling).
+
+All these packages are distributed with GAP but need compilation of GAP kernel extensions.
 
 At the moment you're stuck with the current state of the git repository. To get an initial version,
 it is best to clone the repository, into your `pkg` folder. To do this, change into your GAP
