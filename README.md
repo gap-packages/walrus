@@ -20,10 +20,29 @@ It depends on the package [digraphs](https://gap-packages.github.io/Digraphs), w
 on [io](https://gap-packages.github.io/io) and [orb](https://gap-packages.github.io/orb). All these
 packages are distributed with GAP but need compilation of GAP kernel extensions.
 
+At the moment you're stuck with the current state of the git repository. To get an initial version,
+it is best to clone the repository, into your `pkg` folder. To do this, change into your GAP
+installation's pkg folder and execute the following commands:
+
+```sh
+# cd gap4r8/pkg
+# git clone https://github.com/gap-packages/anatph
+```
+You can then at any point update to the latest state of code by changing into the `anatph` directory
+and executing
+```sh
+# git pull
+```
+Alternatively you can download a `zip` archive of the current state of the `anatph` repository available
+at [this link](https://github.com/gap-packages/anatph/archive/master.zip). Unzip this file into your GAP
+`pkg` folder. Keep in mind that you cannot update code or produce patches from it this way.
+
 Getting Started
 ===============
 
 ```gap
+gap> LoadPackage("anatph");;
+...
 gap> pg := PregroupOfFreeGroup(2);
 <pregroup with 5 elements in table rep>
 gap> pr := RandomPregroupPresentation(pg, 10, 50);
