@@ -5,6 +5,15 @@
 #
 ReadPackage("anatph", "gap/type-helpers.gd");
 
+if not IsBound(NanosecondsSinceEpoch) then
+  Print("No NanosecondsSinceEpoch, emulating with io\n");
+  NanosecondsSinceEpoch := function()
+    local r;
+    r := IO_gettimeofday();
+    return (r.tv_sec * 1000000 + r.tv_usec) * 1000;
+  end;
+fi;
+
 DeclareInfoClass( "InfoANATPH" );
 
 ReadPackage("anatph", "gap/util.gd");
