@@ -512,28 +512,3 @@ function(G1, G2, alm)
     return PregroupByTable(eltn, tbl);
 end);
 
-InstallGlobalFunction(PregroupOfFreeGroup,
-function(n)
-    local i, tbl, eltn, invs;
-
-    eltn := ["1"];
-    invs := ();
-    tbl := NullMat(2*n + 1, 2*n + 1);
-    tbl[1][1] := 1;
-    for i in [1..n] do
-        invs := invs * (2*i, 2*i + 1);
-        eltn[2*i] := Concatenation("x",String(i));
-        eltn[2*i + 1] := Concatenation("X",String(i));
-        tbl[1][2*i] := 2*i;
-        tbl[1][2*i + 1] := 2*i + 1;
-        tbl[2*i][1] := 2*i;
-        tbl[2*i+1][1] := 2*i + 1;
-        tbl[2*i][2*i+1] := 1;
-        tbl[2*i+1][2*i] := 1;
-    od;
-    return PregroupByTable(eltn, tbl);
-end);
-
-    
-
-

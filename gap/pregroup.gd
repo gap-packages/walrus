@@ -14,12 +14,16 @@ DeclareRepresentation("IsPregroupTableRep", IsPregroup and IsComponentObjectRep 
 BindGlobal("PregroupByTableType",
            NewType( PregroupFamily, IsPregroupTableRep));
 
+DeclareRepresentation("IsPregroupOfFreeGroupRep", IsPregroup and IsComponentObjectRep and IsAttributeStoringRep, []);
+BindGlobal("PregroupOfFreeGroupType",
+           NewType( PregroupFamily, IsPregroupOfFreeGroupRep));
+
 DeclareGlobalFunction("PregroupByTableNC");
 DeclareGlobalFunction("PregroupByTable");
 DeclareGlobalFunction("PregroupInversesFromTable");
 
-DeclareOperation("[]", [IsPregroupTableRep, IsInt]);
- DeclareAttribute("Size", IsPregroup);
+DeclareOperation("[]", [IsPregroup, IsInt]);
+DeclareAttribute("Size", IsPregroup);
 DeclareAttribute("IntermultPairs", IsPregroup);
 DeclareAttribute("IntermultPairsIDs", IsPregroup);
 DeclareAttribute("IntermultMap", IsPregroup);
@@ -35,6 +39,7 @@ DeclareOperation("PregroupElementNames", [IsPregroup]);
 
 DeclareCategory("IsElementOfPregroup", IsMultiplicativeElement);
 DeclareRepresentation("IsElementOfPregroupRep", IsElementOfPregroup and IsComponentObjectRep, []);
+DeclareRepresentation("IsElementOfPregroupOfFreeGroupRep", IsElementOfPregroup and IsComponentObjectRep, []);
 
 DeclareAttribute("PregroupOf", IsElementOfPregroup);
 
