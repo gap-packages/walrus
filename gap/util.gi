@@ -102,9 +102,36 @@ function(pres)
     return res;
 end);
 
+# Writes out pregroup as a multiplication table
+# and then the relators
 InstallGlobalFunction(PregroupPresentationToStream,
 function(pres, stream)
+    local row, col, table, n, i, rel;
 
+    table := MultiplicationTableIDs(Pregroup(pres));
+    n := Length(table);
+    AppendTo(stream, "pregroup:\n" );
+
+    for row in [1..n] do
+        AppendTo(stream, "  ");
+        for col in [1..n-1] do
+            AppendTo(stream, String(table[row][col]));
+            AppendTo(stream, " ");
+        od;
+        AppendTo(stream, String(table[row][n]));
+        AppendTo(stream, "\n");
+    od;
+
+    AppendTo(stream, "relators:\n");
+    for rel in Relators(pres) do
+        AppendTo(stream, "  ");
+        for i in [1..Length(rel)-1] do
+            AppendTo(stream, String(__ID(rel[i])));
+            AppendTo(stream, " ");
+        od;
+        AppendTo(stream, String(__ID(rel[Length(rel)])));
+        AppendTo(stream, "\n");
+    od;
 end);
 
 InstallGlobalFunction(PregroupPresentationFromStream,
