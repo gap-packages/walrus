@@ -31,6 +31,10 @@ DeclareAttribute("IntermultMapIDs", IsPregroup);
 DeclareAttribute("IntermultTable", IsPregroup);
 DeclareAttribute("One", IsPregroup);
 
+DeclareAttribute("MultiplicationTable", IsPregroup);
+DeclareAttribute("MultiplicationTableIDs", IsPregroup);
+
+
 DeclareOperation("SetPregroupElementNames", [IsPregroup, IsList]);
 DeclareOperation("PregroupElementNames", [IsPregroup]);
 

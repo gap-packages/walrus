@@ -308,6 +308,44 @@ InstallMethod(One, "for a pregroup",
               [IsPregroup],
               pg -> pg!.elts[1]);
 
+# This is very inefficient, but I don't care at the moment
+InstallMethod(MultiplicationTableIDs,
+              "for a pregroup",
+              [IsPregroup],
+function(pg)
+    local i, j, table;
+
+    table := [];
+    for i in [1..Size(pg)] do
+        table[i] := [];
+        for j in [1..Size(pg)] do
+            table[i][j] := pg[i] * pg[j];
+            if table[i][j] = fail then
+                table[i][j] := 0;
+            else
+                table[i][j] := __ID(table[i][j]);
+            fi;
+        od;
+    od;
+    return table;
+end);
+
+InstallMethod(MultiplicationTable,
+              "for a pregroup",
+              [IsPregroup],
+function(pg)
+    local i, j, table;
+
+    table := [];
+    for i in [1..Size(pg)] do
+        table[i] := [];
+        for j in [1..Size(pg)] do
+            table[i][j] := pg[i] * pg[j];
+        od;
+    od;
+    return table;
+end);
+
 #
 # Pregroup elements
 #
