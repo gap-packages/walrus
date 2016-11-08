@@ -92,6 +92,10 @@ function(r)
     fi;
 end);
 
+InstallMethod(IsBound\[\], "for a pregroup relator, and an position",
+              [IsPregroupRelator, IsInt], ReturnTrue );
+
+
 InstallMethod(\=, "for a pregroup relator, and a pregroup relator",
               [IsPregroupRelator, IsPregroupRelator],
 function(l,r)
