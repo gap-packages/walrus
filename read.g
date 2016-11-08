@@ -13,6 +13,7 @@ fi;
 ReadPackage("anatph", "gap/util.gi");
 ReadPackage("anatph", "gap/pregroup.gi");
 ReadPackage("anatph", "gap/pregroupoffreegroup.gi");
+ReadPackage("anatph", "gap/pregroupconstr.gi");
 ReadPackage("anatph", "gap/relator.gi");
 ReadPackage("anatph", "gap/presentation.gi");
 ReadPackage("anatph", "gap/location.gi");
