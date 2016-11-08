@@ -74,28 +74,6 @@ function(map, place, length)
     return map![1][coord];
 end);
 
-# this is essentially useless
-InstallMethod(Merge, "for an anamap",
-              [IsANAMap and IsANAMapListRep, IsANAMap and IsANAMapListRep],
-function(map1, map2)
-    local p, l, res;
-
-    for p in BoundPositions(map2![1]) do
-        if not IsBound(map1![1][p]) then
-            map1![1][p] := map2![1][p];
-        else
-            for l in BoundPositions(map2![1][p]) do
-                if IsBound(map1![1][p][l]) and
-                   (map1![1][p][l] <= map2![1][p][l]) then
-                    continue;
-                fi;
-                map1![1][p][l] := map2![1][p][l];
-            od;
-        fi;
-    od;
-    return map1;
-end);
-
 InstallMethod(ViewString, "for an anamap",
               [IsANAMap],
 function(map)
