@@ -72,3 +72,43 @@ function()
     List(DirectoriesPackageLibrary("anatph", "tst/standard"), TestDirectory);
 end);
 
+#
+# We make a string right away so we do not have to install awkward
+# Print/View methods for relators, and we have full control over
+# what we print for KBMAG
+#
+#T Put pregroup relations in (if pregroup is not the pregroup of the free group)
+#T Choose sensible generator names and print them (maybe just use x1,x2,... or a,b,c))
+InstallGlobalFunction(PregroupPresentationToKBMAG,
+function(pres)
+    local res, eqns, preqn;
+
+    preqn := function(rel)
+        return Concatenation( "[ "
+                            , JoinStringsWithSeparator(List(rel, String), "*")
+                            , ", IdWord ]");
+    end;
+
+    eqns := JoinStringsWithSeparator(List(Relators(pres), preqn), ",");
+
+    res := Concatenation(
+               "_RWS := rec(\n"
+             , "   isRWS := true,\n"
+             , "   ordering := \"shortlex\",\n"
+             , "   generatorOrder := ", PrintString(Generators(pres)), ",\n"
+             , "   inverses := ", PrintString(List(Generators(pres), PregroupInverse)), ",\n"
+             , "   equations := [ ", eqns, "]"
+             , " );");
+    return res;
+end);
+
+InstallGlobalFunction(PregroupPresentationToStream,
+function(pres, stream)
+
+end);
+
+InstallGlobalFunction(PregroupPresentationFromStream,
+function(pres, stream)
+
+end);
+
