@@ -334,7 +334,7 @@ InstallMethod(String
              , [IsElementOfPregroupRep],
 function(pge)
     if pge!.elt > 0 then
-        return pge!.parent!.enams[pge!.elt];
+        return PregroupElementNames(pge!.parent)[pge!.elt];
     else
         return "undefined";
     fi;
