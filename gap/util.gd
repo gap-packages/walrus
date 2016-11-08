@@ -11,3 +11,6 @@ DeclareGlobalFunction("PregroupPresentationToKBMAG");
 DeclareGlobalFunction("PregroupPresentationToStream");
 DeclareGlobalFunction("PregroupPresentationFromStream");
 
+DeclareGlobalFunction("PregroupPresentationToFile");
+
+

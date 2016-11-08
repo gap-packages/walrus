@@ -105,7 +105,7 @@ end);
 # Writes out pregroup as a multiplication table
 # and then the relators
 InstallGlobalFunction(PregroupPresentationToStream,
-function(pres, stream)
+function(stream, pres)
     local row, col, table, n, i, rel;
 
     table := MultiplicationTableIDs(Pregroup(pres));
@@ -135,7 +135,16 @@ function(pres, stream)
 end);
 
 InstallGlobalFunction(PregroupPresentationFromStream,
-function(pres, stream)
-
+function(stream, pres)
+    Error("This has not been implemented yet");
 end);
 
+InstallGlobalFunction(PregroupPresentationToFile,
+function(filename, pres)
+    local outs;
+
+    outs := OutputTextFile(filename, false);
+    SetPrintFormattingStatus(outs, false);
+    PregroupPresentationToStream(outs, pres);
+    CloseStream(outs);
+end);
