@@ -80,12 +80,16 @@ function(pg, nrel, lrel)
         lett := Random([2..Size(pg)]);
         Add(rel, lett);
         for j in [2..lrel-1] do
-            lett := Random(Difference([2..Size(pg)],[lett]));
+            lett := Random(Difference( [2..Size(pg)]
+                                     , [__ID(PregroupInverse(pg[lett]))]));
             Add(rel, lett);
         od;
         # this is bound to go wrong if we only have 2 generators,
         # but then our group is a quotient of free of rank 1...
-        lett := Random(Difference([2..Size(pg)],[lett,rel[1]]));
+        lett := Random(Difference([2..Size(pg)]
+                                 , [ __ID(PregroupInverse(pg[lett]))
+                                   , __ID(PregroupInverse(pg[rel[1]]))
+                                   ] ));
         Add(rel, lett);
     od;
     return NewPregroupPresentation(pg, List(rels, r -> pg_word(pg, r)));
