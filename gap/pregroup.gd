@@ -63,6 +63,8 @@ DeclareAttribute("__ID", IsElementOfPregroup);
 #T This should actually take an embedding of an almalgamating
 #T subgroup in the end to get intermult pairs and interleaving
 #T and all that
-DeclareGlobalFunction("PregroupFromFreeProduct");
+DeclareOperation("PregroupOfFreeProduct", [IsGroup, IsGroup]);
+DeclareOperation("PregroupOfFreeProduct", [IsGroupHomomorphism, IsGroupHomomorphism]);
+
 DeclareGlobalFunction("PregroupOfFreeGroup");
 

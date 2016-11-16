@@ -34,9 +34,9 @@ end);
 InstallGlobalFunction("TriangleGroup",
 function(l,m,n)
     local pg;
-    pg := PregroupFromFreeProduct( CyclicGroup( IsPermGroup, l)
-                                 , CyclicGroup( IsPermGroup, m)
-                                 , () );
+    pg := PregroupOfFreeProduct( CyclicGroup( IsPermGroup, l)
+                               , CyclicGroup( IsPermGroup, m) );
+
     # This is a bit icky, we can't tell which element of pg is the one of the
     # second cyclic group
     return NewPregroupPresentation(pg, [ pg_word( pg, Repeat(n, [2, l + 1]))]);
@@ -50,9 +50,8 @@ end);
 InstallGlobalFunction(TriSH,
 function(m,n)
     local pg;
-    pg := PregroupFromFreeProduct( CyclicGroup( IsPermGroup, 2)
-                                 , CyclicGroup( IsPermGroup, 3)
-                                 , () );
+    pg := PregroupOfFreeProduct( CyclicGroup( IsPermGroup, 2)
+                               , CyclicGroup( IsPermGroup, 3) );
     # Do this to have slightly nicer display. Maybe we need to give the user
     # a way to label generators
     pg!.enams := "1xyY";
@@ -127,7 +126,7 @@ end);
 BindGlobal("BenchmarkRandom_TriPregroup",
 function(eps, nrel, lrel, nexs, prf)
     local pg;
-    pg := PregroupFromFreeProduct( CyclicGroup( IsPermGroup, 2)
+    pg := PregroupOfFreeGroup( CyclicGroup( IsPermGroup, 2)
                                  , CyclicGroup( IsPermGroup, 3)
                                  , () );
     pg!.enams := "1xyY";
