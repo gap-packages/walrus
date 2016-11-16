@@ -78,7 +78,7 @@ InstallMethod(ViewString, "for an anamap",
               [IsANAMap],
 function(map)
     return STRINGIFY("<an anamap with "
-                    , Length(BoundPositions(map![3]))
+                    , Number(map![3], x->IsBound(x))
                     , " bound positions>");
 end);
 
