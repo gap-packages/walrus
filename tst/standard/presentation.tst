@@ -13,5 +13,5 @@ gap> Locations(T);
   <pregroup relator ([ "4", "2" ])^7>(1,2,4), 
   <pregroup relator ([ "4", "2" ])^7>(2,4,2) ]
 gap> Length(Places(T));
-2
+4
 gap> STOP_TEST("ANATPH: presentation tests", 1000);
