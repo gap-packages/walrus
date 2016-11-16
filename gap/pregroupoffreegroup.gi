@@ -224,7 +224,7 @@ end);
 InstallMethod(IsIntermultPair
              , "for pregroup elements"
              , IsIdenticalObj
-             , [IsElementOfPregroup, IsElementOfPregroup]
+             , [IsElementOfPregroupOfFreeGroupRep, IsElementOfPregroupOfFreeGroupRep]
              , 0,
 function(a,b)
     return false;
