@@ -1,0 +1,20 @@
+language: c
+compiler:
+  - gcc
+env:
+  global:
+    - IO=io-4.4.6
+    - DIGRAPHS=digraphs-0.5.2
+    - GAPDOC=GAPDoc-1.5.1
+    - PROFILING=profiling-1.1.0
+    - ORB=orb-4.7.6
+  matrix:
+    - GAP_BRANCH=master GAP_FORK=gap-system
+    - GAP_BRANCH=stable-4.8 GAP_FORK=gap-system
+addons:
+  apt:
+    packages:
+      - libgmp-dev
+script:
+  - scripts/travis-build.sh
+  - scripts/travis-test.sh
