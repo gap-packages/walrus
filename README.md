@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/gap-packages/anatph.svg?branch=master)](https://travis-ci.org/gap-packages/anatph)
+
 The GAP 4 package `anatph'
 ==============================
 
