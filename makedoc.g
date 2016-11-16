@@ -7,7 +7,12 @@ if fail = LoadPackage("AutoDoc", ">= 2014.03.27") then
     Error("AutoDoc version 2014.03.27 is required.");
 fi;
 
-AutoDoc( "anatph" : scaffold := true, autodoc := true );
+AutoDoc( "anatph",
+         rec( scaffold := rec( includes :=
+                               [ "overview.xml"
+                               , "pregroups.xml"
+                               , "presentation.xml" ] )
+            , autodoc := true ) );
 
 PrintTo("VERSION", PackageInfo("anatph")[1].Version);
 
