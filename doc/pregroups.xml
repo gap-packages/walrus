@@ -53,15 +53,17 @@ gap> pregroup := PregroupOfFreeGroup(4);
     </ManSection>
 
     <ManSection>
-      <Func Name="PregroupFromFreeProduct" Arg="G, H"/>
+      <Oper Name="PregroupFromFreeProduct" Arg="G, H"/>
       <Returns>
         A pregroup in multiplication table representation.
       </Returns>
       <Description>
-      If <A>G</A> and <A>H</A> are groups, then <Ref Func="PregroupFromFreeProduct"/> returns
-      the pregroup of the free product of <A>G</A> and <A>H</A>.
+      If <A>G</A> and <A>H</A> are finite groups, then <Ref Func="PregroupFromFreeProduct"/> returns
+      the pregroup consisting of the non-identity elements of <A>G</A> and <A>H</A> and an identity
+      element. A product between two non-trivial elements is defined if and only if they are in the same
+      group.
       <Example><![CDATA[
-gap> pregroup := PregroupFromFreeProduct(SmallGroup(12,2), SmallGroup(24,4));
+gap> pregroup := PregroupOfFreeProduct(SmallGroup(12,2), SmallGroup(24,4));
 <pregroup with 35 elements in table rep>
 ]]></Example>
       </Description>
@@ -72,6 +74,63 @@ gap> pregroup := PregroupFromFreeProduct(SmallGroup(12,2), SmallGroup(24,4));
 
   <Section>
     <Heading>Creating pregroup presentations</Heading>
+
+    <ManSection>
+      <Func Name="RandomPregroupPresentation" Arg="pregroup, nrel, lrel"/>
+      <Returns>
+        A pregroup presentation.
+      </Returns>
+      <Description>
+        Generates a random pregroup presentation over the pregroup <A>pregroup</A> with
+        <A>nrel</A> cyclically cancelled relators all of length <A>lrel</A>.
+        <Example><![CDATA[
+gap> pg := PregroupOfFreeProduct(CyclicGroup(2), CyclicGroup(3));
+<pregroup with 4 elements in table rep>
+gap> pr := RandomPregroupPresentation(pg, 5, 20);
+<pregroup presentation with 3 generators and 5 relators>
+]]></Example>
+      </Description>
+    </ManSection>
+
+    <ManSection>
+      <Func Name="TriangleGroup" Arg="k,l,m"/>
+      <Returns>
+        A pregroup presentation.
+      </Returns>
+      <Description>
+      <Ref Func="TriangleGroup"/> returns a pregroup presentation of
+      the <M>(k,l,m)</M>-triangle group over the pregroup
+      <C>PregroupOfFreeProduct(CyclicGroup(k), CyclicGroup(l))</C>.
+      </Description>
+    </ManSection>
+
+    <ManSection>
+      <Func Name="TriSH" Arg="m,n"/>
+      <Returns>
+        A pregroup presentation.
+      </Returns>
+      <Description>
+        Returns a pregroup presentation of the quotient of the <M>(2,3,m)</M> triangle group
+        by the <A>m</A>-th power of the commutator of the generators of the two cyclic groups.
+      </Description>
+    </ManSection>
+  </Section>
+
+  <Section>
+    <Heading>Running the RSym tester</Heading>
+    <ManSection>
+      <Func Name="RSymTest" Arg="presentation, epsilon"/>
+      <Description>
+        Runs the <C>RSym</C> tester on the presentation <A>pr</A> with an
+        epsilon value of <A>epsilon</A>.
+        <Example><![CDATA[
+gap> tri_2_3_7 := TriangleGroup(2,3,7);
+<pregroup presentation with 3 generators and 1 relators>
+gap> RSymTest(tri_2_3_7, 1/6);
+true
+        ]]></Example>
+      </Description>
+    </ManSection>
   </Section>
 
 </Chapter>
