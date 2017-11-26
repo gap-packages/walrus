@@ -37,3 +37,17 @@ fi
 ./configure $CONFIGFLAGS
 make -j4 V=1
 cd ..
+
+# install latest version of digraphs
+git clone https://github.com/gap-packages/digraphs
+cd digraphs
+./autogen.sh
+# HACK to workaround problems when building with clang
+if [[ $CC = clang ]]
+then
+    export CXX=clang++
+fi
+./configure $CONFIGFLAGS
+make -j4 V=1
+cd ..
+
