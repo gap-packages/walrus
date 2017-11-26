@@ -1,8 +1,8 @@
 # Some small pregroups
 
-small_pregroups := [];
+BindGlobal("ANATPH_small_pregroups", []);
 
-small_pregroups[6] :=
+ANATPH_small_pregroups[6] :=
     [ [ [1,2,3,4,5,6],
         [2,1,0,5,4,0],
         [3,6,0,1,0,0],
