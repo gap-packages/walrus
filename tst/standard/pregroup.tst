@@ -1,4 +1,3 @@
-gap> START_TEST("ANATPH: pregroup tests");
 gap> PregroupByTable("1xyY", [[1]]);
 Error, PregroupByTable: Length of enams does not match number of rows in table
 gap> PregroupByTable("1xyY", [[],[],[],[]]);
@@ -13,8 +12,7 @@ gap> p[1] * p[2];
 'x'
 gap> p[2] * p[3];
 fail
-gap> Read(Filename(DirectoriesPackageLibrary("anatph", "gap"), "small_pregroups.g")); 
-gap> pgps := List(small_pregroups[6], tbl -> PregroupByTable([1..6], tbl));;
+gap> pgps := List(ANATPH_small_pregroups[6], tbl -> PregroupByTable([1..6], tbl));;
 gap> Length(pgps);
 28
 gap> STOP_TEST("ANATPH: pregroup tests", 1000);
