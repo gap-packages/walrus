@@ -98,17 +98,17 @@ InstallMethod(IntermultPairs
 
 InstallMethod(IntermultPairsIDs
              , "for a pregroup in table rep"
-             , [IsPregroupTableRep],
+             , [IsPregroupOfFreeGroupRep],
              pg -> []);
 
 InstallMethod(IntermultMapIDs
              , "for a pregroup in table rep"
-             , [IsPregroupTableRep],
+             , [IsPregroupOfFreeGroupRep],
              pg -> ListWithIdenticalEntries(Size(pg), []));
 
 InstallMethod(IntermultMap
              , "for a pregroup in table rep"
-             , [IsPregroupTableRep],
+             , [IsPregroupOfFreeGroupRep],
              pg -> ListWithIdenticalEntries(Size(pg), []));
 
 InstallMethod(One, "for a pregroup",

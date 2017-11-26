@@ -234,6 +234,7 @@ function(pg)
     return pairs;
 end);
 
+
 InstallMethod(IntermultMapIDs
              , "for a pregroup in table rep"
              , [IsPregroupTableRep],
