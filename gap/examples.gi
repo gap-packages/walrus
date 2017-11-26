@@ -256,15 +256,27 @@ BenchmarkSinglePres := function(eps, pg, nrel, len)
     return [r, res, t / 1000000000.];
 end;
 
-ProfileSinglePresentation := function(eps, pg, nrel, len)
-    local t;
+if IsBound(OutputAnnotatedCodeCoverageFiles) then
+    ProfileSinglePresentation := function(eps, pg, nrel, len)
+    local t, dir, fn;
 
-    ProfileLineByLine("anatph.gz");
+    dir := DirectoryTemporary();
+    fn := Filename(dir, "anatph.gz");
+
+    Print("Profiling presentation to ", fn, "\n");
+    ProfileLineByLine(fn);
     t := BenchmarkSinglePres(eps, pg, nrel, len);
     UnprofileLineByLine();
-    OutputAnnotatedCodeCoverageFiles("anatph.gz", "/home/makx/tmp/anatph");
+
+    Print("Writing annotated code coverage to ", Filename(dir, ""), "\n");
+    OutputAnnotatedCodeCoverageFiles(fn, Filename(dir, ""));
+
     return t;
 end;
+
+else
+    Print("profiling package is not available, disabling ProfileSinglePresentation\n");
+fi;
 
 # Benchmark the RSym tester with a presentation given <A>density</A>
 # and <A>length</A>
