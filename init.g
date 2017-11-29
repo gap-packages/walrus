@@ -14,6 +14,11 @@ if not IsBound(NanosecondsSinceEpoch) then
   end;
 fi;
 
+if ApplicableMethod(Rat, [ 1/2 ]) = fail then
+  Print("No applicable method for Rat with filter IsRat, invoking InstallMethod(Rat, [ IsRat ], IdFunc );");
+  InstallMethod(Rat, [ IsRat ], IdFunc );
+fi;
+
 DeclareInfoClass( "InfoANATPH" );
 
 ReadPackage("anatph", "gap/util.gd");
