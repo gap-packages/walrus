@@ -511,22 +511,26 @@ function(pres, eps)
             # - q[4] is a curvature value
             for i in [1..zeta] do
                 Info(InfoANATPH, 30
-                     , STRINGIFY("L = ", ViewString(L)), "\n");
+                     , STRINGIFY("L = ", ViewString(L)), ", i = ", i);
                 for Pq in L do      # Pq is for "PlaceQuadruple", which is
                                     # a silly name
+                    Info(InfoANATPH, 30,
+                         STRINGIFY("Considering: ", Pq));
                     if Pq[3] = i - 1 then  # Reachable in i - 1 steps
                         for osrp in Keys(OneStepReachablePlaces(pplaces[Pq[1]])) do
+                            Info(InfoANATPH, 30,
+                                 STRINGIFY("OneStepReachable: ", osrp));
                             if Pq[2] + osrp[2] <= Length(rel) then
                                 psip := Float(Pq[4])
                                         + osrp[2] * (1 + eps) / Length(rel)
                                         # storing positive values -> subtract here
-                                        - Lookup(OneStepReachablePlaces(pplaces[Pq[1]]), osrp[1], osrp[2]);
+                                        - Float(Lookup(OneStepReachablePlaces(pplaces[Pq[1]]), osrp[1], osrp[2]));
                                 Info(InfoANATPH, 30
                                      , STRINGIFY("psi' = "
                                                 , Float(Pq[4]), " + "
                                                 , osrp[2] * (1+eps) / Length(rel), " - "
                                                 , Lookup(OneStepReachablePlaces(pplaces[Pq[1]]), osrp[1], osrp[2]), " = "
-                                                , psip)
+                                                , psip, "\n")
                                     );
                                 if psip < 0.0 then
                                 elif (Float(Pq[4]) > 0.0) and
@@ -537,14 +541,12 @@ function(pres, eps)
                                     pp := PositionProperty(L, x -> (x[1] = osrp[1])
                                                               and (x[2] = Pq[2] + osrp[2]));
                                     if pp = fail then
-                                        Add(L, [osrp[1], Pq[2] + osrp[2], i, psip] );
+                                        Add(L, Imm([osrp[1], Pq[2] + osrp[2], i, psip]) );
                                     else
                                         # Can there be more than one such entry?
                                         # Colva says no.
-                                        if psip > Float(L[pp][4]) then
-                                            L[pp][3] := i;
-                                            L[pp][4] := psip;
-                                        fi;
+                                        L[pp] := Immutable([-1, -1, -1, -1]); # to not confuse the loop over "L"
+                                        Add(L, Imm([osrp[1], Pq[2] + osrp[2], i, psip]));
                                     fi;
                                 fi;
                             fi;
