@@ -50,8 +50,8 @@ end);
 InstallGlobalFunction(TriSH,
 function(m,n)
     local pg;
-    pg := PregroupOfFreeProduct( CyclicGroup( IsPermGroup, 2)
-                               , CyclicGroup( IsPermGroup, 3) );
+    pg := PregroupOfFreeProduct( CyclicGroup(IsPermGroup, 2)
+                               , CyclicGroup(IsPermGroup, 3) );
     # Do this to have slightly nicer display. Maybe we need to give the user
     # a way to label generators
     pg!.enams := "1xyY";
@@ -126,9 +126,8 @@ end);
 BindGlobal("BenchmarkRandom_TriPregroup",
 function(eps, nrel, lrel, nexs, prf)
     local pg;
-    pg := PregroupOfFreeGroup( CyclicGroup( IsPermGroup, 2)
-                                 , CyclicGroup( IsPermGroup, 3)
-                                 , () );
+    pg := PregroupOfFreeProduct( CyclicGroup( IsPermGroup, 2)
+                               , CyclicGroup( IsPermGroup, 3) );
     pg!.enams := "1xyY";
     return BenchmarkRandomPresentation(pg, eps, nrel, lrel, nexs, prf);
 end);
