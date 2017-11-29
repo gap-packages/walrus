@@ -487,7 +487,9 @@ function(pres, eps)
     #        we try running this thing with rationals
     eps := Rat(eps);
     # FIXME: Deleted Round() for rationals experiment
-    zeta := Minimum(Int((6 * (1 + eps)) + 1/2) - 1,
+    # FIXME: CAREFUL, if the zeta value is wrong, the RSymTester
+    #        does not work correctly
+    zeta := Minimum(Int(6 * (1 + eps) + 1) - 1,
                     LengthLongestRelator(pres));
     Info(InfoANATPH, 10
          , "RSymTest start");

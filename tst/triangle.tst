@@ -41,11 +41,11 @@ gap> res := RSymTest(ts, 1/6);;
 gap> IsList(res) and res[1] = fail;
 true
 
-# This should fail (but for some reason doesn't)
-#gap> ts := TriSH(12, 50);;
-#gap> res := RSymTest(ts, 1/100);;
-#gap> IsList(res) and res[1] = fail;
-#true
+# This should fail 
+gap> ts := TriSH(12, 50);;
+gap> res := RSymTest(ts, 1/100);;
+gap> IsList(res) and res[1] = fail;
+true
 
 # This should fail
 gap> ts := TriSH(12, 50);;
