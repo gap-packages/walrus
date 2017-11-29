@@ -483,9 +483,12 @@ function(pres, eps)
           zeta,
           xi, psip, pp;
     # Make sure epsilon is a float
-    eps := Float(eps);
-    zeta := Minimum(Int(Round((6 * (1 + eps)) + 1/2)) - 1,
-                       LengthLongestRelator(pres));
+    # FIXME: To experiment and find out about rounding errors
+    #        we try running this thing with rationals
+    eps := Rat(eps);
+    # FIXME: Deleted Round() for rationals experiment
+    zeta := Minimum(Int((6 * (1 + eps)) + 1/2) - 1,
+                    LengthLongestRelator(pres));
     Info(InfoANATPH, 10
          , "RSymTest start");
     Info(InfoANATPH, 10
@@ -521,19 +524,19 @@ function(pres, eps)
                             Info(InfoANATPH, 30,
                                  STRINGIFY("OneStepReachable: ", osrp));
                             if Pq[2] + osrp[2] <= Length(rel) then
-                                psip := Float(Pq[4])
+                                psip := Rat(Pq[4])
                                         + osrp[2] * (1 + eps) / Length(rel)
                                         # storing positive values -> subtract here
-                                        - Float(Lookup(OneStepReachablePlaces(pplaces[Pq[1]]), osrp[1], osrp[2]));
+                                        - Rat(Lookup(OneStepReachablePlaces(pplaces[Pq[1]]), osrp[1], osrp[2]));
                                 Info(InfoANATPH, 30
                                      , STRINGIFY("psi' = "
-                                                , Float(Pq[4]), " + "
+                                                , Rat(Pq[4]), " + "
                                                 , osrp[2] * (1+eps) / Length(rel), " - "
                                                 , Lookup(OneStepReachablePlaces(pplaces[Pq[1]]), osrp[1], osrp[2]), " = "
                                                 , psip, "\n")
                                     );
-                                if psip < 0.0 then
-                                elif (Float(Pq[4]) > 0.0) and
+                                if psip < 0 then
+                                elif (Rat(Pq[4]) > 0) and
                                      (osrp[1] = __ID(Ps)) and
                                      (Pq[2] + osrp[2] = Length(rel)) then
                                     return [fail, L, Pq];
