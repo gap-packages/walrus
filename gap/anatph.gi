@@ -546,12 +546,12 @@ function(pres, eps)
                                     pp := PositionProperty(L, x -> (x[1] = osrp[1])
                                                               and (x[2] = Pq[2] + osrp[2]));
                                     if pp = fail then
-                                        Add(L, Imm([osrp[1], Pq[2] + osrp[2], i, psip]) );
+                                        Add(L, Immutable([osrp[1], Pq[2] + osrp[2], i, psip]) );
                                     else
                                         # Can there be more than one such entry?
                                         # Colva says no.
                                         L[pp] := Immutable([-1, -1, -1, -1]); # to not confuse the loop over "L"
-                                        Add(L, Imm([osrp[1], Pq[2] + osrp[2], i, psip]));
+                                        Add(L, Immutable([osrp[1], Pq[2] + osrp[2], i, psip]));
                                     fi;
                                 fi;
                             fi;
