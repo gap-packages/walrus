@@ -548,10 +548,10 @@ function(pres, eps)
                                     if pp = fail then
                                         Add(L, Immutable([osrp[1], Pq[2] + osrp[2], i, psip]) );
                                     else
-                                        # Can there be more than one such entry?
-                                        # Colva says no.
-                                        L[pp] := Immutable([-1, -1, -1, -1]); # to not confuse the loop over "L"
-                                        Add(L, Immutable([osrp[1], Pq[2] + osrp[2], i, psip]));
+                                        if L[pp][4] > psip then
+                                            L[pp] := Immutable([-1, -1, -1, -1]); # to not confuse the loop over "L"
+                                            Add(L, Immutable([osrp[1], Pq[2] + osrp[2], i, psip]));
+                                        fi;
                                     fi;
                                 fi;
                             fi;
