@@ -6,6 +6,7 @@ DeclareGlobalFunction("MaxPowerK2");
 
 DeclareGlobalFunction("AnatphTestStandard");
 
+DeclareGlobalFunction("PregroupPresentationToFpGroup");
 DeclareGlobalFunction("PregroupPresentationToKBMAG");
 
 DeclareGlobalFunction("PregroupPresentationToStream");

@@ -80,27 +80,37 @@ end);
 #T Put pregroup relations in (if pregroup is not the pregroup of the free group)
 #T Choose sensible generator names and print them (maybe just use x1,x2,... or a,b,c))
 InstallGlobalFunction(PregroupPresentationToKBMAG,
+    pres -> KBMAGRewritingSystem(PregroupPresentationToFpGroup(pres)));
+
+
+InstallGlobalFunction(PregroupPresentationToFpGroup,
 function(pres)
-    local res, eqns, preqn;
+    local d, F, rels, gens, pg, p, i, j;
 
-    preqn := function(rel)
-        return Concatenation( "[ "
-                            , JoinStringsWithSeparator(List(rel, String), "*")
-                            , ", IdWord ]");
-    end;
+    # By Definition 2.2 of the paper
+    d := Size(Pregroup(pres)) - 1;
+    F := FreeGroup(d);
+    pg := Pregroup(pres);
 
-    eqns := JoinStringsWithSeparator(List(Relators(pres), preqn), ",");
+    rels := [];
+    # rels := List([1..d], x -> [ F.(x) * F.(pg!.inv(x+1)-1), One(F) ]);
+    for i in [2..d+1] do
+        for j in [2..d+1] do
+            p := pg[i] * pg[j];
+            if p <> fail then
+                if p = One(pg) then
+                    Add(rels, [F.(i-1) * F.(j-1), One(F)]);
+                else
+                    Add(rels, [F.(i-1) * F.(j-1) * F.(__ID(PregroupInverse(p))-1), One(F)]);
+                fi;
+            fi;
+        od;
+    od;
+    Append(rels, List(Relators(pres), x -> [Product(List(List(x), y -> F.(__ID(y)-1))), One(F)]));
 
-    res := Concatenation(
-               "_RWS := rec(\n"
-             , "   isRWS := true,\n"
-             , "   ordering := \"shortlex\",\n"
-             , "   generatorOrder := ", PrintString(Generators(pres)), ",\n"
-             , "   inverses := ", PrintString(List(Generators(pres), PregroupInverse)), ",\n"
-             , "   equations := [ ", eqns, "]"
-             , " );");
-    return res;
+    return F / rels;
 end);
+
 
 # Writes out pregroup as a multiplication table
 # and then the relators
