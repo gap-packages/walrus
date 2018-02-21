@@ -61,11 +61,6 @@ function(m,n)
                                    ]);
 end);
 
-trish_3_3  := TriSH(3,3);
-trish_13_7 := TriSH(13,7);
-trish_4_10 := TriSH(4,10);
-trish_8_19 := TriSH(8,19);
-
 # Given a pregroup make a random presentation with nrel relators
 # of length lrel
 InstallGlobalFunction(RandomPregroupPresentation,
