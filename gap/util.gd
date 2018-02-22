@@ -15,3 +15,6 @@ DeclareGlobalFunction("PregroupPresentationFromStream");
 DeclareGlobalFunction("PregroupPresentationToFile");
 
 
+DeclareGlobalFunction("LogPregroupPresentation");
+
+

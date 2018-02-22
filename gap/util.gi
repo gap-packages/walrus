@@ -158,3 +158,16 @@ function(filename, pres)
     PregroupPresentationToStream(outs, pres);
     CloseStream(outs);
 end);
+
+# FIXME: Hack.
+InstallGlobalFunction(LogPregroupPresentation,
+function(pattern, pgp, res)
+    local path, stream;
+
+    path := Directory(IO_mkdtemp(ShallowCopy(pattern)));
+    stream := OutputTextFile(Filename(path, "pregroup_presentation"), false);
+    PregroupPresentationToStream(stream, pgp);
+    WriteRWS(KBMAGRewritingSystem(PregroupPresentationToFpGroup(pgp)), Filename(path, "kbmag") );
+    stream := OutputTextFile(Filename(path, "info"), false);
+    PrintTo(stream, "rsym: ", res);
+end);

@@ -91,8 +91,8 @@ end);
 
 
 BindGlobal("BenchmarkRandomPresentation",
-function(pg, eps, nrel, lrel, nexs, prf)
-    local i, pgp, start, stop, estart, estop, n, nfail, res, runt;
+function(pg, eps, nrel, lrel, nexs, prf, path)
+    local i, pgp, start, stop, estart, estop, n, nfail, res, runt, fid, stream;
 
     n := 0;
     runt := [];
@@ -110,6 +110,7 @@ function(pg, eps, nrel, lrel, nexs, prf)
         else
             prf("failed \c");
         fi;
+        LogPregroupPresentation(path, pgp, res);
         prf(Float((estop - estart) / 1000000000), " seconds\n");
         Add(runt, [pgp, res, estop - estart]);
     od;
@@ -119,19 +120,32 @@ function(pg, eps, nrel, lrel, nexs, prf)
 end);
 
 BindGlobal("BenchmarkRandom_TriPregroup",
-function(eps, nrel, lrel, nexs, prf)
+function(eps, nrel, lrel, nexs, prf, path)
     local pg;
     pg := PregroupOfFreeProduct( CyclicGroup( IsPermGroup, 2)
                                , CyclicGroup( IsPermGroup, 3) );
     pg!.enams := "1xyY";
-    return BenchmarkRandomPresentation(pg, eps, nrel, lrel, nexs, prf);
+    return BenchmarkRandomPresentation(pg, eps, nrel, lrel, nexs, prf, path);
 end);
 
 BindGlobal("BenchmarkRandom_FreeGroupPregroup",
-function(eps, ngen, nrel, lrel, nexs, prf)
+function(eps, ngen, nrel, lrel, nexs, prf, path)
     local pg;
     pg := PregroupOfFreeGroup(ngen);
-    return BenchmarkRandomPresentation(pg, eps, nrel, lrel, nexs, prf);
+    return BenchmarkRandomPresentation(pg, eps, nrel, lrel, nexs, prf, path);
+end);
+
+BindGlobal("BenchmarkRandom_OverSmallPregroup",
+function(eps, nrel, lrel, nexs, prf, path)
+    local pg, res;
+
+    res := [];
+    # FIXME: We only have pregroups of size 6 at the moment
+    for pg in ANATPH_small_pregroups[6] do
+        pg := PregroupByTable([1,'a','b','c','d', 'e'], pg);
+        Add(res, BenchmarkRandomPresentation(pg, eps, nrel, lrel, nexs, prf, path));
+    od;
+    return res;
 end);
 
 BindGlobal("_VARIANCE",
