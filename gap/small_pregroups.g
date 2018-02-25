@@ -173,3 +173,33 @@ ANATPH_small_pregroups[6] :=
         [6,3,2,5,4,1] ]
     ];
 
+BindGlobal("NrSmallPregroups",
+function(n)
+    if not IsPosInt(n) then
+        Error("n has to be a positive integer");
+    fi;
+
+    if IsBound(ANATPH_small_pregroups[n]) then
+        return Length(ANATPH_small_pregroups[n]);
+    fi;
+    return fail;
+end);
+
+BindGlobal("SmallPregroup",
+function(n,i)
+    local names;
+    if not IsPosInt(n) then
+        Error("n has to be a positive integer");
+    fi;
+
+    if IsPosInt(i) and
+       IsBound(ANATPH_small_pregroups[n]) and
+       IsBound(ANATPH_small_pregroups[n][i]) then
+        names := Concatenation( ["1"]
+                              , List([2..n], y -> Concatenation("p", String(y-1))));
+        return PregroupByTable(names, ANATPH_small_pregroups[n][i]);
+    else
+        Error("small pregroup of size ", n, " with index ", i, " not available");
+    fi;
+end);
+

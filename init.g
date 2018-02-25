@@ -18,6 +18,7 @@ if ApplicableMethod(Rat, [ 1/2 ]) = fail then
   Print("No applicable method for Rat with filter IsRat, invoking InstallMethod(Rat, [ IsRat ], IdFunc );");
   InstallMethod(Rat, [ IsRat ], IdFunc );
 fi;
+ReadPackage("anatph", "gap/small_pregroups.g");
 
 DeclareInfoClass( "InfoANATPH" );
 

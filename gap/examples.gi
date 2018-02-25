@@ -1,13 +1,5 @@
 # Examples/Tests for ANATPH
 
-# Pregroup presentation for triangle group
-pg_word := function(pg, l) return List(l, x->pg[x]);
-           end;
-
-Repeat := function(n, l);
-    return ShallowCopy(Flat(ListWithIdenticalEntries(n,l)));
-end;
-
 # Jack Button's Group
 # -------------------
 #
@@ -90,6 +82,104 @@ function(pg, nrel, lrel)
 end);
 
 
+BindGlobal("CreateRandomExample",
+function(path, pg, nrel, lrel)
+    local pgp;
+
+    if not IsDirectoryPath(path) then
+        Error("path does not exist or is not a directory");
+        return;
+    fi;
+    pgp := RandomPregroupPresentation(pg, nrel, lrel);
+
+    # Write the pregroup presentation to file
+    PregroupPresentationToFile(Concatenation(path, "/presentation-gap"), pgp);
+    PregroupPresentationToSimpleFile(Concatenation(path, "/presentation-simple"), pgp);
+
+    # Also create a KBMAG input file, if RSymTest succeeds on this presentation,
+    # we can try computing an automatic structure and run gpgeowa on the result
+    # to check whether the group is hyperbolic.
+    WriteRWS(KBMAGRewritingSystem(PregroupPresentationToFpGroup(pgp)),
+             Concatenation(path, "/presentation-kbmag"));
+end);
+
+# Create a series of examples
+BindGlobal("CreateRandomSeries",
+function(pg, nrels, lrels, nexs, prf, basepath)
+    local path, path2, i, pgp, lrel, nrel;
+
+    if not IsDirectoryPath(basepath) then
+        Error("path does not exist or is not a directory");
+        return;
+    fi;
+    path := basepath;
+
+    for lrel in lrels do
+        CreateDir(Concatenation(path, "/", String(lrel)));
+        for nrel in nrels do
+            CreateDir(Concatenation(path, "/", String(lrel), "/", String(nrel)));
+            for i in [1..nexs] do
+                path2 := Concatenation(path, "/", String(lrel), "/", String(nrel), "/", String(i));
+                prf("creating example nr ", i, " in ", path2, " \c");
+
+                CreateDir(path2);
+                CreateRandomExample(path2, pg, nrel, lrel);
+                prf("\n");
+            od;
+        od;
+    od;
+end);
+
+BindGlobal("CreateRandomSeriesOverSmallPregroups",
+function(basepath)
+    local i, n, sizes, path;
+
+    if not IsDirectoryPath(basepath) then
+        Error("path does not exist or is not a directory");
+        return;
+    fi;
+
+    # at the moment we only have pregroups
+    # of size 6
+    sizes := [6];
+    for n in sizes do
+        CreateDir(Concatenation(basepath, "/", String(n)));
+        for i in [1..NrSmallPregroups(n)] do
+            path := Concatenation(basepath, "/", String(n), "/", String(i));
+            CreateDir(path);
+            CreateRandomSeries( SmallPregroup(n, i)
+                              , [1,2,4,8,10]
+                              , [5,10,15,20,25,30,35,40,45,50]
+                              , 20
+                              , Print
+                              , path);
+        od;
+    od;
+end);
+
+BindGlobal("CreateRandomSeriesOverFreeGroup",
+function(basepath)
+    local i, n, sizes, path;
+
+    if not IsDirectoryPath(basepath) then
+        Error("path does not exist or is not a directory");
+        return;
+    fi;
+
+    # ranks of free group
+    sizes := [2,4,8,16,32,64];
+    for n in sizes do
+        path := Concatenation(basepath, "/", String(n));
+        CreateDir(path);
+        CreateRandomSeries( PregroupOfFreeGroup(n)
+                          , [1,2,4,8,10]
+                          , [5,10,15,20,25,30,35,40,45,50]
+                          , 20
+                          , Print
+                          , path);
+    od;
+end);
+
 BindGlobal("BenchmarkRandomPresentation",
 function(pg, eps, nrel, lrel, nexs, prf, path)
     local i, pgp, start, stop, estart, estop, n, nfail, res, runt, fid, stream;
@@ -117,6 +207,21 @@ function(pg, eps, nrel, lrel, nexs, prf, path)
     stop := NanosecondsSinceEpoch();
     return rec( runtime := (stop - start) / 1000000000,
                 samples := runt );
+end);
+
+BindGlobal("RandomPregroupFromSmallGroups",
+function()
+    local n, i, g1, g2;
+
+    n := Random([1..64]);
+    i := Random([1..NrSmallGroups(n)]);
+    g1 := SmallGroup(n,i);
+
+    n := Random([1..64]);
+    i := Random([1..NrSmallGroups(n)]);
+    g2 := SmallGroup(n,i);
+
+    return PregroupOfFreeProduct(g1, g2);
 end);
 
 BindGlobal("BenchmarkRandom_TriPregroup",

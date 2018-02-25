@@ -2,7 +2,16 @@
 # anatph: A new approach to proving hyperbolicity
 #
 #### Utility functions
-# MaxPowerK: Input a word (relator) v over X, output w such that w^k = v, k maximal with this property
+
+# Pregroup presentation for triangle group
+InstallGlobalFunction(pg_word,
+                      {pg, l} -> List(l, x->pg[x]) );
+
+InstallGlobalFunction(Repeat,
+                      {n, l} -> ShallowCopy(Flat(ListWithIdenticalEntries(n,l))));
+
+# MaxPowerK: Input a word (relator) v over X, output w such that w^k = v, k
+# maximal with this property InstallGlobalFunction(MaxPowerK,
 InstallGlobalFunction(MaxPowerK,
 function(rel)
     local len, d, divs, isrep,
@@ -72,11 +81,6 @@ function()
     List(DirectoriesPackageLibrary("anatph", "tst/standard"), TestDirectory);
 end);
 
-#
-# We make a string right away so we do not have to install awkward
-# Print/View methods for relators, and we have full control over
-# what we print for KBMAG
-#
 #T Put pregroup relations in (if pregroup is not the pregroup of the free group)
 #T Choose sensible generator names and print them (maybe just use x1,x2,... or a,b,c))
 InstallGlobalFunction(PregroupPresentationToKBMAG,
@@ -113,8 +117,9 @@ end);
 
 
 # Writes out pregroup as a multiplication table
-# and then the relators
-InstallGlobalFunction(PregroupPresentationToStream,
+# and then the relators, intended as a simple exchange
+# format
+InstallGlobalFunction(PregroupPresentationToSimpleStream,
 function(stream, pres)
     local row, col, table, n, i, rel;
 
@@ -144,9 +149,35 @@ function(stream, pres)
     od;
 end);
 
-InstallGlobalFunction(PregroupPresentationFromStream,
+# Serialises a pregroup presentation as a GAP record
+# that GAP can read back easily
+InstallGlobalFunction(PregroupPresentationToStream,
 function(stream, pres)
-    Error("This has not been implemented yet");
+    local res, rel, rels;
+
+    res := rec( table := MultiplicationTableIDs(Pregroup(pres)),
+                rels := List(Relators(pres), r -> List(r, x -> __ID(x))));
+
+    PrintTo(stream, res, ";\n");
+end);
+
+InstallGlobalFunction(PregroupPresentationFromStream,
+function(stream)
+    local res, r, pg, rels;
+    res := READ_ALL_COMMANDS(stream, false);
+
+    if Length(res) = 1
+       and res[1][1] = true
+       and IsBound(res[1][2])
+       and IsRecord(res[1][2]) then
+        # FIXME: Store element names, at least don't put arbitarary
+        #        restriction o nnumber of pregroup elts here
+        r := res[1][2];
+        pg := PregroupByTable("1abcdefghijklmnopqrstuvwxyz"{[1..Length(r.table)]}, r.table);
+        return NewPregroupPresentation(pg, List(r.rels, x -> pg_word(pg, x)));
+    else
+        Error("Could not read pregroup presentation from stream");
+    fi;
 end);
 
 InstallGlobalFunction(PregroupPresentationToFile,
@@ -159,15 +190,13 @@ function(filename, pres)
     CloseStream(outs);
 end);
 
-# FIXME: Hack.
-InstallGlobalFunction(LogPregroupPresentation,
-function(pattern, pgp, res)
-    local path, stream;
+InstallGlobalFunction(PregroupPresentationToSimpleFile,
+function(filename, pres)
+    local outs;
 
-    path := Directory(IO_mkdtemp(ShallowCopy(pattern)));
-    stream := OutputTextFile(Filename(path, "pregroup_presentation"), false);
-    PregroupPresentationToStream(stream, pgp);
-    WriteRWS(KBMAGRewritingSystem(PregroupPresentationToFpGroup(pgp)), Filename(path, "kbmag") );
-    stream := OutputTextFile(Filename(path, "info"), false);
-    PrintTo(stream, "rsym: ", res);
+    outs := OutputTextFile(filename, false);
+    SetPrintFormattingStatus(outs, false);
+    PregroupPresentationToSimpleStream(outs, pres);
+    CloseStream(outs);
 end);
+

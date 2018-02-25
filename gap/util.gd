@@ -1,6 +1,10 @@
 #
 # anatph: A new approach to proving hyperbolicity
 #
+
+DeclareGlobalFunction("pg_word");
+DeclareGlobalFunction("Repeat");
+
 DeclareGlobalFunction("MaxPowerK");
 DeclareGlobalFunction("MaxPowerK2");
 
@@ -12,8 +16,13 @@ DeclareGlobalFunction("PregroupPresentationToKBMAG");
 DeclareGlobalFunction("PregroupPresentationToStream");
 DeclareGlobalFunction("PregroupPresentationFromStream");
 
-DeclareGlobalFunction("PregroupPresentationToFile");
+# A simpler output format
+DeclareGlobalFunction("PregroupPresentationToSimpleStream");
 
+DeclareGlobalFunction("PregroupPresentationToFile");
+DeclareGlobalFunction("PregroupPresentationFromFile");
+
+DeclareGlobalFunction("PregroupPresentationToSimpleFile");
 
 DeclareGlobalFunction("LogPregroupPresentation");
 
