@@ -1,7 +1,4 @@
 # Some small pregroups
-
-BindGlobal("ANATPH_small_pregroups", []);
-
 ANATPH_small_pregroups[6] :=
     [ [ [1,2,3,4,5,6],
         [2,1,0,5,4,0],
@@ -173,7 +170,7 @@ ANATPH_small_pregroups[6] :=
         [6,3,2,5,4,1] ]
     ];
 
-BindGlobal("NrSmallPregroups",
+InstallGlobalFunction("NrSmallPregroups",
 function(n)
     if not IsPosInt(n) then
         Error("n has to be a positive integer");
@@ -185,7 +182,7 @@ function(n)
     return fail;
 end);
 
-BindGlobal("SmallPregroup",
+InstallGlobalFunction("SmallPregroup",
 function(n,i)
     local names;
     if not IsPosInt(n) then

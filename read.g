@@ -20,4 +20,5 @@ ReadPackage("anatph", "gap/location.gi");
 ReadPackage("anatph", "gap/place.gi");
 ReadPackage("anatph", "gap/anadata.gi");
 ReadPackage("anatph", "gap/anatph.gi");
+ReadPackage("anatph", "gap/small_pregroups.gi");
 ReadPackage("anatph", "gap/examples.gi");
