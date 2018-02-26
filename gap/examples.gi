@@ -53,32 +53,46 @@ function(m,n)
                                    ]);
 end);
 
+InstallGlobalFunction(RandomTriangleQuotient,
+function(p,q,r,len)
+    local pg;
+    pg := PregroupOfFreeProduct( CyclicGroup(IsPermGroup, p)
+                               , CyclicGroup(IsPermGroup, q) );
+    # Do this to have slightly nicer display. Maybe we need to give the user
+    # a way to label generators
+    pg!.enams := "1xyY";
+    return NewPregroupPresentation(pg,
+                                   [ pg_word(pg, Repeat(r, [2,3])),
+                                     RandomPregroupWord(pg, len)
+                                   ]);
+end);
+
+InstallGlobalFunction(RandomPregroupWord,
+function(pg, len)
+    local i, lett, rel;
+
+    rel := [];
+
+    rel[1] := Random([2..Size(pg)]);
+    for i in [2..len-1] do
+        rel[i] := Random(Difference( [2..Size(pg)]
+                                   , [__ID(PregroupInverse(pg[rel[i-1]]))]));
+    od;
+    rel[len] := Random(Difference([2..Size(pg)]
+                                 , [ __ID(PregroupInverse(pg[rel[len - 1]]))
+                                   , __ID(PregroupInverse(pg[rel[1]]))
+                                   ] ));
+    return pg_word(pg, rel);
+end);
+
 # Given a pregroup make a random presentation with nrel relators
 # of length lrel
 InstallGlobalFunction(RandomPregroupPresentation,
 function(pg, nrel, lrel)
-    local pp, rel, rels, i, j, lett;
-    
-    rels := [];
-    for i in [1..nrel] do
-        rel := [];
-        Add(rels,rel);
-        lett := Random([2..Size(pg)]);
-        Add(rel, lett);
-        for j in [2..lrel-1] do
-            lett := Random(Difference( [2..Size(pg)]
-                                     , [__ID(PregroupInverse(pg[lett]))]));
-            Add(rel, lett);
-        od;
-        # this is bound to go wrong if we only have 2 generators,
-        # but then our group is a quotient of free of rank 1...
-        lett := Random(Difference([2..Size(pg)]
-                                 , [ __ID(PregroupInverse(pg[lett]))
-                                   , __ID(PregroupInverse(pg[rel[1]]))
-                                   ] ));
-        Add(rel, lett);
-    od;
-    return NewPregroupPresentation(pg, List(rels, r -> pg_word(pg, r)));
+    local rels;
+
+    rels := List([1..nrel], i -> RandomPregroupWord(pg, lrel));
+    return NewPregroupPresentation(pg, rels);
 end);
 
 
@@ -179,6 +193,36 @@ function(basepath)
                           , path);
     od;
 end);
+
+BindGlobal("CreateRandomSeriesOverTrianglePregroup",
+function(eps, p, q, nrel, lrel, nexs, prf, path)
+    local pg;
+    pg := PregroupOfFreeProduct( CyclicGroup( IsPermGroup, p)
+                                , CyclicGroup( IsPermGroup, q) );
+    pg!.enams := "1xyY";
+    CreateRandomSeries( pg
+                      , [1]
+                      , [5,10,15,20,25,30,35,40,45,50]
+                      , 20
+                      , Print
+                      , path );
+end);
+
+BindGlobal("CreateRandomSeriesOverTriangleGroup",
+          function(eps, p, q, nrel, lrel, nexs, prf, path)
+              local pg;
+              pg := PregroupOfFreeProduct( CyclicGroup( IsPermGroup, p)
+                                         , CyclicGroup( IsPermGroup, q) );
+              pg!.enams := "1xyY";
+              CreateRandomSeries( pg
+                                , [1]
+                                , [5,10,15,20,25,30,35,40,45,50]
+                                , 20
+                                , Print
+                                , path );
+          end);
+
+
 
 BindGlobal("BenchmarkRandomPresentation",
 function(pg, eps, nrel, lrel, nexs, prf, path)

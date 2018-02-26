@@ -7,3 +7,5 @@ DeclareGlobalFunction("JackButtonGroup");
 DeclareGlobalFunction("TriSH");
 DeclareGlobalFunction("RandomPregroupPresentation");
 
+DeclareGlobalFunction("RandomPregroupWord");
+DeclareGlobalFunction("RandomTriangleQuotient");
