@@ -2,6 +2,17 @@
 # anatph: A new approach to proving hyperbolicity
 #
 
+InstallGlobalFunction(NewPregroupWord,
+function(pg, word)
+    local maxk, rel;
+    maxk := MaxPowerK(word);
+    return Objectify(IsPregroupRelatorType,
+                     rec( pregroup := pg
+                        , base := maxk[1]
+                        , exponent := maxk[2]
+                        , baselen := Length(maxk[1]) ) );
+end);
+
 InstallGlobalFunction(NewPregroupRelator,
 function(pres, word, id)
     local maxk, rel;
@@ -17,15 +28,15 @@ function(pres, word, id)
 end);
 
 InstallMethod(Base, "for a pregroup relator",
-              [IsPregroupRelator],
+              [IsPregroupRelator and IsPregroupRelatorRep ],
               r -> r!.base);
 
 InstallMethod(Exponent, "for a pregroup relator",
-              [IsPregroupRelator],
+              [IsPregroupRelator and IsPregroupRelatorRep ],
               r -> r!.exponent);
 
 InstallMethod(Inverse, "for a pregroup relator",
-              [IsPregroupRelator],
+              [ IsPregroupRelator and IsPregroupRelatorRep ],
               r -> Objectify(IsPregroupRelatorType,
                              rec( pres := r!.pres
                                 , base := List(Reversed(r!.base), PregroupInverse)
@@ -56,7 +67,7 @@ function(r, p)
 end);
 
 InstallMethod(Length, "for a pregroup relator",
-    [IsPregroupRelator],
+    [ IsPregroupRelator and IsPregroupRelatorRep ],
 function(r)
     return r!.baselen * r!.exponent;
 end);
@@ -64,7 +75,7 @@ end);
 # we could possibly store this on creation
 # But this is run at most once anyway
 InstallMethod(Places, "for a pregroup relator",
-              [IsPregroupRelator],
+              [ IsPregroupRelator and IsPregroupRelatorRep ],
 function(r)
     local P, res;
 

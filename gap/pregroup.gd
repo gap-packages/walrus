@@ -10,13 +10,29 @@
 DeclareCategory("IsPregroup", IsObject and IsCollection);
 BindGlobal("PregroupFamily", NewFamily("PregroupFamily"));
 
-DeclareRepresentation("IsPregroupTableRep", IsPregroup and IsComponentObjectRep and IsAttributeStoringRep, []);
+DeclareRepresentation( "IsPregroupTableRep"
+                     , IsPregroup and
+                       IsComponentObjectRep and
+                       IsAttributeStoringRep
+                     , []);
 BindGlobal("PregroupByTableType",
            NewType( PregroupFamily, IsPregroupTableRep));
 
-DeclareRepresentation("IsPregroupOfFreeGroupRep", IsPregroup and IsComponentObjectRep and IsAttributeStoringRep, []);
+DeclareRepresentation( "IsPregroupOfFreeGroupRep"
+                     , IsPregroup and
+                       IsComponentObjectRep and
+                       IsAttributeStoringRep
+                     , []);
 BindGlobal("PregroupOfFreeGroupType",
            NewType( PregroupFamily, IsPregroupOfFreeGroupRep));
+
+DeclareRepresentation( "IsPregroupOfFreeProductRep"
+                     , IsPregroup and
+                       IsComponentObjectRep and
+                       IsAttributeStoringRep
+                     , []);
+BindGlobal("PregroupOfFreeProductType",
+           NewType( PregroupFamily, IsPregroupOfFreeProductRep));
 
 DeclareGlobalFunction("PregroupByTableNC");
 DeclareGlobalFunction("PregroupByTable");
@@ -55,8 +71,6 @@ DeclareAttribute("PregroupInverse", IsElementOfPregroup);
 DeclareAttribute("PregroupElementId", IsElementOfPregroup);
 DeclareAttribute("__ID", IsElementOfPregroup);
 
-# TBD: Words over Pregroups
-
 # Constructing Pregroups
 
 # Make a pregroup from two groups.
@@ -65,6 +79,10 @@ DeclareAttribute("__ID", IsElementOfPregroup);
 #T and all that
 DeclareOperation("PregroupOfFreeProduct", [IsGroup, IsGroup]);
 DeclareOperation("PregroupOfFreeProduct", [IsGroupHomomorphism, IsGroupHomomorphism]);
+
+
+# FIXME: The above operations should work with this
+DeclareGlobalFunction("PregroupOfFreeProductList");
 
 DeclareGlobalFunction("PregroupOfFreeGroup");
 

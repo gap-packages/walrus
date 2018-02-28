@@ -1,8 +1,4 @@
-#
-# anatph: A new approach to proving hyperbolicity
-#
-# Pregroup code
-#
+
 
 # Define a pregroup by giving a list of generator names and
 # a (partial) multiplication table
@@ -15,6 +11,8 @@ function(enams, inv, table)
             , table := table );
     r.fam := NewFamily( "PregroupElementsFamily", IsElementOfPregroup );
     r.elt_t := NewType( r!.fam, IsElementOfPregroupRep );
+    r.wfam := NewFamily( "PregroupWordFamily", IsPregroupWord );
+    r.word_t := NewType( r!.wfam, IsPregroupWordListRep );
     r.elts := List( [1..Length(table)], i -> Objectify(r.elt_t, rec(parent := r, elt := i)));
     r.invs := [];
     for e in [1..Length(r.elts)] do
@@ -470,7 +468,7 @@ function(a,b)
     local x, nontriv;
 
     return IntermultTable(a!.parent)[__ID(a)][__ID(b)];
-    
+
     if a = PregroupInverse(b) then
         return false;
     elif IsDefinedMultiplication(a, b) then

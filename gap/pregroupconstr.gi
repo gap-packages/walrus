@@ -31,3 +31,12 @@ function(G, H)
     return PregroupByTable(eltn, table);
 end);
 
+# Pregroup of free product of entered groups
+InstallGlobalFunction(PregroupOfFreeProductList,
+function(l)
+    local r;
+
+    r.groups := l;
+
+    return Objectify(PregroupOfFreeProductType, r);
+end);
