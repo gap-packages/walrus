@@ -34,11 +34,13 @@ function(map, place, length, val)
 
     coord := coordinateF(map![2], [place, length]);
     v := map![1][coord];
+
+    # we store negative curvature (which irritatingly is positive)
+    # hence we update if we get a *smaller* value
     map![1][coord] := Minimum(v, val);
     if v = infinity then
         AddSet(map![3], [place, length]);
     fi;
-    
 #   if IsBound(map![1][__ID(place)]) then
 #       if IsBound(map![1][__ID(place)][length]) then
 #           if map![1][__ID(place)][length] > val then

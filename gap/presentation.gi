@@ -129,6 +129,7 @@ function(pres)
           rels,
           locs, i;
 
+    # rels := RelatorsAndInverses(pres);
     rels := Relators(pres);
     locs := Locations(pres);
     places := [];

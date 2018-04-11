@@ -118,23 +118,36 @@ function(P)
 
             for P2T in P2s do
                 P2 := P2T[1];  # Place reachable on R1 by consolidated edge
+
                 # P2T[2] location on R2 reachable by the edge
                 len := P2T[3]; # length of consolidated edge
                 v1 := VertexFor(vg, [ InLetter(P2T[2]), OutLetter(P2T[2]), 0 ]);
+                if PregroupInverse(OutLetter(P2T[2])) <> InLetter(Location(P2)) then
+                    Error("assertion failed");
+                fi;
+
                 v := VertexFor(vg, [ InLetter(Location(P2)), OutLetter(Location(P2)), 0 ]);
                 for v2 in OutNeighboursOfVertex(vg, v) do
-                    xi1 := Vertex(pres, v1, v, v2);
-                    if Colour(P2) = "green" then
-                        AddOrUpdate(res, __ID(P2), len, xi1);
-                    elif Colour(P2) = "red" then
-                        next := OneStepRedCase(P2);
-                        # testhack
-                        for n in Keys(next) do
-                            AddOrUpdate(res, n[1],
-                                        len + 1, xi1 + Lookup(next, n[1], n[2]));
-                        od;
-                    else
-                        Error("Invalid colour");
+                    if DigraphVertexLabel(vg, v2)[1] = PregroupInverse(OutLetter(Location(P2))) and
+                       Letter(P2) = DigraphVertexLabel(vg, v2)[2] then
+
+                        xi1 := Vertex(pres, v1, v, v2);
+                        if Colour(P2) = "green" then
+                            if __ID(P2) = 25 then
+                                #Error("beep");
+                            fi;
+ 
+                            AddOrUpdate(res, __ID(P2), len, xi1);
+                        elif Colour(P2) = "red" then
+                            next := OneStepRedCase(P2);
+                            # testhack
+                            for n in Keys(next) do
+                                AddOrUpdate(res, n[1],
+                                            len + 1, xi1 + Lookup(next, n[1], n[2]));
+                            od;
+                        else
+                            Error("Invalid colour");
+                        fi;
                     fi;
                 od;
             od;

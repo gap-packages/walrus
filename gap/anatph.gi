@@ -95,6 +95,7 @@ function(l1, l2)
         j := j + 1;
         if j > Length(r2) then j := 1; fi;
 
+        # Print("r1[", i, "] = ", r1[i], " r2[", j, "] = ", r2[j], "\n");
         if r1[i] <> PregroupInverse(r2[j]) then
             return true;
         fi;
@@ -486,7 +487,6 @@ function(pres, eps)
     # FIXME: To experiment and find out about rounding errors
     #        we try running this thing with rationals
     eps := Rat(eps);
-    # FIXME: Deleted Round() for rationals experiment
     # FIXME: CAREFUL, if the zeta value is wrong, the RSymTester
     #        does not work correctly
     zeta := Minimum(Int(6 * (1 + eps) + 1) - 1,
@@ -526,21 +526,23 @@ function(pres, eps)
                             Info(InfoANATPH, 30,
                                  STRINGIFY("OneStepReachable: ", osrp));
                             if Pq[2] + osrp[2] <= Length(rel) then
-                                psip := Rat(Pq[4])
+                                psip := Pq[4]
                                         + osrp[2] * (1 + eps) / Length(rel)
                                         # storing positive values -> subtract here
-                                        - Rat(Lookup(OneStepReachablePlaces(pplaces[Pq[1]]), osrp[1], osrp[2]));
+                                        - Lookup(OneStepReachablePlaces(pplaces[Pq[1]]), osrp[1], osrp[2]);
                                 Info(InfoANATPH, 30
                                      , STRINGIFY("psi' = "
-                                                , Rat(Pq[4]), " + "
+                                                , Pq[4], " + "
                                                 , osrp[2] * (1+eps) / Length(rel), " - "
                                                 , Lookup(OneStepReachablePlaces(pplaces[Pq[1]]), osrp[1], osrp[2]), " = "
                                                 , psip, "\n")
                                     );
                                 if psip < 0 then
-                                elif (Rat(Pq[4]) > 0) and
+                                elif (Pq[4] > 0) and
                                      (osrp[1] = __ID(Ps)) and
                                      (Pq[2] + osrp[2] = Length(rel)) then
+                                    # Add the place that caused the failure
+                                    Add( L, Immutable( [ osrp[1], Pq[2] + osrp[2], i, psip ] ) );
                                     return [fail, L, Pq];
                                 else
                                     pp := PositionProperty(L, x -> (x[1] = osrp[1])
@@ -548,9 +550,10 @@ function(pres, eps)
                                     if pp = fail then
                                         Add(L, Immutable([osrp[1], Pq[2] + osrp[2], i, psip]) );
                                     else
-                                        if L[pp][4] > psip then
-                                            L[pp] := Immutable([-1, -1, -1, -1]); # to not confuse the loop over "L"
-                                            Add(L, Immutable([osrp[1], Pq[2] + osrp[2], i, psip]));
+                                        if L[pp][4] < psip then
+#                                            L[pp] := Immutable([-1, -1, -1, -1]); # to not confuse the loop over "L"
+                                            # Add(L, Immutable([osrp[1], Pq[2] + osrp[2], i, psip]));
+                                            L[pp] := Immutable([osrp[1], Pq[2] + osrp[2], i, psip]);
                                         fi;
                                     fi;
                                 fi;
