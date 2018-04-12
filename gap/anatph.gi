@@ -370,10 +370,8 @@ function(pres)
                 # We have entered, so backtrack
                 len := len - 1;
             else
-                # Expand if not substring that is equal to 1?
-                if (len = 6)
-                   and (ReduceUPregroupWord(word{[2,3,4]}) <> [])
-                   and (ReduceUPregroupWord(word{[3,4,5]}) <> []) then
+                if (len = 6) then
+                    len := len - 1;
                 else
                     len := len + 1;
                     cand[len] := ShallowCopy(imm[c]);
