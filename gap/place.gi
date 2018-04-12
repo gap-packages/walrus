@@ -97,12 +97,11 @@ function(P)
 
     # Every place that is instanciated with location that is in an instantiation of
     # a place P'.
-    # We're interested in consolidated edges between Relator(P) and Relator(pls)
+    # We're interested in consolidated edges between Relator(P) and Relator(L2)
     # from the locations that P and pls are at.
     #
     # Do we have to check that Relator(P) and Relator(pls) don't entirely cancel?
-    for pls in Places(pres) do
-        L2 := Location(pls); # This is the location on R'
+    for L2 in Locations(pres) do
         R2 := Relator(L2);
 
         # L2 instantiates place on R2, have to test consolidated
@@ -133,10 +132,6 @@ function(P)
 
                         xi1 := Vertex(pres, v1, v, v2);
                         if Colour(P2) = "green" then
-                            if __ID(P2) = 25 then
-                                #Error("beep");
-                            fi;
- 
                             AddOrUpdate(res, __ID(P2), len, xi1);
                         elif Colour(P2) = "red" then
                             next := OneStepRedCase(P2);
