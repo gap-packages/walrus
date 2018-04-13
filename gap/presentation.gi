@@ -104,13 +104,14 @@ end);
 # R'(j,b^(-1),c) such that a reduced diagram only
 # containing R and R' exists
 FindMatchingLocation := function(loc, c)
-    local locs, b, loc2;
+    local locs, b, binv, loc2;
 
     b := OutLetter(loc);
+    binv := PregroupInverse(b);
     locs := Locations(Presentation(loc));
 
     for loc2 in locs do
-        if (InLetter(loc2) = PregroupInverse(b))
+        if (InLetter(loc2) = binv)
            and (OutLetter(loc2) = c)
            and CheckReducedDiagram(loc, loc2) then
             return loc2;

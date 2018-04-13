@@ -198,7 +198,10 @@ function(pres)
         if mat[i][j] = -1 then
             mat[i][j] := wt(i,j);
         else
-            mat[i][j] := Minimum(mat[i][j], mat[i][k] + mat[k][j]);
+            t := mat[i][k] + mat[k][j];
+            if t < mat[i][j] then
+                mat[i][j] := t;
+            fi;
         fi;
     end;
     # Can there be more than one such entry?
