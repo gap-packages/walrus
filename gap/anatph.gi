@@ -481,6 +481,7 @@ function(pres, eps)
     local i, j, rel, R, pplaces,
           places, Ps, P, Q, Pq,
           osrp, # a one-step reachable place
+          osrpp,
           L,
           zeta,
           xi, psip, pp;
@@ -523,19 +524,20 @@ function(pres, eps)
                     Info(InfoANATPH, 30,
                          STRINGIFY("Considering: ", Pq));
                     if Pq[3] = i - 1 then  # Reachable in i - 1 steps
-                        for osrp in Keys(OneStepReachablePlaces(pplaces[Pq[1]])) do
+                        osrpp := OneStepReachablePlaces(pplaces[Pq[1]]);
+                        for osrp in Keys(osrpp) do
                             Info(InfoANATPH, 30,
                                  STRINGIFY("OneStepReachable: ", osrp));
                             if Pq[2] + osrp[2] <= Length(rel) then
                                 psip := Pq[4]
                                         + osrp[2] * (1 + eps) / Length(rel)
                                         # storing positive values -> subtract here
-                                        - Lookup(OneStepReachablePlaces(pplaces[Pq[1]]), osrp[1], osrp[2]);
+                                        - osrpp[osrp];
                                 Info(InfoANATPH, 30
                                      , STRINGIFY("psi' = "
                                                 , Pq[4], " + "
                                                 , osrp[2] * (1+eps) / Length(rel), " - "
-                                                , Lookup(OneStepReachablePlaces(pplaces[Pq[1]]), osrp[1], osrp[2]), " = "
+                                                , osrpp[osrp], " = "
                                                 , psip, "\n")
                                     );
                                 if psip < 0 then

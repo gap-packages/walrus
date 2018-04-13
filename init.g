@@ -3,6 +3,7 @@
 #
 # Reading the declaration part of the package.
 #
+# TODO: This should go
 ReadPackage("anatph", "gap/type-helpers.gd");
 
 if not IsBound(NanosecondsSinceEpoch) then

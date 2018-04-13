@@ -41,6 +41,15 @@ function(p)
     return p![6];
 end);
 
+AddOrUpdate := function(map, key, val)
+    local tmp;
+
+    tmp := map[key];
+    if tmp = fail or val < tmp then
+        map[key] := val;
+    fi;
+end;
+
 InstallGlobalFunction(OneStepRedCase,
 function(P)
     local Q, Ql
@@ -48,10 +57,10 @@ function(P)
           , Lp
           , v, v1, v2
           , res
-          , xi1, xi2, binv, l, onv, pres, vg;
+          , xi1, xi2, binv, l, onv, pres, vg, xi;
 
     pres := Presentation(Relator(P));
-    res := NewANAMap(pres);
+    res := HashMap(1024);
     vg := VertexGraph(pres);
 
     c := Letter(P);
@@ -73,7 +82,8 @@ function(P)
                 #T is accurate correct
                 if DigraphVertexLabel(vg, v2)[2] = x then
                     xi2 := Vertex(pres, v1, v, v2);
-                    AddOrUpdate(res, __ID(Q), 1, xi1 + xi2);
+
+                    AddOrUpdate(res, [ __ID(Q), 1 ], xi1 + xi2);
                 fi;
             od;
         od;
@@ -88,7 +98,7 @@ function(P)
           R, R2, P2, P2s, P2T, i, j, next, res, len, n, l, pres, vg;
 
     pres := Presentation(Relator(P));
-    res := NewANAMap(pres);
+    res := HashMap(1024);
     vg := VertexGraph(pres);
 
     L := Location(P);
@@ -132,13 +142,14 @@ function(P)
 
                         xi1 := Vertex(pres, v1, v, v2);
                         if Colour(P2) = "green" then
-                            AddOrUpdate(res, __ID(P2), len, xi1);
+                            AddOrUpdate(res, [ __ID(P2), len ], xi1);
+
                         elif Colour(P2) = "red" then
                             next := OneStepRedCase(P2);
                             # testhack
                             for n in Keys(next) do
-                                AddOrUpdate(res, n[1],
-                                            len + 1, xi1 + Lookup(next, n[1], n[2]));
+                                AddOrUpdate( res, [ n[1], len + 1 ]
+                                           , xi1 + next[n] );
                             od;
                         else
                             Error("Invalid colour");
