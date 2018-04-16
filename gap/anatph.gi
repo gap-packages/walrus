@@ -305,8 +305,8 @@ function(pres)
     n := Size(pg);
     imm := IntermultMapIDs(pg);
 
-    index := ListWithIdenticalEntries(n ^ 3 + 1, 5/14);
-    index[Length(index)] := [n,n,n];
+    # TODO: This would be better done by a tree structure
+    index := HashMap();
 
     cand := [[2..n]];
 
@@ -385,22 +385,10 @@ function(pres, a, b, c)
 
     n := Size(Pregroup(pres));
     it := ShortRedBlobIndex(pres);
-    return it[coordinateF([n,n,n], [__ID(a), __ID(b), __ID(c)])];
+    v := it[ [__ID(a), __ID(b), __ID(c)] ];
 
-    v := HTValue(it, [__ID(a), __ID(b), __ID(c)]);
-    if v = fail then
-        v := 5/14;
-    fi;
-    return v;
-
-    if IsBound(it[__ID(a)]) then
-        it := it[__ID(a)];
-        if IsBound(it[__ID(b)]) then
-            it := it[__ID(b)];
-            if IsBound(it[__ID(c)]) then
-                return it[__ID(c)][1];
-            fi;
-        fi;
+    if v <> fail then
+        return v;
     fi;
     return 5/14;
 end);
