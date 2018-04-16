@@ -3,7 +3,7 @@ gap> Read(Filename(DirectoriesPackageLibrary("anatph", "tst"), "testexamples.g")
 
 # 
 gap> Read(Filename(DirectoriesPackageLibrary("anatph", "tst"), "F2.out"));
-gap> TestExampleList(pg2, ConvertWordFreeGroup, rgreens2{[1..20]}, results2{[1..20]}, 1/100);
+gap> TestExampleList(pg2, ConvertWordFreeGroup, rgreens2{[1..20]}, results2{[1..20]}, 1/100, false);
 testing: 1...done: true
 testing: 2...done: false
 testing: 3...done: false
@@ -29,7 +29,7 @@ testing: 20...done: true
 
 #
 gap> Read(Filename(DirectoriesPackageLibrary("anatph", "tst"), "F20.out"));
-gap> TestExampleList(pg20, ConvertWordFreeGroup, rgreens20{[1..40]}, results20{[1..40]}, 1/100);
+gap> TestExampleList(pg20, ConvertWordFreeGroup, rgreens20{[1..40]}, results20{[1..40]}, 1/100, false);
 testing: 1...done: true
 testing: 2...done: true
 testing: 3...done: true
@@ -77,7 +77,7 @@ testing: 40...done: true
 
 #
 gap> Read(Filename(DirectoriesPackageLibrary("anatph", "tst"), "psl.out"));
-gap> TestExampleList(pg_psl, ConvertWordPSL, rgreenspsl{ [1..10] }, results_psl{ [1..10] }, 1/100);
+gap> TestExampleList(pg_psl, ConvertWordPSL, rgreenspsl{ [1..10] }, results_psl{ [1..10] }, 1/100, false);
 testing: 1...done: true
 testing: 2...done: true
 testing: 3...done: true
@@ -92,7 +92,7 @@ testing: 10...done: true
 
 #
 gap> Read(Filename(DirectoriesPackageLibrary("anatph", "tst"), "s3s3.out"));
-gap> TestExampleList(pg_s3s3, ConvertWordS3S3, rgreenS3S3{ [1..20] }, resS3S3{ [1..20] }, 1/100);
+gap> TestExampleList(pg_s3s3, ConvertWordS3S3, rgreenS3S3{ [1..20] }, resS3S3{ [1..20] }, 1/100, false);
 testing: 1...done: false
 testing: 2...done: true
 testing: 3...done: false

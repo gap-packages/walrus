@@ -96,25 +96,32 @@ MakeExample := function(pg, converter, rels)
     return NewPregroupPresentation(pg, List(rels, r -> pg_word(pg, converter(ExtRepOfObj(r)))));
 end;
 
-TestExampleList := function(pg, converter, relss, ress, eps)
-    local g, pres, rsym, res, rels;
+TestExampleList := function(pg, converter, relss, ress, eps, timing)
+    local g, pres, rsym, res, rels, setup, run;
 
     res := [];
 
     for rels in [1..Length(relss)] do
         Print("testing: ", rels, "\c");
+        setup := NanosecondsSinceEpoch();
         pres := MakeExample(pg, converter, relss[rels]);
+        setup := NanosecondsSinceEpoch() - setup;
+        run := NanosecondsSinceEpoch();
         rsym := RSymTest(pres, eps);
+        run := NanosecondsSinceEpoch() - run;
         Print("...done: ");
+        if timing then
+            Print("(setup: ", setup/1000000., "ms run: ", run / 1000000., "ms) ");
+        fi;
         if IsList(rsym) then
             Print("false");
             if ress[rels] = true then
-                Print("fail, expect true, but got false");
+                Print(" fail, expect true, but got false");
             fi;
             Add(res, false);
         else
             if ress[rels] = false then
-                Print("fail, expect false, but got true");
+                Print(" fail, expect false, but got true");
             fi;
             Print("true");
             Add(res, true);
