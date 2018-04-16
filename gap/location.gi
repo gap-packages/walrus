@@ -6,7 +6,7 @@
 # NewLocation : IsPregroupRelator -> Int -> IsPregroupLocation
 InstallGlobalFunction(NewLocation,
 function(R,i)
-    return Objectify(IsPregroupLocationType, [R,i,[]]);
+    return Objectify(IsPregroupLocationType, [R, i, [], R[i-1], R[i]]);
 end);
 
 InstallMethod(Relator, "for a location",
@@ -19,31 +19,22 @@ InstallMethod(Position, "for a location",
 
 InstallMethod(InLetter, "for a location",
               [ IsPregroupLocationRep ],
-              l -> l![1][l![2] - 1]);
+              l -> l![4] );
 
 InstallMethod(OutLetter, "for a location",
               [ IsPregroupLocationRep ],
-              l -> l![1][l![2]]);
+              l -> l![5] );
 
 #X Get rid of this
 InstallMethod(__ID, "for a location",
               [ IsPregroupLocationRep ],
-              l -> l![5]);
+              l -> l![6]);
 
 # Return list of Places that have this location
 InstallMethod(Places, "for a location",
               [ IsPregroupLocationRep ],
 function(l)
     return l![3];
-
-#   local p, places;
-#   places := [];
-#   for p in Places(Presentation(l)) do
-#       if Location(p) = l then
-#           Add(places, p);
-#       fi;
-#   od;
-#   return places;
 end);
 
 InstallMethod(NextLocation, "for a location",
