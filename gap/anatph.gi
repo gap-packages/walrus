@@ -95,7 +95,7 @@ function(l1, l2)
         j := j + 1;
         if j > Length(r2) then j := 1; fi;
 
-        # Print("r1[", i, "] = ", r1[i], " r2[", j, "] = ", r2[j], "\n");
+#        # Print("r1[", i, "] = ", r1[i], " r2[", j, "] = ", r2[j], "\n");
         if r1[i] <> PregroupInverse(r2[j]) then
             return true;
         fi;
@@ -160,14 +160,11 @@ function(pres)
         return false;
     end;
     len := Size(pg);
-    backmap := ListWithIdenticalEntries(len * len * 2 + 1, 0);
-    backmap[Length(backmap)] := [len, len, 2];
+    backmap := HashMap();
     for i in [1..Length(v)] do
-        backmap[
-                 coordinateF( backmap[Length(backmap)]
-                            , [__ID(v[i][1]), __ID(v[i][2]), v[i][3] + 1] )
-            ] := i;
+        backmap[ [__ID(v[i][1]), __ID(v[i][2]), v[i][3] + 1] ] := i;
     od;
+
     vg := Digraph(v,e);
     SetDigraphVertexLabels(vg, v);
     vg!.backmap := backmap;
@@ -218,7 +215,7 @@ function(pres)
     vtl := [];
 
     for v in DigraphVertices(vg) do
-        lv := HTCreate([0,0]);
+        lv := HashMap();
         vtl[v] := lv;
 
         vl := DigraphVertexLabel(vg, v);
@@ -231,38 +228,38 @@ function(pres)
                   dist := vgd[v2][v1];
                   if (v1l[3] = 0) and (v2l[3] = 0) then
                       if dist = 1 then
-                          HTAdd(lv, [v1, v2], 1/6);
+                          lv[ [ v1, v2 ] ] := 1/6;
                       elif dist = 2 then
-                          HTAdd(lv, [v1, v2], 1/4);
+                          lv[ [ v1, v2 ] ] := 1/4;
                       elif dist = 3 then
-                          HTAdd(lv, [v1, v2], 3/10);
+                          lv[ [ v1, v2 ] ] := 3/10;
                       elif dist > 3 then
-                          HTAdd(lv, [v1, v2], 1/3);
+                          lv[ [ v1, v2 ] ] := 1/3;
                       else
                           Error("this shouldn't happen");
                       fi;
                   elif (v1l[3] = 0) and (v2l[3] = 1) then
                       if dist = 0 then
-                          HTAdd(lv, [v1,v2], 0);
+                          lv[ [ v1, v2 ] ] := 0;
                       elif dist = 1 then
-                          HTAdd(lv, [v1,v2], 1/6);
+                          lv[ [ v1, v2 ] ] := 1/6;
                       elif dist > 1 then
-                          HTAdd(lv, [v1,v2], 1/4);
+                          lv[ [ v1, v2 ] ] := 1/4;
                       else
                           Error("this shouldn't happen");
                       fi;
                   elif (v1l[3] = 1) and (v2l[3] = 0) then
                       if dist = 1 then
-                          HTAdd(lv, [v1,v2], 0);
+                          lv[ [ v1, v2 ] ] := 0;
                       elif dist = 2 then
-                          HTAdd(lv, [v1,v2], 1/6);
+                          lv[ [ v1, v2 ] ] := 1/6;
                       elif dist > 2 then
-                          HTAdd(lv, [v1,v2], 1/4);
+                          lv[ [ v1, v2 ] ] := 1/4;
                       else
                           Error("this shouldn't happen");
                       fi;
                   elif (v1l[3] = 1) and (v2l[3] = 1) then
-                      HTAdd(lv, [v1,v2], 0);
+                      lv[ [ v1, v2 ] ] := 0;
                       # what if dist=infinity (i.e. no path)
                   else
                       Error("this should not happen");
@@ -278,31 +275,23 @@ InstallGlobalFunction(Vertex,
 function(pres, v1, v, v2)
     local vt, t;
 
-   t := HTValue(VertexTriples(pres)[v], [v1,v2]);
-   if t <> fail then
-       return t;
-   else
-       return 1/3;
-   fi;
+    t := VertexTriples(pres)[v][ [v1,v2] ];
+    if t <> fail then
+        return t;
+    else
+        return 1/3;
+    fi;
 
-
-    #if v1 = fail then
-    #    Error("v1 was fail");
-    #fi;
     vt := VertexTriples(pres)[v];
     for t in vt do
         if (t[1] = v1) and (t[2] = v2) then
             return t[3];
         fi;
     od;
-    Print("for ", [v1,v,v2], " fallback?\n");
     if (v1 = v) or (v = v2) then
-        Error("wat?");
+        Error("This shouldn't happen");
     fi;
     return 1/3;
-    # Or should it?
-    Error("This shouldn't happen");
-    return fail;
 end);
 
 #XXX Computes triples (a,b,c) that are infixes
@@ -310,8 +299,7 @@ end);
 InstallMethod(ShortRedBlobIndex, "for a pregroup presentation",
               [IsPregroupPresentation],
 function(pres)
-    local pg, n, imm, index, nrl, cand, word, nonrletts, len, c
-    ;
+    local pg, n, imm, index, nrl, cand, word, nonrletts, len, c;
 
     pg := Pregroup(pres);
     n := Size(pg);
@@ -319,7 +307,6 @@ function(pres)
 
     index := ListWithIdenticalEntries(n ^ 3 + 1, 5/14);
     index[Length(index)] := [n,n,n];
-        #HTCreate([0,0,0], rec( hashlen := NextPrimeInt(Size(Pregroup(pres)) ^ 3 )));
 
     cand := [[2..n]];
 
@@ -421,19 +408,7 @@ end);
 # TODO: Use a map
 InstallGlobalFunction(VertexFor,
 function(vg, trip)
-    local ltrip;
-    ltrip := [__ID(trip[1]), __ID(trip[2]), trip[3] + 1];
-    return vg!.backmap[coordinateF(vg!.backmap[Length(vg!.backmap)], ltrip)];
-
-    # Linear scan, is not too bad as long
-    # Pregroup is small
-#   local v;
-#   for v in DigraphVertices(vg) do
-#       if DigraphVertexLabel(vg, v) = trip then
-#           return v;
-#       fi;
-#   od;
-#   return fail;
+    return vg!.backmap[ [ __ID(trip[1]), __ID(trip[2]), trip[3] + 1 ] ];
 end);
 
 # Compute a list of
