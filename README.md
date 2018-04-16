@@ -1,44 +1,28 @@
 [![Build Status](https://travis-ci.org/gap-packages/anatph.svg?branch=master)](https://travis-ci.org/gap-packages/anatph)
 [![Code Coverage](https://codecov.io/github/gap-packages/anatph/coverage.svg?branch=master&token=)](https://codecov.io/gh/gap-packages/anatph)
 
-# The GAP 4 package `anatph'
+# A new approach to proving hyperbolicity (ANATPH)
 
-This package contains a proof-of-concept implementation of the "New approach to proving hyperbolicity" algorithm.
+This package contains a proof-of-concept implementation of the "New approach to
+proving hyperbolicity" algorithm.
 
 # /!\ WARNING /!\
 
-This is work-in-progress. There are probably many bugs, and places in which I did not understood
-the algorithm correctly yet. Do not yet trust output of the provided code.
+This is work-in-progress. There are probably many bugs, and places in which I
+did not understood the algorithm correctly yet. Do not yet trust output of the
+provided code.
 
-If you do play with it and find problems, let me know, file an issue, or send me an email, and I will
-be happy to discuss.
+If you do play with it and find problems, let me know, file an issue, or send
+me an email, and I will be happy to discuss.
 
 # Installation
 
-This package should work on any recent [GAP](http://www.gap-system.org) release newer than 4.8.3.
-It depends on the package [digraphs](https://gap-packages.github.io/Digraphs), which itself depends
-on [io](https://gap-packages.github.io/io) and [orb](https://gap-packages.github.io/orb).i
+This package currently only works on a recent [GAP](http://www.gap-system.org) `master` build.
 
-Currently, there is also a dependency on the package [profiling](https://gap-packages.github.io/profiling).
-
-All these packages are distributed with GAP but need compilation of GAP kernel extensions.
-
-At the moment you're stuck with the current state of the git repository. To get an initial version,
-it is best to clone the repository, into your `pkg` folder. To do this, change into your GAP
-installation's pkg folder and execute the following commands:
-
-```sh
-# cd gap4r8/pkg
-# git clone https://github.com/gap-packages/anatph
-```
-You can then at any point update to the latest state of code by changing into the `anatph` directory
-and executing
-```sh
-# git pull
-```
-Alternatively you can download a `zip` archive of the current state of the `anatph` repository available
-at [this link](https://github.com/gap-packages/anatph/archive/master.zip). Unzip this file into your GAP
-`pkg` folder. Keep in mind that you cannot update code or produce patches from it this way.
+It depends on the package [digraphs](https://gap-packages.github.io/Digraphs),
+which itself depends on [io](https://gap-packages.github.io/io) and
+[orb](https://gap-packages.github.io/orb), as well as the package
+[datastructures](https://github.com/gap-packages/datastructures).
 
 Getting Started
 ===============
