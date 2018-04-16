@@ -3,7 +3,7 @@ env:
   global:
     - GAPROOT=gaproot
     - COVDIR=coverage
-    - GAP_PKGS_TO_BUILD="io profiling orb digraphs kbmag"
+    - GAP_PKGS_TO_BUILD="io profiling orb digraphs datastructures kbmag"
 
 addons:
   apt_packages:
@@ -13,6 +13,7 @@ addons:
     - libreadline-dev:i386
     - gcc-multilib
     - g++-multilib
+    - jq
 
 matrix:
   include:
