@@ -84,18 +84,27 @@ end);
 InstallMethod(Locations, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local rel, locs, w, i;
+    local rel, locs, w, i, index;
 
     locs := [];
+
     for rel in RelatorsAndInverses(pres) do
         Append(locs, Locations(rel));
     od;
 
     # Hack
     # In particular this ID is ID within presentation
+    index := HashMap(x -> HashBasic([__ID(x[1]), __ID(x[2])]));
     for i in [1..Length(locs)] do
-        locs[i]![5] := i;
+        locs[i]![6] := i;
+
+        if IsBound( index[ [ InLetter(locs[i]), OutLetter(locs[i]) ] ] ) then
+            Add( index[ [ InLetter(locs[i]), OutLetter(locs[i]) ] ], locs[i] );
+        else
+            index[ [ InLetter(locs[i]), OutLetter(locs[i]) ] ] := [ locs[i] ];
+        fi;
     od;
+    SetLocationIndex(pres, index);
     return locs;
 end);
 
@@ -108,15 +117,19 @@ FindMatchingLocation := function(loc, c)
 
     b := OutLetter(loc);
     binv := PregroupInverse(b);
-    locs := Locations(Presentation(loc));
+    locs := LocationIndex(Presentation(loc));
+    locs := locs[ [binv, c] ];
 
-    for loc2 in locs do
-        if (InLetter(loc2) = binv)
-           and (OutLetter(loc2) = c)
-           and CheckReducedDiagram(loc, loc2) then
-            return loc2;
-        fi;
-    od;
+    if locs <> fail then
+        for loc2 in locs do
+            if
+                # (InLetter(loc2) = binv) and
+                # (OutLetter(loc2) = c) and
+                CheckReducedDiagram(loc, loc2) then
+                return loc2;
+            fi;
+        od;
+    fi;
     return fail;
 end;
 

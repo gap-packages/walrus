@@ -212,11 +212,9 @@ function(pres)
 
     vg := VertexGraph(pres);
     vgd := VertexGraphDistances(pres);
-    vtl := [];
+    vtl := HashMap(16384);
 
     for v in DigraphVertices(vg) do
-        lv := HashMap();
-        vtl[v] := lv;
 
         vl := DigraphVertexLabel(vg, v);
         # Only green vertices
@@ -228,38 +226,38 @@ function(pres)
                   dist := vgd[v2][v1];
                   if (v1l[3] = 0) and (v2l[3] = 0) then
                       if dist = 1 then
-                          lv[ [ v1, v2 ] ] := 1/6;
+                          vtl[ [v, v1, v2 ] ] := 1/6;
                       elif dist = 2 then
-                          lv[ [ v1, v2 ] ] := 1/4;
+                          vtl[ [ v, v1, v2 ] ] := 1/4;
                       elif dist = 3 then
-                          lv[ [ v1, v2 ] ] := 3/10;
+                          vtl[ [ v, v1, v2 ] ] := 3/10;
                       elif dist > 3 then
-                          lv[ [ v1, v2 ] ] := 1/3;
+                          vtl[ [ v, v1, v2 ] ] := 1/3;
                       else
                           Error("this shouldn't happen");
                       fi;
                   elif (v1l[3] = 0) and (v2l[3] = 1) then
                       if dist = 0 then
-                          lv[ [ v1, v2 ] ] := 0;
+                          vtl[ [ v, v1, v2 ] ] := 0;
                       elif dist = 1 then
-                          lv[ [ v1, v2 ] ] := 1/6;
+                          vtl[ [ v, v1, v2 ] ] := 1/6;
                       elif dist > 1 then
-                          lv[ [ v1, v2 ] ] := 1/4;
+                          vtl[ [ v, v1, v2 ] ] := 1/4;
                       else
                           Error("this shouldn't happen");
                       fi;
                   elif (v1l[3] = 1) and (v2l[3] = 0) then
                       if dist = 1 then
-                          lv[ [ v1, v2 ] ] := 0;
+                          vtl[ [ v, v1, v2 ] ] := 0;
                       elif dist = 2 then
-                          lv[ [ v1, v2 ] ] := 1/6;
+                          vtl[ [ v, v1, v2 ] ] := 1/6;
                       elif dist > 2 then
-                          lv[ [ v1, v2 ] ] := 1/4;
+                          vtl[ [ v, v1, v2 ] ] := 1/4;
                       else
                           Error("this shouldn't happen");
                       fi;
                   elif (v1l[3] = 1) and (v2l[3] = 1) then
-                      lv[ [ v1, v2 ] ] := 0;
+                      vtl[ [ v, v1, v2 ] ] := 0;
                       # what if dist=infinity (i.e. no path)
                   else
                       Error("this should not happen");
@@ -275,23 +273,12 @@ InstallGlobalFunction(Vertex,
 function(pres, v1, v, v2)
     local vt, t;
 
-    t := VertexTriples(pres)[v][ [v1,v2] ];
+    t := VertexTriples(pres)[ [v, v1, v2] ];
     if t <> fail then
         return t;
     else
         return 1/3;
     fi;
-
-    vt := VertexTriples(pres)[v];
-    for t in vt do
-        if (t[1] = v1) and (t[2] = v2) then
-            return t[3];
-        fi;
-    od;
-    if (v1 = v) or (v = v2) then
-        Error("This shouldn't happen");
-    fi;
-    return 1/3;
 end);
 
 #XXX Computes triples (a,b,c) that are infixes

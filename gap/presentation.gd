@@ -13,6 +13,7 @@ DeclareObject( "IsPregroupPresentation",
                 , "ShortRedBlobIndex"
                 , "OneStepReachablePlaces"
                 , "LengthLongestRelator"
+                , "LocationIndex"
                ],
                []);
 DeclareOperation("Blob",
