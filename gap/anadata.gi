@@ -33,4 +33,70 @@ function(idx, word, value)
 end);
 
 
+#
+InstallGlobalFunction( DigraphDijkstraST,
+function(graph, s, t)
+    local vertices, dist, prev, queue, u, v, alt;
+
+    dist := [];
+    prev := [];
+    queue := BinaryHeap({x,y} -> x[1] < y[1]);
+
+    for v in DigraphVertices(graph) do
+        dist[v] := infinity;
+        prev[v] := -1;
+    od;
+
+    dist[s] := 0;
+    Push(queue, [0, s]);
+
+    while not IsEmpty(queue) do
+        u := Pop(queue);
+        u := u[2];
+        if u = t then
+            return [ dist, prev ];
+        fi;
+        for v in OutNeighbours(graph)[u] do
+            alt := dist[u] + DigraphEdgeLabel(graph, u, v);
+            if alt < dist[v] then
+                dist[v] := alt;
+                prev[v] := u;
+                Push(queue, [dist[v], v]);
+            fi;
+        od;
+    od;
+end);
+
+InstallGlobalFunction( DigraphDijkstraS,
+function(graph, s, t)
+    local vertices, dist, prev, queue, u, v, alt;
+
+    dist := [];
+    prev := [];
+    queue := BinaryHeap({x,y} -> x[1] < y[1]);
+
+    for v in DigraphVertices(graph) do
+        dist[v] := infinity;
+        prev[v] := -1;
+    od;
+
+    dist[s] := 0;
+    Push(queue, [0, s]);
+
+    while not IsEmpty(queue) do
+        u := Pop(queue);
+        u := u[2];
+        for v in OutNeighbours(graph)[u] do
+            alt := dist[u] + DigraphEdgeLabel(graph, u, v);
+            if alt < dist[v] then
+                dist[v] := alt;
+                prev[v] := u;
+                Push(queue, [dist[v], v]);
+            fi;
+        od;
+    od;
+
+    return [ dist, prev ];
+end);
+
 
