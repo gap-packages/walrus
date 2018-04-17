@@ -174,35 +174,50 @@ end);
 InstallMethod(VertexGraphDistances, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local vg, wt, f;
+    local vg, wt, f, vertices, n, mat, i, j, k, a, b, t, out;
 
     vg := VertexGraph(pres);
-    wt := function(i,j)
-        local a,b;
+
+    vertices := DigraphVertices(vg);
+	  n := DigraphNrVertices(vg);
+    mat := EmptyPlist(n);
+
+    for i in vertices do
+        mat[i] := EmptyPlist(n);
+        for j in vertices do
+            mat[i][j] := infinity;
+        od;
+    od;
+
+    out := OutNeighbours(vg);
+    for i in vertices do
         a := DigraphVertexLabel(vg, i);
-
-        if (a[3] = 0) then # edges originating at green vertex
-                           # have weight 1
-            return 1;
-        elif (a[3] = 1) then # edges originating at red vertex
-                             # have weight 0
-            return 0;
-        fi;
-    end;
-    f := function(mat, i, j, k)
-        local t;
-
-        if mat[i][j] = -1 then
-            mat[i][j] := wt(i,j);
+        if a[3] = 0 then
+            for j in out[i] do
+                mat[i][j] := 1;
+            od;
+        elif (a[3] = 1) then
+            for j in out[i] do
+                mat[i][j] := 0;
+            od;
         else
-            t := mat[i][k] + mat[k][j];
-            if t < mat[i][j] then
-                mat[i][j] := t;
-            fi;
+            Error("This shouldn't happen");
         fi;
-    end;
+    od;
+
+
+    for k in vertices do
+        for i in vertices do
+            for j in vertices do
+                t := mat[i][k] + mat[k][j];
+                if t < mat[i][j] then
+                    mat[i][j] := t;
+                fi;
+            od;
+        od;
+    od;
     # Can there be more than one such entry?
-    return DigraphFloydWarshall(vg, f, infinity, -1 );
+    return mat;
 end);
 
 InstallMethod(VertexTriples, "for a pregroup presentation",
