@@ -13,6 +13,7 @@ function(pg, rels)
     Objectify(IsPregroupPresentationType, res);
     Locations(res);
     Places(res);
+    SetVertexTripleCache(res, HashMap());
 
     return res;
 end);
@@ -81,6 +82,15 @@ function(pres)
     return rlett;
 end);
 
+# An R-letter is a letter that occurs in any (interleave) of
+# a relation (Definition 7.4)
+# XXX: Note that the code below does not do interleaves yet!
+InstallGlobalFunction(IsRLetter,
+function(pres, x)
+    # determine whether x occurs in I(R)
+    return x in RLetters(pres);
+end);
+
 InstallMethod(Locations, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
@@ -122,10 +132,7 @@ FindMatchingLocation := function(loc, c)
 
     if locs <> fail then
         for loc2 in locs do
-            if
-                # (InLetter(loc2) = binv) and
-                # (OutLetter(loc2) = c) and
-                CheckReducedDiagram(loc, loc2) then
+            if CheckReducedDiagram(loc, loc2) then
                 return loc2;
             fi;
         od;
@@ -177,3 +184,49 @@ InstallMethod(LengthLongestRelator, "for a pregroup presentation",
 function(pres)
     return Maximum(List(Relators(pres), Length));
 end);
+
+# Definition 3.3: A diagram is semi-reduced, if no distinct adjacent faces
+# are labelled by ww_1 and w_1^{-1}w for a relator ww_1 and have a common
+# consolidated edge labelled by w and w^-1
+# it is reduced if this also holds for a face incident with itself.
+#
+# test whether label on Relator(l2) beginning at b^(-1) is equal to inverse
+# of label on Relator(l1) ending at b
+InstallGlobalFunction(CheckReducedDiagram,
+function(l1, l2)
+    local i, j, r1, r2, iend, jend;
+
+    r1 := Relator(l1);
+    i := Position(l1);
+    iend := i + 1;
+    if iend > Length(r1) then iend := iend - Length(r1); fi;
+
+    r2 := Relator(l2);
+    j := Position(l2) - 1;
+    jend := j - 1;
+    if jend < 0 then jend := jend + Length(r2); fi;
+
+    # Here inverses should match, or otherwise the passed
+    # locations are already incompatible
+    if r1[i] <> PregroupInverse(r2[j]) then
+        Error("loc1 and loc2 are not compatible");
+        return fail;
+    fi;
+
+    repeat
+        i := i - 1;
+        if i = 0 then i := Length(r1); fi;
+        j := j + 1;
+        if j > Length(r2) then j := 1; fi;
+
+#        # Print("r1[", i, "] = ", r1[i], " r2[", j, "] = ", r2[j], "\n");
+        if r1[i] <> PregroupInverse(r2[j]) then
+            return true;
+        fi;
+    until (i = iend) or (j = jend);
+
+    return false;
+end);
+
+
+

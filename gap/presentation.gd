@@ -20,7 +20,9 @@ DeclareOperation("Blob",
                  [IsPregroupPresentation,
                   IsElementOfPregroup, IsElementOfPregroup, IsElementOfPregroup]);
 
+DeclareAttribute("VertexTripleCache", IsPregroupPresentation, "mutable" );
+
 DeclareOperation("RSymTest", [IsPregroupPresentation, IsObject]);
 
-# IsPregroup -> [IsPregroupRelator] -> IsPregroupPresentation
+DeclareGlobalFunction("IsRLetter");
 DeclareGlobalFunction("NewPregroupPresentation");

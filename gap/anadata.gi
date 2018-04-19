@@ -68,7 +68,7 @@ function(graph, s, t)
 end);
 
 InstallGlobalFunction( DigraphDijkstraS,
-function(graph, s, t)
+function(graph, s)
     local vertices, dist, prev, queue, u, v, alt;
 
     dist := [];

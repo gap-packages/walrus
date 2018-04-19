@@ -5,12 +5,9 @@
 #
 
 # Random utility functions
-DeclareGlobalFunction("IsRLetter");
 DeclareGlobalFunction("RepeedList");
 
 # Proving hyperblicity using RSym
-# DeclareGlobalFunction("Locations");
-# DeclareGlobalFunction("Places");
 DeclareGlobalFunction("CheckReducedDiagram");
 DeclareGlobalFunction("ComputePlaceTriples");
 

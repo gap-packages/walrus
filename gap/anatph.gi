@@ -52,121 +52,62 @@
 #   always use rationals or always use floats)
 #
 
-# An R-letter is a letter that occurs in any (interleave) of
-# a relation (Definition 7.4)
-# XXX: Note that the code below does not do interleaves yet!
-InstallGlobalFunction(IsRLetter,
-function(pres, x)
-    # determine whether x occurs in I(R)
-    return ForAny(RelatorsAndInverses(pres), r -> x in r);
-end);
-
-# Definition 3.3: A diagram is semi-reduced, if no distinct adjacent faces
-# are labelled by ww_1 and w_1^{-1}w for a relator ww_1 and have a common
-# consolidated edge labelled by w and w^-1
-# it is reduced if this also holds for a face incident with itself.
-
-# test whether label on Relator(l2) beginning at b^(-1) is equal to inverse
-# of label on Relator(l1) ending at b
-InstallGlobalFunction(CheckReducedDiagram,
-function(l1, l2)
-    local i, j, r1, r2, iend, jend;
-
-    r1 := Relator(l1);
-    i := Position(l1);
-    iend := i + 1;
-    if iend > Length(r1) then iend := iend - Length(r1); fi;
-
-    r2 := Relator(l2);
-    j := Position(l2) - 1;
-    jend := j - 1;
-    if jend < 0 then jend := jend + Length(r2); fi;
-
-    # Here inverses should match, or otherwise the passed
-    # locations are already incompatible
-    if r1[i] <> PregroupInverse(r2[j]) then
-        Error("loc1 and loc2 are not compatible");
-        return fail;
-    fi;
-
-    repeat
-        i := i - 1;
-        if i = 0 then i := Length(r1); fi;
-        j := j + 1;
-        if j > Length(r2) then j := 1; fi;
-
-#        # Print("r1[", i, "] = ", r1[i], " r2[", j, "] = ", r2[j], "\n");
-        if r1[i] <> PregroupInverse(r2[j]) then
-            return true;
-        fi;
-    until (i = iend) or (j = jend);
-
-    return false;
-end);
-
-
 # Alternative to LocationBlobGraph, only has pairs, coloured Green for location pair
 # and red for intermult pair
 # a bit hacky though
 InstallMethod(VertexGraph, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local v, vd, vg, e, loc, loc2, pg, p, ploc, ploc2, imp, i, backmap, len;
+    local v, vd, vg, e, loc, loc2, pg, p, ploc, ploc2, imp, i, backmap, len, li, labels;
 
     pg := Pregroup(pres);
 
-    # 0 - green, 1 - red
-    v := Set([]);
-    vd := NewDictionary([One(pg), One(pg), 0], true);
-    for loc in Locations(pres) do
-        p := [InLetter(loc), OutLetter(loc), 0];
-        ploc := LookupDictionary(vd, p);
-        if ploc = fail then
-            AddDictionary(vd, p, [loc]);
-            AddSet(v, p);
-        else
-            Add(ploc, loc);
-        fi;
-    od;
-    for imp in IntermultPairs(pg) do
-        p := [imp[1],imp[2], 1];
-        AddDictionary(vd, p, []);
-        AddSet(v, p);
-    od;
+    li := LocationIndex(pres);
+
+    # Green vertices [[a, b], 0] correspond to locations
+    v := List(Keys(li), l -> [l, 0]);
+    # Red vertices correspond to intermult pairs
+    Append(v, List(IntermultPairs(pg), p -> [p, 1]));
 
     e := function(a,b)
-        if (a[3] = 0) and (b[3] = 0) then # both vertices are green
-            if PregroupInverse(a[2]) = b[1] then # There are locations R(i,a,b) and R'(j,b^-1,c)
-                ploc := LookupDictionary(vd, a);
-                ploc2 := LookupDictionary(vd, b);
+        if (a[2] = 0) and (b[2] = 0) then              # both vertices are green
+            if PregroupInverse(a[1][2]) = b[1][1] then # There are locations R(i,a,b) and R'(j,b^-1,c)
+                ploc := li[a[1]];
+                ploc2 := li[b[1]];
                 for loc in ploc do
                     for loc2 in ploc2 do
                         if CheckReducedDiagram(loc, loc2) then
-                            return true;
+                            return 1;
                         fi;
                     od;
                 od;
-                return false;
+                return fail;
             fi;
-        elif (a[3] = 0) and (b[3] = 1) then # a is green, b is red
-            if PregroupInverse(a[2]) = b[1] then # There is location R(i,a,b)
-                return true; # weight 1
+        elif (a[2] = 0) and (b[2] = 1) then            # a is green, b is red
+            if PregroupInverse(a[1][2]) = b[1][1] then # There is location R(i,a,b)
+                return 1;
             fi;
-        elif (a[3] = 1) and (b[3] = 0) then # a is red, b is green
-            if PregroupInverse(a[2]) = b[1] then #
-                return true; # weight 0
+        elif (a[2] = 1) and (b[2] = 0) then            # a is red, b is green
+            if PregroupInverse(a[1][2]) = b[1][1] then #
+                return 0;
             fi;
         fi;
-        return false;
+        return fail;
     end;
-    len := Size(pg);
+
     backmap := HashMap();
     for i in [1..Length(v)] do
-        backmap[ [__ID(v[i][1]), __ID(v[i][2]), v[i][3] + 1] ] := i;
+        backmap[ [__ID(v[i][1][1]), __ID(v[i][1][2]), v[i][2] ] ] := i;
     od;
 
-    vg := Digraph(v,e);
+    vg := Digraph(v, {i,j} -> e(i,j) <> fail);
     SetDigraphVertexLabels(vg, v);
+    labels := MutableCopyMat(OutNeighbours(vg));
+    for i in [1..Length(labels)] do
+        labels[i] := List(labels[i], j -> e(v[i],v[j]));
+    od;
+    SetDigraphEdgeLabels(vg, labels);
+
     vg!.backmap := backmap;
     return vg;
 end);
@@ -192,11 +133,11 @@ function(pres)
     out := OutNeighbours(vg);
     for i in vertices do
         a := DigraphVertexLabel(vg, i);
-        if a[3] = 0 then
+        if a[2] = 0 then
             for j in out[i] do
                 mat[i][j] := 1;
             od;
-        elif (a[3] = 1) then
+        elif (a[2] = 1) then
             for j in out[i] do
                 mat[i][j] := 0;
             od;
@@ -204,7 +145,6 @@ function(pres)
             Error("This shouldn't happen");
         fi;
     od;
-
 
     for k in vertices do
         for i in vertices do
@@ -398,7 +338,7 @@ end);
 # TODO: Use a map
 InstallGlobalFunction(VertexFor,
 function(vg, trip)
-    return vg!.backmap[ [ __ID(trip[1]), __ID(trip[2]), trip[3] + 1 ] ];
+    return vg!.backmap[ [ __ID(trip[1]), __ID(trip[2]), trip[3] ] ];
 end);
 
 # Compute a list of
@@ -463,7 +403,12 @@ function(pres, eps)
     Info(InfoANATPH, 10
          , "zeta: ", zeta);
 
+    # Precompute some things so it doesn't show up in weird places
+    # in the profiling data
+    # Some of this we might want to compute on demand?
+    VertexGraphDistances(pres);
     pplaces := Places(pres);
+    OneStepReachablePlaces(pplaces[1]);
 
     for rel in Relators(pres) do
         Info(InfoANATPH, 20
