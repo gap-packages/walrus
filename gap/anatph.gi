@@ -58,7 +58,7 @@
 InstallMethod(VertexGraph, "for a pregroup presentation",
               [IsPregroupPresentation and IsPregroupPresentationRep],
 function(pres)
-    local v, vd, vg, e, loc, loc2, pg, p, ploc, ploc2, imp, i, backmap, len, li, labels;
+    local mat, v, vd, vg, e, loc, loc2, pg, p, ploc, ploc2, imp, i, backmap, len, li, labels;
 
     pg := Pregroup(pres);
 
@@ -81,7 +81,7 @@ function(pres)
                         fi;
                     od;
                 od;
-                return fail;
+                return infinity;
             fi;
         elif (a[2] = 0) and (b[2] = 1) then            # a is green, b is red
             if PregroupInverse(a[1][2]) = b[1][1] then # There is location R(i,a,b)
@@ -92,7 +92,7 @@ function(pres)
                 return 0;
             fi;
         fi;
-        return fail;
+        return infinity;
     end;
 
     backmap := HashMap();
@@ -100,15 +100,13 @@ function(pres)
         backmap[ [__ID(v[i][1][1]), __ID(v[i][1][2]), v[i][2] ] ] := i;
     od;
 
-    vg := Digraph(v, {i,j} -> e(i,j) <> fail);
+    vg := Digraph(v, {i,j} -> e(i,j) <> infinity);
     SetDigraphVertexLabels(vg, v);
-    labels := MutableCopyMat(OutNeighbours(vg));
-    for i in [1..Length(labels)] do
-        labels[i] := List(labels[i], j -> e(v[i],v[j]));
-    od;
-    SetDigraphEdgeLabels(vg, labels);
-
+ 
+    mat := List(DigraphVertices(vg), i -> List(DigraphVertices(vg), j -> e(v[i], v[j]) ) );
+    vg!.mat := mat;
     vg!.backmap := backmap;
+
     return vg;
 end);
 
@@ -118,33 +116,8 @@ function(pres)
     local vg, wt, f, vertices, n, mat, i, j, k, a, b, t, out;
 
     vg := VertexGraph(pres);
-
     vertices := DigraphVertices(vg);
-	  n := DigraphNrVertices(vg);
-    mat := EmptyPlist(n);
-
-    for i in vertices do
-        mat[i] := EmptyPlist(n);
-        for j in vertices do
-            mat[i][j] := infinity;
-        od;
-    od;
-
-    out := OutNeighbours(vg);
-    for i in vertices do
-        a := DigraphVertexLabel(vg, i);
-        if a[2] = 0 then
-            for j in out[i] do
-                mat[i][j] := 1;
-            od;
-        elif (a[2] = 1) then
-            for j in out[i] do
-                mat[i][j] := 0;
-            od;
-        else
-            Error("This shouldn't happen");
-        fi;
-    od;
+    mat := vg!.mat;
 
 #    SC_FLOYD_WARSHALL(mat);
 
