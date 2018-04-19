@@ -173,13 +173,13 @@ function(pres)
 
         vl := DigraphVertexLabel(vg, v);
         # Only green vertices
-        if (vl[3] = 0) then
+        if (vl[2] = 0) then
           for v1 in InNeighboursOfVertex(vg, v) do
               v1l := DigraphVertexLabel(vg, v1);
               for v2 in OutNeighboursOfVertex(vg, v) do
                   v2l := DigraphVertexLabel(vg, v2);
                   dist := vgd[v2][v1];
-                  if (v1l[3] = 0) and (v2l[3] = 0) then
+                  if (v1l[2] = 0) and (v2l[2] = 0) then
                       if dist = 1 then
                           vtl[ [v, v1, v2 ] ] := 1/6;
                       elif dist = 2 then
@@ -191,7 +191,7 @@ function(pres)
                       else
                           Error("this shouldn't happen");
                       fi;
-                  elif (v1l[3] = 0) and (v2l[3] = 1) then
+                  elif (v1l[2] = 0) and (v2l[2] = 1) then
                       if dist = 0 then
                           vtl[ [ v, v1, v2 ] ] := 0;
                       elif dist = 1 then
@@ -201,7 +201,7 @@ function(pres)
                       else
                           Error("this shouldn't happen");
                       fi;
-                  elif (v1l[3] = 1) and (v2l[3] = 0) then
+                  elif (v1l[2] = 1) and (v2l[2] = 0) then
                       if dist = 1 then
                           vtl[ [ v, v1, v2 ] ] := 0;
                       elif dist = 2 then
@@ -211,7 +211,7 @@ function(pres)
                       else
                           Error("this shouldn't happen");
                       fi;
-                  elif (v1l[3] = 1) and (v2l[3] = 1) then
+                  elif (v1l[2] = 1) and (v2l[2] = 1) then
                       vtl[ [ v, v1, v2 ] ] := 0;
                       # what if dist=infinity (i.e. no path)
                   else

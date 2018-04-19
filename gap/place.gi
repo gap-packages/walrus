@@ -80,7 +80,7 @@ function(P)
             for v2 in onv do
                 #T this check is new, and assuming the paper
                 #T is accurate correct
-                if DigraphVertexLabel(vg, v2)[2] = x then
+                if DigraphVertexLabel(vg, v2)[1][2] = x then
                     xi2 := Vertex(pres, v1, v, v2);
 
                     AddOrUpdate(res, [ __ID(Q), 1 ], xi1 + xi2);
@@ -95,7 +95,8 @@ end);
 InstallGlobalFunction(OneStepGreenCase,
 function(P)
  local L, L2, b, c, loc, pls, is_consoledge, v, v1, v2, xi1, xi2,
-          R, R2, P2, P2s, P2T, i, j, next, res, len, n, l, pres, vg;
+       R, R2, P2, P2s, P2T, i, j, next, res, len, n, l, pres, vg,
+       P2_loc, P2_inletter, P2_outletter, P2_outletterinv, P2_letter;
 
     pres := Presentation(Relator(P));
     res := HashMap(1024);
@@ -127,18 +128,20 @@ function(P)
 
             for P2T in P2s do
                 P2 := P2T[1];  # Place reachable on R1 by consolidated edge
+                
+                P2_loc := Location(P2);
+                P2_inletter := InLetter(P2_loc);
+                P2_outletter := OutLetter(P2_loc);
+                P2_outletterinv := PregroupInverse(P2_outletter);
+                P2_letter := Letter(P2);
 
                 # P2T[2] location on R2 reachable by the edge
                 len := P2T[3]; # length of consolidated edge
                 v1 := VertexFor(vg, [ InLetter(P2T[2]), OutLetter(P2T[2]), 0 ]);
-                if PregroupInverse(OutLetter(P2T[2])) <> InLetter(Location(P2)) then
-                    Error("assertion failed");
-                fi;
-
-                v := VertexFor(vg, [ InLetter(Location(P2)), OutLetter(Location(P2)), 0 ]);
+                v := VertexFor(vg, [ P2_inletter, P2_outletter, 0 ]);
                 for v2 in OutNeighboursOfVertex(vg, v) do
-                    if DigraphVertexLabel(vg, v2)[1] = PregroupInverse(OutLetter(Location(P2))) and
-                       Letter(P2) = DigraphVertexLabel(vg, v2)[2] then
+                    if DigraphVertexLabel(vg, v2)[1][1] = P2_outletterinv and
+                       P2_letter = DigraphVertexLabel(vg, v2)[1][2] then
 
                         xi1 := Vertex(pres, v1, v, v2);
                         if Colour(P2) = "green" then
@@ -154,6 +157,8 @@ function(P)
                         else
                             Error("Invalid colour");
                         fi;
+                    else
+
                     fi;
                 od;
             od;
