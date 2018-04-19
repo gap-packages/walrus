@@ -65,6 +65,7 @@ function(graph, s, t)
             fi;
         od;
     od;
+    return infinity;
 end);
 
 InstallGlobalFunction( DigraphDijkstraS,
