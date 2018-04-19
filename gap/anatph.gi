@@ -146,12 +146,14 @@ function(pres)
         fi;
     od;
 
+#    SC_FLOYD_WARSHALL(mat);
+
     for k in vertices do
         for i in vertices do
             for j in vertices do
-                t := mat[i][k] + mat[k][j];
-                if t < mat[i][j] then
-                    mat[i][j] := t;
+                t := mat[i, k] + mat[k, j];
+                if t < mat[i,j] then
+                    mat[i,j] := t;
                 fi;
             od;
         od;
