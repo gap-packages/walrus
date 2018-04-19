@@ -3,22 +3,17 @@
 #
 # Reading the declaration part of the package.
 #
+if (not IsBound(__ANATPH_C)) and ("anatph" in SHOW_STAT()) then
+  LoadStaticModule("datastructures");
+fi;
+
+if (not IsBound(__ANATPH_C)) and
+   (Filename(DirectoriesPackagePrograms("anatph"), "anatph.so") <> fail) then
+  LoadDynamicModule(Filename(DirectoriesPackagePrograms("anatph"), "anatph.so"));
+fi;
+
 # TODO: This should go
 ReadPackage("anatph", "gap/type-helpers.gd");
-
-if not IsBound(NanosecondsSinceEpoch) then
-  Print("No NanosecondsSinceEpoch, emulating with io\n");
-  NanosecondsSinceEpoch := function()
-    local r;
-    r := IO_gettimeofday();
-    return (r.tv_sec * 1000000 + r.tv_usec) * 1000;
-  end;
-fi;
-
-if ApplicableMethod(Rat, [ 1/2 ]) = fail then
-  Print("No applicable method for Rat with filter IsRat, invoking InstallMethod(Rat, [ IsRat ], IdFunc );");
-  InstallMethod(Rat, [ IsRat ], IdFunc );
-fi;
 
 DeclareInfoClass( "InfoANATPH" );
 
