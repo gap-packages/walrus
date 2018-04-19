@@ -97,21 +97,35 @@ MakeExample := function(pg, converter, rels)
 end;
 
 TestExampleList := function(pg, converter, relss, ress, eps, timing)
-    local g, pres, rsym, res, rels, setup, run;
+    local g, pres, rsym, res, rels, setup, vg, vgd, run;
 
     res := [];
 
     for rels in [1..Length(relss)] do
         Print("testing: ", rels, "\c");
+
         setup := NanosecondsSinceEpoch();
         pres := MakeExample(pg, converter, relss[rels]);
         setup := NanosecondsSinceEpoch() - setup;
+
+        vg := NanosecondsSinceEpoch();
+        VertexGraph(pres);
+        vg := NanosecondsSinceEpoch() - vg;
+
+       	vgd := NanosecondsSinceEpoch();
+        VertexGraphDistances(pres);
+        vgd := NanosecondsSinceEpoch() - vgd;  
+
         run := NanosecondsSinceEpoch();
         rsym := RSymTest(pres, eps);
         run := NanosecondsSinceEpoch() - run;
         Print("...done: ");
         if timing then
-            Print("(setup: ", setup/1000000., "ms run: ", run / 1000000., "ms) ");
+            Print("\n");
+            Print("(setup: ", setup / 1000000., "ms\n",
+                   "vg:    ", vg / 1000000., "ms\n",
+                   "vgd:   ", vgd / 1000000., "ms\n",
+                   "rsym:  ", run / 1000000., "ms)\n");
         fi;
         if IsList(rsym) then
             Print("false");
