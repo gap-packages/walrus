@@ -383,7 +383,9 @@ function(pres, eps)
     # Some of this we might want to compute on demand?
     VertexGraphDistances(pres);
     pplaces := Places(pres);
-    OneStepReachablePlaces(pplaces[1]);
+    if not IsEmpty(pplaces) then
+        OneStepReachablePlaces(pplaces[1]);
+    fi;
 
     for rel in Relators(pres) do
         Info(InfoANATPH, 20
