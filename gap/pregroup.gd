@@ -73,6 +73,9 @@ DeclareAttribute("__ID", IsElementOfPregroup);
 
 # Constructing Pregroups
 
+# Construct a pregroup given a list of red relators over a free group
+DeclareOperation("PregroupByRedRelators", [ IsFreeGroup, IsList ]);
+
 # Make a pregroup from two groups.
 #T This should actually take an embedding of an almalgamating
 #T subgroup in the end to get intermult pairs and interleaving

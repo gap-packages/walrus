@@ -27,14 +27,25 @@ which itself depends on [io](https://gap-packages.github.io/io) and
 Getting Started
 ===============
 
+The below example is taken from https://magma.maths.usyd.edu.au/magma/handbook/text/825
+
 ```gap
 gap> LoadPackage("anatph");;
 ...
-gap> pg := PregroupOfFreeGroup(2);
-<pregroup with 5 elements in table rep>
-gap> pr := RandomPregroupPresentation(pg, 10, 50);
-<pregroup presentation with 4 generators and 10 relators>
-gap> RSymTest(pr, 1/6);
+gap> F := FreeGroup("x", "y");;
+gap> AssignGeneratorVariables(F);;
+#I  Assigned the global variables [ x, y ]
+gap> rred := [y^3]; rgreen := [x^4, (x*y)^4 ];
+gap> RSymTest(F, rred, rgreen, 1/10);
+[ fail, [ [ 1, 0, 0, 0 ], [ 2, 1, 1, 13/120 ], [ 1, 2, 2, 13/60 ], [ 2, 3, 3, 13/40 ], [ 1, 4, 4, 13/30 ] ], [ 2, 3, 3, 13/40 ] ]
+# Let's try breaking up the relator x^4.
+gap> F := FreeGroup("x", "y", "t");;
+gap> AssignGeneratorVariables(F);;
+#I  Global variable `x' is already defined and will be overwritten
+#I  Global variable `y' is already defined and will be overwritten
+#I  Assigned the global variables [ x, y, t ]
+gap> rred := [y^3, x^2*t]; rgreen := [t^2, (x*y)^4];
+gap> RSymTest(F, rred, rgreen, 1/10);
 true
 ```
 

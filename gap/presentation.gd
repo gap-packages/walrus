@@ -22,7 +22,9 @@ DeclareOperation("Blob",
 
 DeclareAttribute("VertexTripleCache", IsPregroupPresentation, "mutable" );
 
-DeclareOperation("RSymTest", [IsPregroupPresentation, IsObject]);
+DeclareOperation("RSymTestOp", [IsPregroupPresentation, IsRat]);
+
+DeclareGlobalFunction("RSymTest");
 
 DeclareGlobalFunction("IsRLetter");
 DeclareGlobalFunction("NewPregroupPresentation");

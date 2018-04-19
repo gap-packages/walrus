@@ -355,8 +355,8 @@ end);
 
 # The RSym tester
 # The epsilon is chosen by the user
-InstallMethod(RSymTest, "for a pregroup presentation, and a float",
-              [IsPregroupPresentation, IsObject],
+InstallMethod(RSymTestOp, "for a pregroup presentation, and a rational",
+              [IsPregroupPresentation, IsRat],
 function(pres, eps)
     local i, j, rel, R, pplaces,
           places, Ps, P, Q, Pq,
@@ -456,3 +456,30 @@ function(pres, eps)
     od;
     return true;
 end);
+
+
+InstallGlobalFunction(RSymTest,
+function(args...)
+    local pg, pgp, rgreen;
+
+    if Length(args) >= 2 then
+        if IsPregroupPresentation(args[1]) then
+            return RSymTestOp(args[1], args[2]);
+        fi;
+        if IsFreeGroup(args[1]) then
+            pg := PregroupByRedRelators(args[1], args[2]);
+            # TODO: Make this a bit more transparent?
+            rgreen := List(args[3], r -> List( LetterRepAssocWord(r)
+                                             , function(c)
+                                                   if c > 0 then return pg[2 * c];
+                                                   else return pg[2 * (-c) + 1];
+                                                   fi;
+                                               end) );
+            pgp := NewPregroupPresentation(pg, rgreen);
+            return RSymTestOp(pgp, args[4]);
+        fi;
+    else
+        # TODO: Usage message
+    fi;
+end);
+
