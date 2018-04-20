@@ -46,16 +46,18 @@ InstallMethod(PregroupByRedRelators,
               "for a free group, and a list of words of length 3",
               [ IsFreeGroup, IsList, IsList ],
 function(F, rred, inv)
-    local n, enams, table, i, j, r, pg, convert, ic;
+    local rkF, n, enams, table, i, j, r, pg, convert, ic;
+
+    rkF := Length(GeneratorsOfGroup(F));
 
     if ForAny(rred, x -> not ( (x in F) and ( Length(x) = 3 ) ) ) then
         Error("rred has to be a list of words of length 3 over F");
     fi;
 
     ic := Length(inv);
-    n := 1 + 2 * Rank(F);
+    n := 1 + 2 * rkF;
     enams := Concatenation(["1"]
-                          , Concatenation( List([1..Rank(F)],
+                          , Concatenation( List([1..rkF],
                                  x -> [ Concatenation("x", String(x))
                                       , Concatenation("X", String(x)) ] )));
     table := NullMat(n, n);
@@ -68,7 +70,7 @@ function(F, rred, inv)
 
     # Multiplication of mutual inverse generators in
     # Free group
-    for i in [2, 4..2 * Rank(F)] do
+    for i in [2, 4..2 * rkF] do
         table[i, i+1] := 1;
         table[i+1, i] := 1;
     od;
