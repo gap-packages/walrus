@@ -74,7 +74,7 @@ DeclareAttribute("__ID", IsElementOfPregroup);
 # Constructing Pregroups
 
 # Construct a pregroup given a list of red relators over a free group
-DeclareOperation("PregroupByRedRelators", [ IsFreeGroup, IsList ]);
+DeclareOperation("PregroupByRedRelators", [ IsFreeGroup, IsList, IsList ]);
 
 # Make a pregroup from two groups.
 #T This should actually take an embedding of an almalgamating

@@ -28,3 +28,4 @@ DeclareGlobalFunction("RSymTest");
 
 DeclareGlobalFunction("IsRLetter");
 DeclareGlobalFunction("NewPregroupPresentation");
+DeclareGlobalFunction("PregroupPresentationFromFp");

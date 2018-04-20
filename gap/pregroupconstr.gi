@@ -44,14 +44,15 @@ end);
 
 InstallMethod(PregroupByRedRelators,
               "for a free group, and a list of words of length 3",
-              [ IsFreeGroup, IsList ],
-function(F, rred)
-    local n, enams, table, i, r, c;
+              [ IsFreeGroup, IsList, IsList ],
+function(F, rred, inv)
+    local n, enams, table, i, j, r, pg, convert, ic;
 
     if ForAny(rred, x -> not ( (x in F) and ( Length(x) = 3 ) ) ) then
         Error("rred has to be a list of words of length 3 over F");
     fi;
 
+    ic := Length(inv);
     n := 1 + 2 * Rank(F);
     enams := Concatenation(["1"]
                           , Concatenation( List([1..Rank(F)],
@@ -67,16 +68,29 @@ function(F, rred)
 
     # Multiplication of mutual inverse generators in
     # Free group
-    for i in [2,4..2 * Rank(F)] do
+    for i in [2, 4..2 * Rank(F)] do
         table[i, i+1] := 1;
         table[i+1, i] := 1;
     od;
 
-    c := function(x)
+    for i in inv do
+        table[ 2*i, 2*i] := 1;
+        table[ 2*i, 2*i + 1] := 0;
+        table[ 2*i + 1, 2*i] := 0;
+        table[ 2*i+1 , 2*i+1] := 1;
+
+    od;
+
+    convert := function(x)
         if x > 0 then
             return 2 * x;
         else
-            return 2 * (-x) + 1;
+            # involution
+            if -x in inv then
+                return 2 * (-x);
+            else
+                return 2 * (-x) + 1;
+            fi;
         fi;
     end;
 
@@ -89,14 +103,17 @@ function(F, rred)
     # - y = x^-1 * z^-1
     # - y^-1 = z * x
     for r in List(rred, LetterRepAssocWord) do
-        table[ c(r[1]), c(r[2]) ] := c(-r[3]);
-        table[ c(-r[3]), c(-r[2]) ] := c(r[1]);
-        table[ c(r[2]), c(r[3]) ] := c(-r[1]);
-        table[ c(-r[2]), c(-r[1]) ] := c(r[3]);
-        table[ c(-r[1]), c(-r[3]) ] := c(r[2]);
-        table[ c(r[3]), c(r[1]) ] := c(-r[2]);
+        table[ convert(r[1]), convert(r[2]) ] := convert(-r[3]);
+        table[ convert(-r[3]), convert(-r[2]) ] := convert(r[1]);
+        table[ convert(r[2]), convert(r[3]) ] := convert(-r[1]);
+        table[ convert(-r[2]), convert(-r[1]) ] := convert(r[3]);
+        table[ convert(-r[1]), convert(-r[3]) ] := convert(r[2]);
+        table[ convert(r[3]), convert(r[1]) ] := convert(-r[2]);
     od;
-    return PregroupByTable(enams, table);
+    pg := PregroupByTable(enams, table);
+    pg!.freegroup := F;
+    pg!.convert_word := w -> List(LetterRepAssocWord(w), l -> pg[convert(l)]);
+    return pg;
 end);
 
 

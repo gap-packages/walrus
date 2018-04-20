@@ -18,6 +18,29 @@ function(pg, rels)
     return res;
 end);
 
+InstallGlobalFunction(PregroupPresentationFromFp,
+function(F, rred, rgreen)
+    local inv, pg, rgreens, inv_test;
+
+    inv_test := function(x)
+        local lr;
+        if Length(x) = 2 then
+            lr := LetterRepAssocWord(x);
+            return lr[1] = lr[2];
+        fi;
+        return false;
+    end;
+
+    # Get the involutions
+    inv := Filtered(rgreen, inv_test);
+    rgreens := Filtered(rgreen, x -> not inv_test(x));
+    pg := PregroupByRedRelators(F, rred, List(inv, x -> LetterRepAssocWord(x)[1]));
+
+    rgreens := List(rgreens, pg!.convert_word);
+
+    return NewPregroupPresentation(pg, rgreens);
+end);
+
 InstallMethod(ViewString
              , "for a pregroup presentation"
              , [IsPregroupPresentationRep],

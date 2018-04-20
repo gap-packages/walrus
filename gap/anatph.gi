@@ -457,25 +457,16 @@ function(pres, eps)
     return true;
 end);
 
-
 InstallGlobalFunction(RSymTest,
 function(args...)
-    local pg, pgp, rgreen;
+    local pg, pgp, rgreen, inv;
 
     if Length(args) >= 2 then
         if IsPregroupPresentation(args[1]) then
             return RSymTestOp(args[1], args[2]);
         fi;
         if IsFreeGroup(args[1]) then
-            pg := PregroupByRedRelators(args[1], args[2]);
-            # TODO: Make this a bit more transparent?
-            rgreen := List(args[3], r -> List( LetterRepAssocWord(r)
-                                             , function(c)
-                                                   if c > 0 then return pg[2 * c];
-                                                   else return pg[2 * (-c) + 1];
-                                                   fi;
-                                               end) );
-            pgp := NewPregroupPresentation(pg, rgreen);
+            pgp := PregroupPresentationFromFp(args[1], args[2], args[3]);
             return RSymTestOp(pgp, args[4]);
         fi;
     else
