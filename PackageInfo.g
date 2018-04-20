@@ -5,67 +5,10 @@ SetPackageInfo( rec(
 
 PackageName := "anatph",
 Subtitle := "A new approach to proving hyperbolicity",
-Version := "0.3",
-Date := "26/11/2017", # dd/mm/yyyy format
+Version := "0.4",
+Date := "20/04/2018", # dd/mm/yyyy format
 
 Persons := [
-  rec(
-       IsAuthor := true,
-       IsMaintainer := true,
-       FirstNames := "Colva",
-       LastName := "Roney-Dougal",
-       WWWHome := "",
-       Email := "colva.roney-dougal@st-andrews.ac.uk",
-       PostalAddress := Concatenation(
-                                       "School of Mathematics\n",
-                                       "University of St Andrews\n",
-                                       "St Andrews, Fife, KY16 9SS\n",
-                                       "United Kingdom" ),
-       Place := "St Andrews",
-       Institution := "University of St Andrews",
-      ),
-  rec(
-       IsAuthor := true,
-       IsMaintainer := true,
-       FirstNames := "Derek",
-       LastName := "Holt",
-       WWWHome := "",
-       Email := "",
-       PostalAddress := Concatenation(
-                                       "School of Mathematics\n",
-                                       "University of Warwick\n",
-                                       "\n",
-                                       "United Kingdom" ),
-       Place := "Warwick",
-       Institution := "University of Warwick",
-      ),
-  rec(
-       IsAuthor := true,
-       IsMaintainer := true,
-       FirstNames := "Richard",
-       LastName := "Parker",
-       WWWHome := "",
-       Email := "",
-       PostalAddress := "United Kingdom",
-       Place := "Cambridge",
-       Institution := "",
-      ),
-  rec(
-       IsAuthor := true,
-       IsMaintainer := true,
-       FirstNames := "Stephen",
-       LastName := "Linton",
-       WWWHome := "",
-       Email := "sal4@st-andrews.ac.uk",
-       PostalAddress := Concatenation(
-                                       "School of Computer Science\n",
-                                       "University of St Andrews\n",
-                                       "Jack Cole Building, North Haugh\n",
-                                       "St Andrews, Fife, KY16 9SX\n",
-                                       "United Kingdom" ),
-       Place := "St Andrews",
-       Institution := "University of St Andrews",
-      ),
   rec(
        IsAuthor := true,
        IsMaintainer := true,
@@ -102,7 +45,10 @@ ArchiveFormats := ".tar.gz",
 ##
 Status := "dev",
 
-AbstractHTML   :=  "",
+AbstractHTML   :=  
+"""An implementation of hyperbolicity testing using an ideas
+by Richard Parker, Derek Holt, Colva Roney-Dougal, Max Neunhöffer,
+and probably quite a few more""",
 
 PackageDoc := rec(
   BookName  := "anatph",
