@@ -12,9 +12,9 @@ GAPINSTALLLIB = $(abs_top_srcdir)/$(BINARCHDIR)/anatph.so
 lib_LTLIBRARIES = anatph.la
 
 anatph_la_SOURCES = src/anatph.c
-anatph_la_CPPFLAGS = $(GAP_CPPFLAGS) -DCONFIG_H
-# Note that the latter is only for GAP 4.4.12
-anatph_la_LDFLAGS = -module -avoid-version
+anatph_la_CPPFLAGS = $(GAP_CPPFLAGS)
+anatph_la_CFLAGS = $(GAP_CFLAGS)
+anatph_la_LDFLAGS = $(GAP_LDFLAGS) -module -avoid-version
 if SYS_IS_CYGWIN
 anatph_la_LDFLAGS += -no-undefined -version-info 0:0:0 -Wl,$(GAPROOT)/bin/$(GAPARCH)/gap.dll
 endif
