@@ -24,6 +24,11 @@ DeclareAttribute("VertexTripleCache", IsPregroupPresentation, "mutable" );
 
 DeclareOperation("RSymTestOp", [IsPregroupPresentation, IsRat]);
 
+DeclareOperation("IsHyperbolic", [IsPregroupPresentation]);
+DeclareOperation("IsHyperbolic", [IsPregroupPresentation, IsRat]);
+DeclareOperation("IsHyperbolic", [IsFreeGroup, IsObject, IsObject, IsRat]);
+
+
 DeclareGlobalFunction("RSymTest");
 
 DeclareGlobalFunction("IsRLetter");

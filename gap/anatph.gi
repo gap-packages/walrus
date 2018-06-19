@@ -474,3 +474,12 @@ function(args...)
     fi;
 end);
 
+InstallMethod(IsHyperbolic, "for a free group, a list, a list, and a rational number",
+              [IsFreeGroup, IsObject, IsObject, IsRat],
+              {freeg, rrel, grel, eps} -> RSymTest(freeg, rrel, grel, eps));
+
+
+InstallMethod(IsHyperbolic, "for a pregroup presentation, and a rational number",
+              [IsPregroupPresentation, IsRat],
+              {pres, eps} -> RSymTest(pres,eps));
+
