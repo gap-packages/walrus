@@ -1,10 +1,9 @@
 <Chapter Label="Overview">
   <Heading>Overview</Heading>
 
-  This package provides the <C>RSymTest</C> procedure, a way of testing a
-  finitely presented group for hyperbolicity.
+  This package provides the operations <C>IsHyperbolic</C>, ways of testing a
+  finitely presented group for hyperbolicity (in the sense of Gromov).
   <P/>
 
-
-
+  The algorithm is based on ideas by Richard Parker.
 </Chapter>
