@@ -1,4 +1,10 @@
 <Chapter Label="Overview">
   <Heading>Overview</Heading>
 
+  This package provides the <C>RSymTest</C> procedure, a way of testing a
+  finitely presented group for hyperbolicity.
+  <P/>
+
+
+
 </Chapter>
