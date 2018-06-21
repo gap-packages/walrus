@@ -1,5 +1,5 @@
 #
-# anatph: A new approach to proving hyperbolicity
+# walrus: Computational Methods for Finitely Generated Monoids and Groups
 #
 # This file is part of the build system of a GAP kernel extension.
 # Requires GNU autoconf, GNU automake and GNU libtool.
@@ -9,8 +9,8 @@ dnl ##
 dnl ## Setup autoconf
 dnl ##
 AC_PREREQ([2.68])
-AC_INIT([anatph], m4_esyscmd([tr -d '\n' < VERSION]))
-AC_CONFIG_SRCDIR([src/anatph.c])
+AC_INIT([walrus], m4_esyscmd([tr -d '\n' < VERSION]))
+AC_CONFIG_SRCDIR([src/walrus.c])
 AC_CONFIG_HEADER([src/pkgconfig.h:cnf/pkgconfig.h.in])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([cnf])
