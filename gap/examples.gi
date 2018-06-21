@@ -39,7 +39,7 @@ end);
 #T see what happens if we present this group as
 #T <x,y,z | x^2, y^3, z^m, (zxY)^n > ?
 #T we push a parameter into the pregroup
-InstallGlobalFunction(TriSH,
+InstallGlobalFunction(TriangleCommutatorQuotient,
 function(m,n)
     local pg;
     pg := PregroupOfFreeProduct( CyclicGroup(IsPermGroup, 2)

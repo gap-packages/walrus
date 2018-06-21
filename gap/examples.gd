@@ -4,7 +4,10 @@
 # can give "IsPregroupPresentation" for method selection
 DeclareGlobalFunction("TriangleGroup");
 DeclareGlobalFunction("JackButtonGroup");
-DeclareGlobalFunction("TriSH");
+
+DeclareGlobalFunction("TriangleCommutatorQuotient");
+DeclareSynonym("TriSH", TriangleCommutatorQuotient);
+
 DeclareGlobalFunction("RandomPregroupPresentation");
 
 DeclareGlobalFunction("RandomPregroupWord");
