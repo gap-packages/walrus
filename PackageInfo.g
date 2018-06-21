@@ -29,9 +29,18 @@ Persons := [
 
 PackageWWWHome := "https://gap-packages.github.io/anatph/",
 
-ArchiveURL     := Concatenation( ~.PackageWWWHome, "anatph-", ~.Version ),
-README_URL     := Concatenation( ~.PackageWWWHome, "README" ),
-PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
+
+SourceRepository := rec( 
+  Type := "git", 
+  URL := "https://github.com/gap-packages/anatph"
+),
+IssueTrackerURL := Concatenation( ~.SourceRepository.URL, "/issues" ),
+PackageWWWHome  := "https://gap-packages.github.io/anatph",
+README_URL      := Concatenation( ~.PackageWWWHome, "/README.md" ),
+PackageInfoURL  := Concatenation( ~.PackageWWWHome, "/PackageInfo.g" ),
+ArchiveURL      := Concatenation( ~.SourceRepository.URL,
+                                 "/releases/download/v", ~.Version,
+                                 "/anatph-", ~.Version ),
 
 ArchiveFormats := ".tar.gz",
 
