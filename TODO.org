@@ -1,3 +1,0 @@
-- consider using the assoc word machinery
-  (this could be dangerous though since we cannot necessarily cancel things,
-   and gap assumes that things are groups about everywhere...)

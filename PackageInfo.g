@@ -1,9 +1,9 @@
 #
-# anatph: A new approach to proving hyperbolicity
+# walrus: Computational Methods for Finitely Generated Monoids and Groups
 #
 SetPackageInfo( rec(
 
-PackageName := "anatph",
+PackageName := "walrus",
 Subtitle := "A new approach to proving hyperbolicity",
 Version := "0.5",
 Date := "20/06/2018", # dd/mm/yyyy format
@@ -27,20 +27,20 @@ Persons := [
       ),
 ],
 
-PackageWWWHome := "https://gap-packages.github.io/anatph/",
+PackageWWWHome := "https://gap-packages.github.io/walrus/",
 
 
 SourceRepository := rec( 
   Type := "git", 
-  URL := "https://github.com/gap-packages/anatph"
+  URL := "https://github.com/gap-packages/walrus"
 ),
 IssueTrackerURL := Concatenation( ~.SourceRepository.URL, "/issues" ),
-PackageWWWHome  := "https://gap-packages.github.io/anatph",
+PackageWWWHome  := "https://gap-packages.github.io/walrus",
 README_URL      := Concatenation( ~.PackageWWWHome, "/README.md" ),
 PackageInfoURL  := Concatenation( ~.PackageWWWHome, "/PackageInfo.g" ),
 ArchiveURL      := Concatenation( ~.SourceRepository.URL,
                                  "/releases/download/v", ~.Version,
-                                 "/anatph-", ~.Version ),
+                                 "/walrus-", ~.Version ),
 
 ArchiveFormats := ".tar.gz",
 
@@ -60,12 +60,12 @@ by Richard Parker, Derek Holt, Colva Roney-Dougal, Max Neunhöffer,
 and probably quite a few more""",
 
 PackageDoc := rec(
-  BookName  := "anatph",
+  BookName  := "walrus",
   ArchiveURLSubset := ["doc"],
   HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
   SixFile   := "doc/manual.six",
-  LongTitle := "A new approach to proving hyperbolicity",
+  LongTitle := "Computational Methods for Finitely Generated Monoids and Groups",
 ),
 
 Dependencies := rec(
@@ -84,7 +84,7 @@ AvailabilityTest := function()
 
 TestFile := "tst/testall.g",
 
-#Keywords := [ "TODO" ],
+Keywords := [ "Finitely Generated", "group", "monoid", "hyperbolic" ],
 
 ));
 

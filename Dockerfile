@@ -10,7 +10,7 @@ RUN    cd /home/gap/inst/gap-master \
     && ./configure \
     && make \
     && cd .. \
-    && git clone https://github.com/gap-packages/anatph \
+    && git clone https://github.com/gap-packages/walrus \
     && cd ../..
 
 COPY . /home/gap

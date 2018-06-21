@@ -1,5 +1,5 @@
 #
-# anatph: A new approach to proving hyperbolicity
+# walrus: Computational Methods for Finitely Generated Monoids and Groups
 #
 DeclareObject("IsPregroupPlace",
                IsObject,

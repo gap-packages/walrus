@@ -1,5 +1,5 @@
 #
-# anatph: A new approach to proving hyperbolicity
+# walrus: Computational Methods for Finitely Generated Monoids and Groups
 #
 # This file is part of the build system of a GAP kernel extension.
 # Requires automake.
@@ -7,24 +7,24 @@
 ACLOCAL_AMFLAGS = -I m4
 
 BINARCHDIR = bin/$(GAPARCH)
-GAPINSTALLLIB = $(abs_top_srcdir)/$(BINARCHDIR)/anatph.so
+GAPINSTALLLIB = $(abs_top_srcdir)/$(BINARCHDIR)/walrus.so
 
-lib_LTLIBRARIES = anatph.la
+lib_LTLIBRARIES = walrus.la
 
-anatph_la_SOURCES = src/anatph.c
-anatph_la_CPPFLAGS = $(GAP_CPPFLAGS)
-anatph_la_CFLAGS = $(GAP_CFLAGS)
-anatph_la_LDFLAGS = $(GAP_LDFLAGS) -module -avoid-version
+walrus_la_SOURCES = src/walrus.c
+walrus_la_CPPFLAGS = $(GAP_CPPFLAGS)
+walrus_la_CFLAGS = $(GAP_CFLAGS)
+walrus_la_LDFLAGS = $(GAP_LDFLAGS) -module -avoid-version
 if SYS_IS_CYGWIN
-anatph_la_LDFLAGS += -no-undefined -version-info 0:0:0 -Wl,$(GAPROOT)/bin/$(GAPARCH)/gap.dll
+walrus_la_LDFLAGS += -no-undefined -version-info 0:0:0 -Wl,$(GAPROOT)/bin/$(GAPARCH)/gap.dll
 endif
 
-all-local: anatph.la
+all-local: walrus.la
 	$(mkdir_p) $(top_srcdir)/$(BINARCHDIR)
 if SYS_IS_CYGWIN
-	cp .libs/anatph.dll $(GAPINSTALLLIB)
+	cp .libs/walrus.dll $(GAPINSTALLLIB)
 else
-	cp .libs/anatph.so $(GAPINSTALLLIB)
+	cp .libs/walrus.so $(GAPINSTALLLIB)
 endif
 	@echo "SUCCESS!"
 

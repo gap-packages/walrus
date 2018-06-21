@@ -1,6 +1,6 @@
 ########################################################################
 #
-# anatph: A new approach to proving hyperbolicity
+# walrus: Computational Methods for Finitely Generated Monoids and Groups
 #
 # WARNING
 #
@@ -456,6 +456,7 @@ function(pres, eps)
     od;
     return true;
 end);
+
 
 InstallGlobalFunction(RSymTest,
 function(args...)

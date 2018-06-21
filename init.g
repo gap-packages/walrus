@@ -1,29 +1,29 @@
 #
-# anatph: A new approach to proving hyperbolicity
+# walrus: Computational Methods for Finitely Generated Monoids and Groups
 #
 # Reading the declaration part of the package.
 #
-if (not IsBound(__ANATPH_C)) and ("anatph" in SHOW_STAT()) then
+if (not IsBound(__ANATPH_C)) and ("walrus" in SHOW_STAT()) then
   LoadStaticModule("datastructures");
 fi;
 
 if (not IsBound(__ANATPH_C)) and
-   (Filename(DirectoriesPackagePrograms("anatph"), "anatph.so") <> fail) then
-  LoadDynamicModule(Filename(DirectoriesPackagePrograms("anatph"), "anatph.so"));
+   (Filename(DirectoriesPackagePrograms("walrus"), "walrus.so") <> fail) then
+  LoadDynamicModule(Filename(DirectoriesPackagePrograms("walrus"), "walrus.so"));
 fi;
 
 # TODO: This should go
-ReadPackage("anatph", "gap/type-helpers.gd");
+ReadPackage("walrus", "gap/type-helpers.gd");
 
 DeclareInfoClass( "InfoANATPH" );
 
-ReadPackage("anatph", "gap/util.gd");
-ReadPackage("anatph", "gap/pregroup.gd");
-ReadPackage("anatph", "gap/relator.gd");
-ReadPackage("anatph", "gap/presentation.gd");
-ReadPackage("anatph", "gap/location.gd");
-ReadPackage("anatph", "gap/place.gd");
-ReadPackage("anatph", "gap/anadata.gd");
-ReadPackage("anatph", "gap/anatph.gd");
-ReadPackage("anatph", "gap/small_pregroups.gd");
-ReadPackage("anatph", "gap/examples.gd");
+ReadPackage("walrus", "gap/util.gd");
+ReadPackage("walrus", "gap/pregroup.gd");
+ReadPackage("walrus", "gap/relator.gd");
+ReadPackage("walrus", "gap/presentation.gd");
+ReadPackage("walrus", "gap/location.gd");
+ReadPackage("walrus", "gap/place.gd");
+ReadPackage("walrus", "gap/anadata.gd");
+ReadPackage("walrus", "gap/anatph.gd");
+ReadPackage("walrus", "gap/small_pregroups.gd");
+ReadPackage("walrus", "gap/examples.gd");
