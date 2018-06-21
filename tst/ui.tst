@@ -14,7 +14,11 @@ gap> AssignGeneratorVariables(F);;
 gap> rred := [y^3, x^2*t];; rgreen := [t^2, (x*y)^4];;
 gap> RSymTest(F, rred, rgreen, 1/10);
 true
+gap> IsHyperbolic(F, rred, rgreen, 1/10);
+true
 gap> pgp := PregroupPresentationFromFp(F, rred, rgreen);
 <pregroup presentation with 6 generators and 1 relators>
 gap> RSymTest(pgp, 1/10);
+true
+gap> IsHyperbolic(pgp, 1/10);
 true
