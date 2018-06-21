@@ -11,7 +11,7 @@ an algorithm due to Richard Parker, described in the paper "Polynomial-time
 proofs that groups are hyperbolic".
 
 For lightweight experimentation with `walrus` you can use the 
-[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/gap-packages/walrus/binder-test?filepath=Polynomial-time%20proofs%20that%20groups%20are%20hyperbolic.ipynb) demo in your browser.
+[MyBinder demo](https://mybinder.org/v2/gh/gap-packages/walrus/binder-test?filepath=Polynomial-time%20proofs%20that%20groups%20are%20hyperbolic.ipynb) in your browser.
 
 Future work on this package will include a more sophisticated implementation of
 the `RSym` procedure, integration of Knuth-Bendix methods from `kbmag` for
@@ -20,12 +20,13 @@ proofs that groups are hyperbolic".
 
 # Installation
 
-This package works with [[GAP](http://www.gap-system.org) version `4.9.1` or
-later, and does not require manual compilation.
+This package works with [GAP](http://www.gap-system.org) version `4.9.1` or
+later, and does not require compilation of a kernel module.
 
-Along with packages that are distributed with GAP, it depends on the as-yet not deposited
-package [datastructures](https://github.com/gap-packages/datastructures), which
-needs to be installed manually.
+Along with packages that are distributed with GAP (`GAPDoc`, `io`, `digraphs`,
+and `kbmag`), it depends on the as-yet not deposited package
+[datastructures](https://github.com/gap-packages/datastructures), which needs
+to be installed and compiled manually.
 
 ## Documentation
 
