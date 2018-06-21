@@ -1,0 +1,8 @@
+  
+  [1X1 [33X[0;0YOverview[133X[101X
+  
+  [33X[0;0YThis  package  provides  the  operations  [10XIsHyperbolic[110X,  ways  of  testing a
+  finitely presented group for hyperbolicity (in the sense of Gromov).[133X
+  
+  [33X[0;0YThe algorithm is based on ideas by Richard Parker.[133X
+  
