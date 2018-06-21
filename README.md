@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/gap-packages/walrus.svg?branch=master)](https://travis-ci.org/gap-packages/walrus)
 [![Code Coverage](https://codecov.io/github/gap-packages/walrus/coverage.svg?branch=master&token=)](https://codecov.io/gh/gap-packages/walrus)
-[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/gap-packages/walrus/binder-test?filepath=Polynomial-time%20proofs%20that%20groups%20are%20hyperbolic.ipynb)
+[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/gap-packages/walrus/master?filepath=Polynomial-time%20proofs%20that%20groups%20are%20hyperbolic.ipynb)
 
 
 # `walrus` - Computational Methods for Finitely Generated Monoids and Groups
@@ -11,7 +11,7 @@ an algorithm due to Richard Parker, described in the paper "Polynomial-time
 proofs that groups are hyperbolic".
 
 For lightweight experimentation with `walrus` you can use the 
-[MyBinder demo](https://mybinder.org/v2/gh/gap-packages/walrus/binder-test?filepath=Polynomial-time%20proofs%20that%20groups%20are%20hyperbolic.ipynb) in your browser.
+[MyBinder demo](https://mybinder.org/v2/gh/gap-packages/walrus/master?filepath=Polynomial-time%20proofs%20that%20groups%20are%20hyperbolic.ipynb) in your browser.
 
 Future work on this package will include a more sophisticated implementation of
 the `RSym` procedure, integration of Knuth-Bendix methods from `kbmag` for
