@@ -78,7 +78,7 @@ end);
 
 InstallGlobalFunction(AnatphTestStandard,
 function()
-    List(DirectoriesPackageLibrary("anatph", "tst/standard"), TestDirectory);
+    List(DirectoriesPackageLibrary("walrus", "tst/standard"), TestDirectory);
 end);
 
 #T Put pregroup relations in (if pregroup is not the pregroup of the free group)
