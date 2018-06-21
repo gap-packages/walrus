@@ -5,8 +5,8 @@ SetPackageInfo( rec(
 
 PackageName := "anatph",
 Subtitle := "A new approach to proving hyperbolicity",
-Version := "0.4",
-Date := "20/04/2018", # dd/mm/yyyy format
+Version := "0.5",
+Date := "20/06/2018", # dd/mm/yyyy format
 
 Persons := [
   rec(
@@ -62,7 +62,7 @@ PackageDoc := rec(
 Dependencies := rec(
   GAP := ">= 4.8",
   NeededOtherPackages := [ [ "GAPDoc", ">= 1.5" ],
-                           [ "datastructures", "0.0.0" ],
+                           [ "datastructures", "0.1.2" ],
                            [ "digraphs", ">= 0.10" ],
                            [ "kbmag", ">= 1.5.4" ]],
   SuggestedOtherPackages := [ [ "profiling", " >= 1.3.0"] ],
