@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/gap-packages/anatph.svg?branch=master)](https://travis-ci.org/gap-packages/anatph)
 [![Code Coverage](https://codecov.io/github/gap-packages/anatph/coverage.svg?branch=master&token=)](https://codecov.io/gh/gap-packages/anatph)
+[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/gap-packages/anatph/binder-test?filepath=Polynomial-time%20proofs%20that%20groups%20are%20hyperbolic.ipynb)
+
 
 # A new approach to proving hyperbolicity (ANATPH)
 
