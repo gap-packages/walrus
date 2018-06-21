@@ -53,3 +53,8 @@ option) any later version.
 
 For details see the files COPYRIGHT.md and LICENSE.
 
+# Why `walrus`?
+
+The Walrus is Captain Flint's ship in Robert Louis Stevenson's *Treasure
+Island*. Sailing ships come with a lot of ropes, which, when you think about
+it, are glorified strings.
