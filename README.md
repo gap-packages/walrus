@@ -7,8 +7,8 @@
 
 The main feature of this package currently is an implementation of methods for 
 proving hyperbolicity of finitely presented groups in polynomial time based on
-an algorithm due to Richard Parker, described in the paper "Polynomial-time
-proofs that groups are hyperbolic".
+an algorithm described in the paper "Polynomial-time proofs that groups are
+hyperbolic".
 
 For lightweight experimentation with `walrus` you can use the 
 [MyBinder demo](https://mybinder.org/v2/gh/gap-packages/walrus/master?filepath=Polynomial-time%20proofs%20that%20groups%20are%20hyperbolic.ipynb) in your browser.

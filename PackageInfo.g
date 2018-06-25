@@ -56,7 +56,7 @@ Status := "dev",
 
 AbstractHTML   :=  
 """An implementation of hyperbolicity testing using an ideas
-by Richard Parker, Derek Holt, Colva Roney-Dougal, Max Neunhöffer,
+by Derek Holt, Max Neunhöffer, Richard Parker, and Colva Roney-Dougal,
 and probably quite a few more""",
 
 PackageDoc := rec(
