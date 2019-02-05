@@ -20,13 +20,11 @@ proofs that groups are hyperbolic".
 
 # Installation
 
-This package works with [GAP](http://www.gap-system.org) version `4.9.1` or
+This package works with [GAP](http://www.gap-system.org) version `4.10.1` or
 later, and does not require compilation of a kernel module.
 
-Along with packages that are distributed with GAP (`GAPDoc`, `io`, `digraphs`,
-and `kbmag`), it depends on the as-yet not deposited package
-[datastructures](https://github.com/gap-packages/datastructures), which needs
-to be installed and compiled manually.
+It depends on the GAP packages `GAPDoc`, `io`, `digraphs`, `kbmag`, and
+`datastructures`.
 
 ## Documentation
 
