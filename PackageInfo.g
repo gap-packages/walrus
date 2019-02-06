@@ -5,7 +5,7 @@ SetPackageInfo( rec(
 
 PackageName := "walrus",
 Subtitle := "A new approach to proving hyperbolicity",
-Version := "0.6",
+Version := "0.7",
 Date := "21/06/2018", # dd/mm/yyyy format
 
 Persons := [
@@ -30,8 +30,8 @@ Persons := [
 PackageWWWHome := "https://gap-packages.github.io/walrus/",
 
 
-SourceRepository := rec( 
-  Type := "git", 
+SourceRepository := rec(
+  Type := "git",
   URL := "https://github.com/gap-packages/walrus"
 ),
 IssueTrackerURL := Concatenation( ~.SourceRepository.URL, "/issues" ),
@@ -54,7 +54,7 @@ ArchiveFormats := ".tar.gz",
 ##
 Status := "dev",
 
-AbstractHTML   :=  
+AbstractHTML   :=
 """An implementation of hyperbolicity testing using an ideas
 by Derek Holt, Max Neunhöffer, Richard Parker, and Colva Roney-Dougal,
 and probably quite a few more""",
@@ -69,9 +69,9 @@ PackageDoc := rec(
 ),
 
 Dependencies := rec(
-  GAP := ">= 4.8",
+  GAP := ">= 4.10",
   NeededOtherPackages := [ [ "GAPDoc", ">= 1.5" ],
-                           [ "datastructures", "0.1.2" ],
+                           [ "datastructures", "0.2.3" ],
                            [ "digraphs", ">= 0.10" ],
                            [ "kbmag", ">= 1.5.4" ]],
   SuggestedOtherPackages := [ [ "profiling", " >= 1.3.0"] ],
