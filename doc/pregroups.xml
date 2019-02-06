@@ -3,6 +3,9 @@
     Pregroups
   </Heading>
 
+  Pregroups are the fundamental building block of pregroup presentations used in the hyperbolicity tester.
+  The following section describes how to create pregroups from multiplication tables, free groups, and free products of finite groups.
+
   <Section>
     <Heading>Creating pregroups</Heading>
 

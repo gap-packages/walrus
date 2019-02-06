@@ -11,9 +11,8 @@ AutoDoc( "walrus",
          rec( scaffold := rec( includes :=
                                [ "overview.xml"
                                , "pregroups.xml"
-                               , "presentation.xml" ] )
+                               , "presentation.xml"
+                               , "magmainterface.xml" ] )
             , autodoc := true ) );
-
-PrintTo("VERSION", PackageInfo("anatph")[1].Version);
 
 QUIT;
