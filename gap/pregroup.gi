@@ -170,7 +170,7 @@ end);
 
 InstallMethod(Size
              , "for a pregroup in table rep"
-             , [IsPregroupTableRep],
+             , [IsPregroup and IsPregroupTableRep],
 function(pg)
     return Length(pg!.elts);
 end);
