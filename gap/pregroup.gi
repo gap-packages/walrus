@@ -377,6 +377,14 @@ function(pge)
     fi;
 end);
 
+InstallMethod(InverseOp
+             , "for a pregroup element"
+             , [IsElementOfPregroupRep]
+             , 0,
+function(x)
+    return PregroupInverse(x);
+end);
+
 #XXX Is fail as a result for multiplication acceptable?
 InstallMethod(\*
              , "for pregroup elements"
