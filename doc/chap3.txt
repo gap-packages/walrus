@@ -1,0 +1,19 @@
+  
+  [1X3 [33X[0;0YThe MAGMA-comatible interface[133X[101X
+  
+  [33X[0;0YAn  implementation  of  the hyperbolicity testing algorithm and word-problem
+  solver  exist  in  MAGMA as well. For ease of comparison between the results
+  these  two  systems  give,  [5Xwalrus[105X  contains  an  interface  that aims to be
+  compatible  with  MAGMA's. Please refer to MAGMA's documentation for further
+  details.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XF := FreeGroup("x", "y");;[127X[104X
+    [4X[25Xgap>[125X [27XAssignGeneratorVariables(F);;[127X[104X
+    [4X[25Xgap>[125X [27Xrred := [ y^3 ];;[127X[104X
+    [4X[25Xgap>[125X [27Xrgreen := [ x^4, (x*y)^4 ];;[127X[104X
+    [4X[25Xgap>[125X [27XIsHyperbolic(F, rred, rgreen, 1/10);[127X[104X
+    [4X[28X[ fail, [ [ 1, 0, 0, 0 ], [ 2, 1, 1, 13/120 ], [ 1, 2, 2, 13/60 ],[128X[104X
+    [4X[28X          [ 2, 3, 3, 13/40 ], [ 1, 4, 4, 13/30 ] ], [ 2, 3, 3, 13/40 ] ][128X[104X
+  [4X[32X[104X
+  

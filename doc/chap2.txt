@@ -1,6 +1,11 @@
   
   [1X2 [33X[0;0YPregroups[133X[101X
   
+  [33X[0;0YPregroups  are the fundamental building block of pregroup presentations used
+  in  the  hyperbolicity tester. The following section describes how to create
+  pregroups  from  multiplication  tables,  free  groups, and free products of
+  finite groups.[133X
+  
   
   [1X2.1 [33X[0;0YCreating pregroups[133X[101X
   
@@ -113,6 +118,4 @@
     [4X[28Xtrue[128X[104X
     [4X[28X        [128X[104X
   [4X[32X[104X
-  
-  [33X[0;0Y [133X
   

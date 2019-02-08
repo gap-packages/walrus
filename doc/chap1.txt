@@ -4,5 +4,31 @@
   [33X[0;0YThis  package  provides  the  operations  [10XIsHyperbolic[110X,  ways  of  testing a
   finitely presented group for hyperbolicity (in the sense of Gromov).[133X
   
-  [33X[0;0YThe algorithm is based on ideas by Richard Parker.[133X
+  [33X[0;0YThe  algorithm  is  based  on  ideas  by  Richard  Parker, and the theory is
+  described in the paper "Polynomial time proofs that groups are hyperbolic".[133X
+  
+  
+  [1X1.1 [33X[0;0YTesting Hyperbolicity[133X[101X
+  
+  [33X[0;0YThe  main  function  of  this  package is the so-called RSym-tester. Given a
+  (pregroup)  presentation of a group, this function will try to prove whether
+  the group defined by the presentation is hyperbolic, and will give an answer
+  in  polynomial  time.  Since hyperbolicity is undecidable, the answer can be
+  positive,  negative,  or  inconclusive.  As  a  simple  example consider the
+  following.  Triangle groups are known to be hyperbolic when the sum [22Xfrac1p +
+  frac1q   +   frac1r[122X   is   less  than  [22X1[122X.  The  parameter  for  [2XIsHyperbolic[102X
+  ([14X???IsHyperbolic???[114X) gives the algorithm a hint how hard it should try.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xtriangle := TriangleGroup(2,3,7);[127X[104X
+    [4X[28X<pregroup presentation with 3 generators and 1 relators>[128X[104X
+    [4X[25Xgap>[125X [27XIsHyperbolic(triangle, 1/6);[127X[104X
+    [4X[28Xtrue[128X[104X
+    [4X[25Xgap>[125X [27Xtriangle := TriangleGroup(3,3,3);[127X[104X
+    [4X[28X<pregroup presentation with 3 generators and 1 relators>[128X[104X
+    [4X[25Xgap>[125X [27XIsHyperbolic(triangle, 1/6);[127X[104X
+    [4X[28X[ fail, [ [ 1, 0, 0, 0 ], [ 2, 1, 1, 1/36 ], [ 1, 2, 2, 1/18 ],[128X[104X
+    [4X[28X          [ 2, 3, 3, 1/12 ], [ 1, 4, 4, 1/9 ], [ 2, 5, 5, 5/36 ],[128X[104X
+    [4X[28X          [ 1, 6, 6, 1/6 ] ], [ 2, 5, 5, 5/36 ] ][128X[104X
+  [4X[32X[104X
   
