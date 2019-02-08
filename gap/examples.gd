@@ -56,10 +56,10 @@ DeclareGlobalFunction("RandomTriangleQuotient");
 #! @Arguments
 #! @Returns a pregroup presentation
 #! @Description
-#! The Jack-Button group, as suggested to me by Alan Logan. It is not known yet whether this group
-#! is hyperbolic.
-#! The pregroup is the pregroup of the free group of rank 3 with generators <M>a</M>,<M>b</M>, and <M>t</M>
-#! and two relators <M>t^{-1}atb^{-1}a^{-1}</M> and <M>t^{-1}ata^{-1}b^{-1}</M>.
+#! The Jack-Button group, as suggested to me by Alan Logan. It is not known yet
+#! whether this group is hyperbolic. The pregroup is the pregroup of the free
+#! group of rank 3 with generators <M>a</M>,<M>b</M>, and <M>t</M> and two
+#! relators <M>t^{-1}atb^{-1}a^{-1}</M> and <M>t^{-1}ata^{-1}b^{-1}</M>.
 #! @BeginExample
 #! gap> J := JackButtonGroup();
 #! <pregroup presentation with 6 generators and 2 relators>
@@ -80,8 +80,9 @@ DeclareGlobalFunction("RandomPregroupPresentation");
 #! @Arguments pg, len
 #! @Returns a list of integers
 #! @Description
-#! A random list of pregroup element numbers of the pregroup <A>pregroup</A> of length
-#! <A>len</A>. When interpreted as a pregroup word this is cyclically reduced.
+#! A random list of pregroup element numbers of the pregroup <A>pregroup</A> of
+#! length <A>len</A>. When interpreted as a pregroup word this is cyclically
+#! reduced.
 DeclareGlobalFunction("RandomPregroupWord");
 
 
