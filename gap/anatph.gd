@@ -40,9 +40,23 @@
 #!          [ 1, 6, 6, 1/6 ] ], [ 2, 5, 5, 5/36 ] ]
 #! @EndExample
 #!
-# TODO: Maybe move this to a separate file?
+#! One can also create pregroup presentations by giving a pregroup
+#! and relators, that is, words over the pregroup.
+#! @BeginExample
+#! gap> G1 := CyclicGroup(3);
+#! <pc group of size 3 with 1 generators>
+#! gap> pg := PregroupOfFreeProduct(G1,G1);
+#! <pregroup with 5 elements in table rep>
+#! gap> rel := [2,5,3,4,3,4,3,4,3,5,2,4,3,5,2,4,3,5,3,4,2,4,3,5];
+#! [ 2, 5, 3, 4, 3, 4, 3, 4, 3, 5, 2, 4, 3, 5, 2, 4, 3, 5, 3, 4, 2, 4, 3, 5 ]
+#! gap> pgp := NewPregroupPresentation(pg,[pg_word(pg,rel)]);
+#! <pregroup presentation with 4 generators and 1 relators>
+#! gap> res := RSymTest(pgp, 0);;
+#! gap> res[1];
+#! fail
+#! @EndExample
 #!
-#! @Chapter The MAGMA-compatible interface
+#! @Section The MAGMA-compatible interface
 #!
 #! An implementation of the hyperbolicity testing algorithm and word-problem
 #! solver exist in MAGMA as well. For ease of comparison between the results
@@ -60,6 +74,8 @@
 #!           [ 2, 3, 3, 13/40 ], [ 1, 4, 4, 13/30 ] ], [ 2, 3, 3, 13/40 ] ]
 #! @EndExample
 
+
+# TODO: Move these or replace them
 # Random utility functions
 DeclareGlobalFunction("RepeedList");
 
@@ -71,8 +87,6 @@ DeclareGlobalFunction("ComputePlaceTriples");
 DeclareGlobalFunction("Vertex");
 
 DeclareGlobalFunction("ShortBlobWords");
-# DeclareGlobalFunction("Blob");
-# DeclareGlobalFunction("RSymTester");
 
 # Location blob graph has by convention set of locations first
 # in vertex set for quick lookup
