@@ -22,22 +22,38 @@ DeclareGlobalFunction("PregroupPresentationFromFp");
 
 # @Section Filters, Attributes, and Properties
 # TODO: Untangle this
-DeclareObject( "IsPregroupPresentation",
-                   IsObject,
-                   IsComponentObjectRep and IsAttributeStoringRep,
-                   ["Pregroup", "Generators",
-                    "Relators", "RelatorsAndInverses",
-                    "Locations", "Places", "Bases", "Powers",
-                    # , "Roots",
-                    "VertexGraph", "VertexGraphDistances", "VertexTriples",
-                    "RLetters", "PlaceTriples"
-                    #                , "ShortRedBlobs"
-                    , "ShortRedBlobIndex"
-                    , "OneStepReachablePlaces"
-                    , "LengthLongestRelator"
-                    , "LocationIndex"
-                   ],
-                   []);
+
+DeclareCategory("IsPregroupPresentation", IsObject);
+DeclareRepresentation( "IsPregroupPresentationRep"
+                     , IsPregroupPresentation and IsComponentObjectRep and IsAttributeStoringRep
+                     , [] );
+
+BindGlobal( "PregroupPresentationType"
+          , NewType( NewFamily( "PregroupPresentationFam")
+                   , IsPregroupPresentationRep ) );
+
+DeclareAttribute("Pregroup", IsPregroupPresentation );
+DeclareAttribute("Generators", IsPregroupPresentation );
+DeclareAttribute("Relators", IsPregroupPresentation );
+DeclareAttribute("RelatorsAndInverses", IsPregroupPresentation );
+DeclareAttribute("Locations", IsPregroupPresentation );
+DeclareAttribute("Places", IsPregroupPresentation );
+DeclareAttribute("Bases", IsPregroupPresentation );
+DeclareAttribute("Powers", IsPregroupPresentation );
+DeclareAttribute("VertexGraph", IsPregroupPresentation );
+DeclareAttribute("VertexGraphDistances", IsPregroupPresentation );
+DeclareAttribute("VertexTriples", IsPregroupPresentation );
+DeclareAttribute("RLetters", IsPregroupPresentation );
+DeclareAttribute("PlaceTriples", IsPregroupPresentation );
+DeclareAttribute("ShortRedBlobIndex", IsPregroupPresentation );
+DeclareAttribute("OneStepReachablePlaces", IsPregroupPresentation );
+DeclareAttribute("LengthLongestRelator", IsPregroupPresentation );
+DeclareAttribute("LocationIndex", IsPregroupPresentation );
+
+# TODO: Obsolete?
+# "Roots",
+# "ShortRedBlobs"
+
 DeclareOperation("Blob",
                  [IsPregroupPresentation,
                   IsElementOfPregroup, IsElementOfPregroup, IsElementOfPregroup]);

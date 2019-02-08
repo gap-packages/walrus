@@ -10,7 +10,7 @@ function(pg, rels)
     res := rec( pg := pg );
     res.rels := List([1..Length(rels)], x -> NewPregroupRelator(res, rels[x], x));
     # Orgh. Make sure Locations and Places are all computed for the moment
-    Objectify(IsPregroupPresentationType, res);
+    Objectify(PregroupPresentationType, res);
     Locations(res);
     Places(res);
     SetVertexTripleCache(res, HashMap());
