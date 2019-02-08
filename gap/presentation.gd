@@ -20,6 +20,13 @@ DeclareGlobalFunction("NewPregroupPresentation");
 #! <A>F</A> and <A>rred</A> with relators <A>rgreen</A>.
 DeclareGlobalFunction("PregroupPresentationFromFp");
 
+#! @Arguments presentation
+#! @Returns a finitely presented group
+#! @Description
+#! Converts the pregroup presentation <A>presentation</A> into
+#! a finitely presented group.
+DeclareGlobalFunction("PregroupPresentationToFpGroup");
+
 # @Section Filters, Attributes, and Properties
 # TODO: Untangle this
 
@@ -91,6 +98,28 @@ DeclareOperation("IsHyperbolic", [IsPregroupPresentation, IsRat]);
 #! @Arguments F, rred, rgreen, epsilon
 DeclareOperation("IsHyperbolic", [IsFreeGroup, IsObject, IsObject, IsRat]);
 #! @EndGroup
+
+
+
+#! @Section Input and Output of Pregroup Presentations
+
+#! @Description
+DeclareGlobalFunction("PregroupPresentationToKBMAG");
+#! @Description
+DeclareGlobalFunction("PregroupPresentationToStream");
+#! @Description
+DeclareGlobalFunction("PregroupPresentationFromStream");
+# A simpler output format
+#! @Description
+DeclareGlobalFunction("PregroupPresentationToSimpleStream");
+#! @Description
+DeclareGlobalFunction("PregroupPresentationToFile");
+#! @Description
+DeclareGlobalFunction("PregroupPresentationFromFile");
+#! @Description
+DeclareGlobalFunction("PregroupPresentationToSimpleFile");
+#! @Description
+DeclareGlobalFunction("LogPregroupPresentation");
 
 
 
