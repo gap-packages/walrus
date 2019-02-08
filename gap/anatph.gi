@@ -373,9 +373,9 @@ function(pres, eps)
     #        does not work correctly
     zeta := Minimum(Int(6 * (1 + eps) + 1) - 1,
                     LengthLongestRelator(pres));
-    Info(InfoANATPH, 10
+    Info(InfoWalrus, 10
          , "RSymTest start");
-    Info(InfoANATPH, 10
+    Info(InfoWalrus, 10
          , "zeta: ", zeta);
 
     # Precompute some things so it doesn't show up in weird places
@@ -388,11 +388,11 @@ function(pres, eps)
     fi;
 
     for rel in Relators(pres) do
-        Info(InfoANATPH, 20
+        Info(InfoWalrus, 20
              , "relator: ", ViewString(rel), "\n");
         places := Places(rel);
         for Ps in places do
-            Info(InfoANATPH, 20
+            Info(InfoWalrus, 20
                  , "  start place: "
                  , ViewString(Ps)
                  , "\n" );
@@ -404,23 +404,23 @@ function(pres, eps)
             # - q[3] is the number of steps that q[1] is from Ps
             # - q[4] is a curvature value
             for i in [1..zeta] do
-                Info(InfoANATPH, 30
+                Info(InfoWalrus, 30
                      , STRINGIFY("L = ", ViewString(L)), ", i = ", i);
                 for Pq in L do      # Pq is for "PlaceQuadruple", which is
                                     # a silly name
-                    Info(InfoANATPH, 30,
+                    Info(InfoWalrus, 30,
                          STRINGIFY("Considering: ", Pq));
                     if Pq[3] = i - 1 then  # Reachable in i - 1 steps
                         osrpp := OneStepReachablePlaces(pplaces[Pq[1]]);
                         for osrp in Keys(osrpp) do
-                            Info(InfoANATPH, 30,
+                            Info(InfoWalrus, 30,
                                  STRINGIFY("OneStepReachable: ", osrp));
                             if Pq[2] + osrp[2] <= Length(rel) then
                                 psip := Pq[4]
                                         + osrp[2] * (1 + eps) / Length(rel)
                                         # storing positive values -> subtract here
                                         - osrpp[osrp];
-                                Info(InfoANATPH, 30
+                                Info(InfoWalrus, 30
                                      , STRINGIFY("psi' = "
                                                 , Pq[4], " + "
                                                 , osrp[2] * (1+eps) / Length(rel), " - "

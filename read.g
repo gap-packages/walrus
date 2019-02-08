@@ -4,12 +4,6 @@
 # Reading the implementation part of the package.
 #
 
-# In principle this is naughty. This has been fixed in -master
-# and will appear in 4.9 though
-if ViewString(true) = "<object>" then
-    InstallMethod(ViewString, "for a boolean", true, [ IsBool ], 5, String);
-fi;
-
 ReadPackage("walrus", "gap/util.gi");
 ReadPackage("walrus", "gap/pregroup.gi");
 ReadPackage("walrus", "gap/pregroupoffreegroup.gi");

@@ -3,19 +3,7 @@
 #
 # Reading the declaration part of the package.
 #
-if (not IsBound(__ANATPH_C)) and ("walrus" in SHOW_STAT()) then
-  LoadStaticModule("datastructures");
-fi;
-
-if (not IsBound(__ANATPH_C)) and
-   (Filename(DirectoriesPackagePrograms("walrus"), "walrus.so") <> fail) then
-  LoadDynamicModule(Filename(DirectoriesPackagePrograms("walrus"), "walrus.so"));
-fi;
-
-# TODO: This should go
-ReadPackage("walrus", "gap/type-helpers.gd");
-
-DeclareInfoClass( "InfoANATPH" );
+DeclareInfoClass( "InfoWalrus" );
 
 ReadPackage("walrus", "gap/util.gd");
 ReadPackage("walrus", "gap/pregroup.gd");
