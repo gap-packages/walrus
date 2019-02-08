@@ -6,7 +6,6 @@ DeclareGlobalFunction("pg_word");
 DeclareGlobalFunction("Repeat");
 
 DeclareGlobalFunction("MaxPowerK");
-DeclareGlobalFunction("MaxPowerK2");
 
 DeclareGlobalFunction("AnatphTestStandard");
 
