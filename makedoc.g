@@ -8,11 +8,9 @@ if fail = LoadPackage("AutoDoc", ">= 2014.03.27") then
 fi;
 
 AutoDoc( "walrus",
-         rec( scaffold := rec( includes :=
-                               [ "overview.xml"
-                               , "pregroups.xml"
-                               , "presentation.xml"
-                               , "magmainterface.xml" ] )
-            , autodoc := true ) );
+         rec( scaffold := true # scaffold := rec( includes :=
+              #                 [ "overview.xml"
+              #                 , "magmainterface.xml" ] )
+            , autodoc := rec( files := [ "doc/Intros.autodoc" ] ) ) );
 
 QUIT;
