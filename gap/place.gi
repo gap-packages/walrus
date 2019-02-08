@@ -6,7 +6,7 @@
 InstallGlobalFunction(NewPlace,
 function(loc, c, colour)
     local p;
-    p := Objectify(IsPregroupPlaceType, [loc,c,colour]);
+    p := Objectify(PregroupPlaceType, [loc,c,colour]);
     Add(loc![3], p);
     return p;
 end);
