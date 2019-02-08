@@ -6,7 +6,7 @@
 # NewLocation : IsPregroupRelator -> Int -> IsPregroupLocation
 InstallGlobalFunction(NewLocation,
 function(R,i)
-    return Objectify(IsPregroupLocationType, [R, i, [], R[i-1], R[i]]);
+    return Objectify(PregroupLocationType, [R, i, [], R[i-1], R[i]]);
 end);
 
 InstallMethod(Relator, "for a location",
