@@ -7,7 +7,7 @@ DeclareGlobalFunction("Repeat");
 
 DeclareGlobalFunction("MaxPowerK");
 
-DeclareGlobalFunction("AnatphTestStandard");
+DeclareGlobalFunction("WalrusTestStandard");
 
 DeclareGlobalFunction("PregroupPresentationToFpGroup");
 DeclareGlobalFunction("PregroupPresentationToKBMAG");

@@ -42,7 +42,7 @@ function(rel)
     return [ rel, 1 ];
 end);
 
-InstallGlobalFunction(AnatphTestStandard,
+InstallGlobalFunction(WalrusTestStandard,
 function()
     List(DirectoriesPackageLibrary("walrus", "tst/standard"), TestDirectory);
 end);
@@ -80,7 +80,6 @@ function(pres)
 
     return F / rels;
 end);
-
 
 # Writes out pregroup as a multiplication table
 # and then the relators, intended as a simple exchange
