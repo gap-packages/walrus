@@ -59,7 +59,7 @@ function(P)
           , res
           , xi1, xi2, binv, l, onv, pres, vg, xi;
 
-    pres := Presentation(Relator(P));
+    pres := PregroupPresentationOf(Relator(P));
     res := HashMap(1024);
     vg := VertexGraph(pres);
 
@@ -98,7 +98,7 @@ function(P)
        R, R2, P2, P2s, P2T, i, j, next, res, len, n, l, pres, vg,
        P2_loc, P2_inletter, P2_outletter, P2_outletterinv, P2_letter;
 
-    pres := Presentation(Relator(P));
+    pres := PregroupPresentationOf(Relator(P));
     res := HashMap(1024);
     vg := VertexGraph(pres);
 

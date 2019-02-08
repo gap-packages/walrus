@@ -244,7 +244,7 @@ function(pg, eps, nrel, lrel, nexs, prf, path)
         else
             prf("failed \c");
         fi;
-        LogPregroupPresentation(path, pgp, res);
+#        LogPregroupPresentation(path, pgp, res);
         prf(Float((estop - estart) / 1000000000), " seconds\n");
         Add(runt, [pgp, res, estop - estart]);
     od;

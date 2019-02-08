@@ -44,7 +44,7 @@ InstallMethod(Inverse, "for a pregroup relator",
                                 , baselen := r!.baselen
                                 , __ID := -r!.__ID)
                             ));
-InstallMethod(Presentation,
+InstallMethod(PregroupPresentationOf,
               "for pregroup relators",
               [IsPregroupRelator],
               r -> r!.pres);
@@ -81,7 +81,7 @@ function(r)
 
     res := [];
 
-    for P in Places(Presentation(r)) do
+    for P in Places(PregroupPresentationOf(r)) do
         if Relator(P) = r then
             Add(res, P);
         fi;

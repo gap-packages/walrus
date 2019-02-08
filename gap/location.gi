@@ -74,9 +74,9 @@ function(l,r)
            and (l![2] = r![2]);
 end);
 
-InstallMethod(Presentation, "for a location",
+InstallMethod(PregroupPresentationOf, "for a location",
               [ IsPregroupLocationRep ],
-              l -> Presentation(l![1]));
+              l -> PregroupPresentationOf(l![1]));
 
 InstallMethod(ViewString, "for a location",
               [ IsPregroupLocationRep ],

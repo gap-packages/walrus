@@ -28,7 +28,7 @@ DeclareRepresentation("IsPregroupRelatorRep",
 BindGlobal("IsPregroupRelatorFamily", NewFamily("IsPregroupRelatorFamily"));
 BindGlobal("IsPregroupRelatorType", NewType(IsPregroupRelatorFamily, IsPregroupRelatorRep));
 
-DeclareAttribute("Presentation", IsPregroupRelator);
+DeclareAttribute("PregroupPresentationOf", IsPregroupRelator);
 DeclareAttribute("Base", IsPregroupRelator);
 DeclareAttribute("Exponent", IsPregroupRelator);
 DeclareAttribute("Places", IsPregroupRelator);

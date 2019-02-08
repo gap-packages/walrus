@@ -71,7 +71,7 @@ DeclareOperation("PregroupByRedRelators", [ IsFreeGroup, IsList, IsList ]);
 #! @EndExample
 DeclareOperation("PregroupOfFreeProduct", [IsGroup, IsGroup]);
 
-#
+# TODO: Implement this, or rather implement something with arbitrary arity
 DeclareOperation("PregroupOfFreeProduct", [IsGroupHomomorphism, IsGroupHomomorphism]);
 
 # FIXME: The above operations should work with this
@@ -82,11 +82,20 @@ DeclareGlobalFunction("PregroupOfFreeProductList");
 #! Return the pregroup of the free group <A>F</A>
 DeclareGlobalFunction("PregroupOfFreeGroup");
 
+
+#!
 #! @Section Filters and Representations
+#!
+#! This section gives an overview over the filters, categories
+#! and representations defined by &walrus;
 #!
 DeclareCategory("IsPregroup", IsObject and IsCollection);
 BindGlobal("PregroupFamily", NewFamily("PregroupFamily"));
 
+#! @Description
+#! A pregroup represented by its multiplication table, which is a
+#! square table of integers between 0 and the size of the pregroup,
+#! where 0 represents an undefined multiplication.
 DeclareRepresentation( "IsPregroupTableRep"
                      , IsPregroup and
                        IsComponentObjectRep and
@@ -95,6 +104,10 @@ DeclareRepresentation( "IsPregroupTableRep"
 BindGlobal("PregroupByTableType",
            NewType( PregroupFamily, IsPregroupTableRep));
 
+#! @Description
+#! Pregroup of a free group of rank <M>k</M>. The
+#! only defined products are <M>1\cdot x = x \cdot 1 = x</M>
+#! and <M>xx^{-1} = x^{-1}x = 1</M>, for all generators <M>x</M>.
 DeclareRepresentation( "IsPregroupOfFreeGroupRep"
                      , IsPregroup and
                        IsComponentObjectRep and
@@ -103,6 +116,11 @@ DeclareRepresentation( "IsPregroupOfFreeGroupRep"
 BindGlobal("PregroupOfFreeGroupType",
            NewType( PregroupFamily, IsPregroupOfFreeGroupRep));
 
+#! @Description
+#! Pregroup of the free product of a list of groups where
+#! products between non-trivial elements <M>g</M>, <M>h</M>
+#! are defined if <M>g,h</M> are contained in the same
+#! group.
 DeclareRepresentation( "IsPregroupOfFreeProductRep"
                      , IsPregroup and
                        IsComponentObjectRep and
@@ -112,8 +130,13 @@ BindGlobal("PregroupOfFreeProductType",
            NewType( PregroupFamily, IsPregroupOfFreeProductRep));
 
 
-#! @Section Attributes, Properties, and Operations
+# TODO: Products amalgamating subgroups.
 
+#! @Section Attributes, Properties, and Operations
+#!
+#! This section gives an overview over the attributes, properties,
+#! and operatins defined for pregroups.
+#!
 #! @Arguments pregroup,i
 #! @Description
 #! Get the <A>i</A>th element of <A>pregroup</A>. By convention
@@ -142,12 +165,14 @@ DeclareAttribute("MultiplicationTable", IsPregroup);
 DeclareAttribute("MultiplicationTableIDs", IsPregroup);
 
 #! @Arguments pregroup, names
+#! @Description
 #! Can be used to set more user-friendly display names for
 #! the elements of <A>pregroup</A>. The list <A>names</A>
 #! has to be of length <C>Size(<A>pregroup</A>)</C>.
 DeclareOperation("SetPregroupElementNames", [IsPregroup, IsList]);
 
 #! @Arguments pregroup
+#! @Description
 #! Return the list of names of elements of <A>pregroup</A>
 DeclareOperation("PregroupElementNames", [IsPregroup]);
 

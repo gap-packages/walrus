@@ -6,7 +6,8 @@ DeclareObject( "IsPregroupPresentation",
                IsComponentObjectRep and IsAttributeStoringRep,
                ["Pregroup", "Generators",
                 "Relators", "RelatorsAndInverses",
-                "Locations", "Places", "Bases", "Powers", "Roots",
+                "Locations", "Places", "Bases", "Powers",
+                # , "Roots",
                 "VertexGraph", "VertexGraphDistances", "VertexTriples",
                 "RLetters", "PlaceTriples"
 #                , "ShortRedBlobs"

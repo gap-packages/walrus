@@ -150,7 +150,7 @@ FindMatchingLocation := function(loc, c)
 
     b := OutLetter(loc);
     binv := PregroupInverse(b);
-    locs := LocationIndex(Presentation(loc));
+    locs := LocationIndex(PregroupPresentationOf(loc));
     locs := locs[ [binv, c] ];
 
     if locs <> fail then

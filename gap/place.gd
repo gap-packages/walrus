@@ -6,7 +6,7 @@ DeclareObject("IsPregroupPlace",
                IsPositionalObjectRep,
                # and IsAttributeStoringRep, # 
                [ "Relator"
-               , "Presentation"
+               , "PregroupPresentationOf"
                , "Location"
                , "Letter"
                , "Colour"
