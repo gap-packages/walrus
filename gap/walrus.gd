@@ -74,11 +74,6 @@
 #!           [ 2, 3, 3, 13/40 ], [ 1, 4, 4, 13/30 ] ], [ 2, 3, 3, 13/40 ] ]
 #! @EndExample
 
-
-# TODO: Move these or replace them
-# Random utility functions
-DeclareGlobalFunction("RepeedList");
-
 # Proving hyperblicity using RSym
 DeclareGlobalFunction("CheckReducedDiagram");
 DeclareGlobalFunction("ComputePlaceTriples");
