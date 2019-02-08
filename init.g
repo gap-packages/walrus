@@ -12,6 +12,6 @@ ReadPackage("walrus", "gap/presentation.gd");
 ReadPackage("walrus", "gap/location.gd");
 ReadPackage("walrus", "gap/place.gd");
 ReadPackage("walrus", "gap/anadata.gd");
-ReadPackage("walrus", "gap/anatph.gd");
+ReadPackage("walrus", "gap/walrus.gd");
 ReadPackage("walrus", "gap/small_pregroups.gd");
 ReadPackage("walrus", "gap/examples.gd");

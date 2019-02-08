@@ -13,6 +13,6 @@ ReadPackage("walrus", "gap/presentation.gi");
 ReadPackage("walrus", "gap/location.gi");
 ReadPackage("walrus", "gap/place.gi");
 ReadPackage("walrus", "gap/anadata.gi");
-ReadPackage("walrus", "gap/anatph.gi");
+ReadPackage("walrus", "gap/walrus.gi");
 ReadPackage("walrus", "gap/small_pregroups.gi");
 ReadPackage("walrus", "gap/examples.gi");
