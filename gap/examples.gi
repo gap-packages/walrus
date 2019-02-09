@@ -358,20 +358,21 @@ end);
     
 BindGlobal("StandardBenchmarks",
 function(nsamples, prn)
-    local d, ngens, rlen, nrels, r;
-    
-    Print("running standard benchmarks for anatph, ", nsamples, " each\n");
+    local d, ngens, rlen, nrels, r, path;
 
-    Print("= = = = = = =\n");
-    Print(" Quotients of free group pregroup\n");
-    Print("= = = = = = =\n");
-    for ngens in [2,4,8,16,32] do
-        for nrels in [1,2,3,4,5] do
-            for rlen in [10,20,30,40,50,60] do
-                Print("running "
-                     , ngens, " generators, "
-                     , nrels, " relators "
-                     , "of length ", rlen, "\n");
+    path := DirectoryTemporary();    
+    prn("running standard benchmarks for anatph, ", nsamples, " each\n");
+
+    prn("= = = = = = =\n");
+    prn(" Quotients of free group pregroup\n");
+    prn("= = = = = = =\n");
+    for ngens in [2,4,8,16] do
+        for nrels in [1,2,3,4] do
+            for rlen in [10,20,30,40,50] do
+                prn("running "
+                   , ngens, " generators, "
+                   , nrels, " relators "
+                   , "of length ", rlen, "\n");
                 r := BenchmarkRandom_FreeGroupPregroup(
                                                     1/12
                                                   , ngens
@@ -379,26 +380,28 @@ function(nsamples, prn)
                                                   , rlen
                                                   , nsamples
                                                   , prn
+                                                  , path
                      );
-                Print(StringBenchResult(AnalyseBenchmarkResult(r)));
+                prn(StringBenchResult(AnalyseBenchmarkResult(r)));
             od;
         od;
     od;
 
-    Print("= = = = = = =\n");
-    Print(" Quotients of 2-3-triangle group pregroup\n");
-    Print("= = = = = = =\n");
-    for nrels in [1,2,3,4,5] do
-        for rlen in [10,20,30,40,50,60] do
-            Print("running ", nrels, "relators of length ", rlen, "\n");
+    prn("= = = = = = =\n");
+    prn(" Quotients of 2-3-triangle group pregroup\n");
+    prn("= = = = = = =\n");
+    for nrels in [1,2,3,4] do
+        for rlen in [10,20,30,40,50] do
+            prn("running ", nrels, "relators of length ", rlen, "\n");
             r := BenchmarkRandom_TriPregroup(
                                               1/12
                                             , nrels
                                             , rlen
                                             , nsamples
                                             , prn
+                                            , path
                      );
-            Print(StringBenchResult(AnalyseBenchmarkResult(r)));
+            prn(StringBenchResult(AnalyseBenchmarkResult(r)));
         od;
     od;
 

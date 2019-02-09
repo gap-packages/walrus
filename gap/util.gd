@@ -4,7 +4,5 @@
 
 DeclareGlobalFunction("pg_word");
 DeclareGlobalFunction("Repeat");
-
 DeclareGlobalFunction("MaxPowerK");
-
 DeclareGlobalFunction("WalrusTestStandard");
