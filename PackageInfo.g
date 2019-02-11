@@ -5,8 +5,8 @@ SetPackageInfo( rec(
 
 PackageName := "walrus",
 Subtitle := "A new approach to proving hyperbolicity",
-Version := "0.8",
-Date := "08/02/2019", # dd/mm/yyyy format
+Version := "0.9",
+Date := "11/02/2019", # dd/mm/yyyy format
 
 Persons := [
   rec(
@@ -72,9 +72,9 @@ Dependencies := rec(
   GAP := ">= 4.10",
   NeededOtherPackages := [ [ "GAPDoc", ">= 1.5" ],
                            [ "datastructures", "0.2.2" ],
-                           [ "digraphs", ">= 0.10" ],
-                           [ "kbmag", ">= 1.5.4" ]],
-  SuggestedOtherPackages := [ [ "profiling", " >= 1.3.0"] ],
+                           [ "digraphs", ">= 0.10" ]],
+  SuggestedOtherPackages := [ [ "profiling", " >= 1.3.0"],
+                              [ "kbmag", ">= 1.5.4" ]],
   ExternalConditions := [ ],
 ),
 

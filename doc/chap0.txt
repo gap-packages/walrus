@@ -6,10 +6,10 @@
                    [1X A new approach to proving hyperbolicity [101X
   
   
-                                      0.8
+                                      0.9
   
   
-                                8 February 2019
+                                11 February 2019
   
   
                                 Markus Pfeiffer
@@ -33,48 +33,75 @@
   [1XContents (walrus)[101X
   
   1 [33X[0;0YOverview[133X
-    1.1 [33X[0;0YTesting Hyperbolicity[133X
+    1.1 [33X[0;0YExamples[133X
+      1.1-1 TriangleGroup
+      1.1-2 TriangleCommutatorQuotient
+      1.1-3 RandomTriangleQuotient
+      1.1-4 JackButtonGroup
+      1.1-5 RandomPregroupPresentation
+      1.1-6 RandomPregroupWord
+    1.2 [33X[0;0YTesting Hyperbolicity[133X
+    1.3 [33X[0;0YThe MAGMA-compatible interface[133X
   2 [33X[0;0YPregroups[133X
-    2.1 [33X[0;0YCreating pregroups[133X
-      2.1-1 PregroupByMultiplicationTable
-      2.1-2 PregroupOfFreeGroup
-      2.1-3 PregroupFromFreeProduct
-    2.2 [33X[0;0YCreating pregroup presentations[133X
-      2.2-1 RandomPregroupPresentation
-      2.2-2 TriangleGroup
-      2.2-3 TriSH
-    2.3 [33X[0;0YRunning the RSym tester[133X
-      2.3-1 RSymTest
-  3 [33X[0;0YThe MAGMA-comatible interface[133X
-  4 [33X[0;0YPregroups[133X
-    4.1 [33X[0;0YCreating Pregroups[133X
-      4.1-1 PregroupByTable
-      4.1-2 PregroupByRedRelators
-      4.1-3 PregroupOfFreeProduct
-      4.1-4 PregroupOfFreeGroup
-    4.2 [33X[0;0YFilters and Representations[133X
-      4.2-1 IsPregroup
-      4.2-2 
-      4.2-3 
-      4.2-4 
-    4.3 [33X[0;0YAttributes, Properties, and Operations[133X
-      4.3-1 []
-      4.3-2 IntermultPairs
-      4.3-3 One
-      4.3-4 MultiplicationTable
-      4.3-5 SetPregroupElementNames
-      4.3-6 PregroupElementNames
-    4.4 [33X[0;0YElements of Pregroups[133X
-      4.4-1 IsElementOfPregroup
-      4.4-2 IsElementOfPregroupRep
-      4.4-3 IsElementOfPregroupOfFreeGroupRep
-      4.4-4 PregroupOf
-      4.4-5 IsDefinedMultiplication
-      4.4-6 IsIntermultPair
-      4.4-7 PregroupInverse
-    4.5 [33X[0;0YSmall Pregroups[133X
-      4.5-1 NrSmallPregroups
-      4.5-2 SmallPregroup
+    2.1 [33X[0;0YCreating Pregroups[133X
+      2.1-1 PregroupByTable
+      2.1-2 PregroupByRedRelators
+      2.1-3 PregroupOfFreeProduct
+      2.1-4 PregroupOfFreeGroup
+    2.2 [33X[0;0YFilters and Representations[133X
+      2.2-1 IsPregroup
+      2.2-2 IsPregroupTableRep
+      2.2-3 IsPregroupOfFreeGroupRep
+      2.2-4 IsPregroupOfFreeProductRep
+    2.3 [33X[0;0YAttributes, Properties, and Operations[133X
+      2.3-1 []
+      2.3-2 IntermultPairs
+      2.3-3 One
+      2.3-4 MultiplicationTable
+      2.3-5 SetPregroupElementNames
+      2.3-6 PregroupElementNames
+    2.4 [33X[0;0YElements of Pregroups[133X
+      2.4-1 IsElementOfPregroup
+      2.4-2 IsElementOfPregroupRep
+      2.4-3 IsElementOfPregroupOfFreeGroupRep
+      2.4-4 PregroupOf
+      2.4-5 IsDefinedMultiplication
+      2.4-6 IsIntermultPair
+      2.4-7 PregroupInverse
+    2.5 [33X[0;0YSmall Pregroups[133X
+      2.5-1 NrSmallPregroups
+      2.5-2 SmallPregroup
+  3 [33X[0;0YPregroup Presentations[133X
+    3.1 [33X[0;0YConcepts[133X
+      3.1-1 [33X[0;0YLocations[133X
+      3.1-2 [33X[0;0YPlaces[133X
+    3.2 [33X[0;0YAttributes[133X
+      3.2-1 IsPregroupLocation
+      3.2-2 InLetter
+      3.2-3 OutLetter
+      3.2-4 Places
+      3.2-5 NextLocation
+      3.2-6 PrevLocation
+      3.2-7 __ID
+    3.3 [33X[0;0YCreating Pregroup Presentations[133X
+      3.3-1 NewPregroupPresentation
+      3.3-2 PregroupPresentationFromFp
+      3.3-3 PregroupPresentationToFpGroup
+    3.4 [33X[0;0YFilters, Attributes, and Properties[133X
+      3.4-1 IsPregroupPresentation
+      3.4-2 
+    3.5 [33X[0;0YHyperbolicity testing for pregroup presentations[133X
+      3.5-1 RSymTestOp
+      3.5-2 RSymTest
+      3.5-3 IsHyperbolic
+    3.6 [33X[0;0YInput and Output of Pregroup Presentations[133X
+      3.6-1 PregroupPresentationToKBMAG
+      3.6-2 PregroupPresentationToStream
+      3.6-3 PregroupPresentationFromStream
+      3.6-4 PregroupPresentationToSimpleStream
+      3.6-5 PregroupPresentationToFile
+      3.6-6 PregroupPresentationFromFile
+      3.6-7 PregroupPresentationToSimpleFile
   
   
   [32X
