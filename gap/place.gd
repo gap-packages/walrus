@@ -2,6 +2,18 @@
 # walrus: Computational Methods for Finitely Generated Monoids and Groups
 #
 
+
+#! @Chapter Pregroup Presentations
+#!
+#! @Section Concepts
+#!
+#! @Subsection Places
+#!
+#! A <E>place</E> <M>R(L, x, C)</M> on a pregroup relator <M>R</M> is a location
+#! (<Ref Subsect="Chapter_Pregroup_Presentations_Section_Concepts_Subsection_Locations"/>) together with a letter from the pregroup and a
+#! colour, which is either <E>red</E> or <E>green</E>.
+
+#
 DeclareCategory("IsPregroupPlace", IsObject);
 
 DeclareRepresentation( "IsPregroupPlaceRep"

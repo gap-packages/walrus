@@ -8,7 +8,7 @@
 #! @Chapter Overview
 #!
 #! This package provides the operations <C>IsHyperbolic</C>, ways of testing a
-#! finitely presented group for hyperbolicity (in the sense of Gromov).
+#! finitely presented group for hyperbolicity in the sense of Gromov.
 #! <P/>
 #!
 #! The algorithm is based on ideas by Richard Parker, and the theory is described
@@ -25,8 +25,8 @@
 #!
 #! As a simple example consider the following. Triangle groups are known to be
 #! hyperbolic when the sum <M>\frac{1}{p} + \frac{1}{q} + \frac{1}{r}</M> is less
-#! than <M>1</M>. The parameter for <Ref Func="IsHyperbolic" /> gives the algorithm
-#! a hint how hard it should try.
+#! than <M>1</M>. The parameter for <Ref Func="IsHyperbolic" Label="for IsPregroupPresentation"/>
+#! gives the algorithm a hint how hard it should try.
 #! @BeginExample
 #! gap> triangle := TriangleGroup(2,3,7);
 #! <pregroup presentation with 3 generators and 1 relators>

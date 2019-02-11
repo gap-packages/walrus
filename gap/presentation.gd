@@ -27,9 +27,10 @@ DeclareGlobalFunction("PregroupPresentationFromFp");
 #! a finitely presented group.
 DeclareGlobalFunction("PregroupPresentationToFpGroup");
 
-# @Section Filters, Attributes, and Properties
-# TODO: Untangle this
 
+#!
+#! @Section Filters, Attributes, and Properties
+#!
 DeclareCategory("IsPregroupPresentation", IsObject);
 DeclareRepresentation( "IsPregroupPresentationRep"
                      , IsPregroupPresentation and IsComponentObjectRep and IsAttributeStoringRep
@@ -38,6 +39,7 @@ DeclareRepresentation( "IsPregroupPresentationRep"
 BindGlobal( "PregroupPresentationType"
           , NewType( NewFamily( "PregroupPresentationFam")
                    , IsPregroupPresentationRep ) );
+
 
 DeclareAttribute("Pregroup", IsPregroupPresentation );
 DeclareAttribute("Generators", IsPregroupPresentation );
@@ -56,10 +58,6 @@ DeclareAttribute("ShortRedBlobIndex", IsPregroupPresentation );
 DeclareAttribute("OneStepReachablePlaces", IsPregroupPresentation );
 DeclareAttribute("LengthLongestRelator", IsPregroupPresentation );
 DeclareAttribute("LocationIndex", IsPregroupPresentation );
-
-# TODO: Obsolete?
-# "Roots",
-# "ShortRedBlobs"
 
 DeclareOperation("Blob",
                  [IsPregroupPresentation,
@@ -103,23 +101,65 @@ DeclareOperation("IsHyperbolic", [IsFreeGroup, IsObject, IsObject, IsRat]);
 
 #! @Section Input and Output of Pregroup Presentations
 
+#! @Arguments presentation
+#! @Returns A KBMAG rewriting system
 #! @Description
+#! Turns the pregroup presentation <A>presentation</A> into
+#! valid input for Knuth-Bendix rewriting using KBMAG.
 DeclareGlobalFunction("PregroupPresentationToKBMAG");
+
+#! @Arguments stream, presentation
 #! @Description
+#! Writes the pregroup presentation <A>presentation</A> to
+#! <A>stream</A>.
+#! @BeginExample
+#! gap> T := TriangleGroup(2,3,7);;
+#! gap> str := "";; stream := OutputTextString(str, true);;
+#! gap> PregroupPresentationToStream(stream, T);
+#! gap> Print(str);
+#! rec(
+#!   rels := [ [ 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3 ] ],
+#!   table := [ [ 1, 2, 3, 4 ], [ 2, 1, 0, 0 ], [ 3, 0, 4, 1 ], [ 4, 0, 1, 3 ] ] );
+#! @EndExample
 DeclareGlobalFunction("PregroupPresentationToStream");
+
+#! @Arguments stream
+#! @Returns A pregroup presentation
 #! @Description
+#! Reads a pregroup presentation from an input stream in the same format
+#! that <Ref Func="PregroupPresentationToStream" /> uses.
+#! @BeginExample
+#! gap> stream := InputTextString(str);
+#! InputTextString(0,146)
+#! gap> PregroupPresentationFromStream(stream);
+#! <pregroup presentation with 3 generators and 1 relators>
+#! @EndExample
 DeclareGlobalFunction("PregroupPresentationFromStream");
-# A simpler output format
+
+#! @Arguments stream, presentation
 #! @Description
+#! Writes the pregroup presentation <A>presentation</A> to
+#! <A>stream</A>. Uses a simpler format than
+#! <Ref Func="PregroupPresentationToStream" />
 DeclareGlobalFunction("PregroupPresentationToSimpleStream");
+
+#! @Arguments filename, presentation
 #! @Description
+#! Writes the pregroup presentation <A>presentation</A> to
+#! file with name <A>filename</A>.
 DeclareGlobalFunction("PregroupPresentationToFile");
+
+#! @Arguments filename
 #! @Description
+#! Reads a pregroup presentation from file with <A>filename</A>.
 DeclareGlobalFunction("PregroupPresentationFromFile");
+
+#! @Arguments stream, presentation
 #! @Description
+#! Writes the pregroup presentation <A>presentation</A> to
+#! file with name <A>filename</A> in a simple format.
 DeclareGlobalFunction("PregroupPresentationToSimpleFile");
-#! @Description
+
+
+
 DeclareGlobalFunction("LogPregroupPresentation");
-
-
-

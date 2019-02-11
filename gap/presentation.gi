@@ -335,7 +335,7 @@ end);
 InstallGlobalFunction(PregroupPresentationFromStream,
 function(stream)
     local res, r, pg, rels;
-    res := READ_ALL_COMMANDS(stream, false);
+    res := READ_ALL_COMMANDS(stream, false, false, IdFunc);
 
     if Length(res) = 1
        and res[1][1] = true

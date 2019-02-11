@@ -2,4 +2,17 @@
 
 @Chapter Pregroups
 
+@Chapter Pregroup Presentations
 
+@Section Concepts
+
+ Given a pregroup <M>P</M> there is a universal group <M>\mathcal{U}(P)</M> that
+ contains <M>P</M>. The concept of a pregroup presentation is a generalisation of
+ presentations over the free group, that is a pregroup presentation is a way of
+ defining a group as a quotient of a universal group over a pregroup by giving
+ relator words over the pregroup.
+
+ For the purposes of the RSym tester we introduce some more concepts.
+
+@Subsection Locations
+@Subsection Places

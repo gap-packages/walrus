@@ -8,8 +8,6 @@
 #! These small pregroups currently used for testing. Accessing the small
 #! pregroups database works as follows.
 
-
-
 # The global variable holding the small pregroups.
 BindGlobal("ANATPH_small_pregroups", []);
 

@@ -2,10 +2,6 @@
 # walrus: Computational Methods for Finitely Generated Monoids and Groups
 #
 #
-# Pregroups
-#
-# Declarations
-#
 #! @Chapter Pregroups
 #! Pregroups are the fundamental building block of pregroup presentations used
 #! in the hyperbolicity tester.
@@ -22,8 +18,8 @@
 #! If <A>enams</A> is a list of element names, which can be arbitrary GAP objects,
 #! with the convention that <C>enams[1]</C> is the name of the identity element, and
 #! <A>table</A> is a square table of non-negative integers that is the multiplication
-#! table of a pregroup, then <Ref Func="PregroupByMultiplicationTable"/> and
-#! <Ref Func="PregroupByMultiplicationTableNC"/> return a pregroup in multiplication
+#! table of a pregroup, then <Ref Func="PregroupByTable"/> and
+#! <Ref Func="PregroupByTableNC"/> return a pregroup in multiplication
 #! table representation.
 #! <P/>
 #! By convention the elements of the pregroup are numbered <C>[1..n]</C> with
@@ -32,7 +28,7 @@
 #! The axioms for a pregroup are checked by <Ref Func="PregroupByTable"/> and
 #! not checked by <Ref Func="PregroupByTableNC"/>.
 #! @BeginExample
-#! gap> pregroup := PregroupByMultiplicationTable( "1xyY",
+#! gap> pregroup := PregroupByTable( "1xyY",
 #! >                [ [1,2,3,4]
 #! >                , [2,1,0,0]
 #! >                , [3,4,0,1]
@@ -60,7 +56,7 @@ DeclareOperation("PregroupByRedRelators", [ IsFreeGroup, IsList, IsList ]);
 #! @Description
 #! Construct the pregroup of the free product of <A>G</A> and <A>H</A>.
 #! If <A>G</A> and <A>H</A> are finite groups, then
-#! <Ref Func="PregroupOfFreeProduct"/> returns the pregroup consisting of the
+#! <Ref Oper="PregroupOfFreeProduct" Label="for IsGroup, IsGroup"/> returns the pregroup consisting of the
 #! non-identity elements of <A>G</A> and <A>H</A> and an identity element.
 #! A product between two non-trivial elements is defined if and only if they are
 #! in the same group.
@@ -96,8 +92,8 @@ BindGlobal("PregroupFamily", NewFamily("PregroupFamily"));
 #! A pregroup represented by its multiplication table, which is a
 #! square table of integers between 0 and the size of the pregroup,
 #! where 0 represents an undefined multiplication.
-DeclareRepresentation( "IsPregroupTableRep"
-                     , IsPregroup and
+DeclareRepresentation( "IsPregroupTableRep",
+                       IsPregroup and
                        IsComponentObjectRep and
                        IsAttributeStoringRep
                      , []);
@@ -108,8 +104,8 @@ BindGlobal("PregroupByTableType",
 #! Pregroup of a free group of rank <M>k</M>. The
 #! only defined products are <M>1\cdot x = x \cdot 1 = x</M>
 #! and <M>xx^{-1} = x^{-1}x = 1</M>, for all generators <M>x</M>.
-DeclareRepresentation( "IsPregroupOfFreeGroupRep"
-                     , IsPregroup and
+DeclareRepresentation( "IsPregroupOfFreeGroupRep",
+                       IsPregroup and
                        IsComponentObjectRep and
                        IsAttributeStoringRep
                      , []);
@@ -121,8 +117,8 @@ BindGlobal("PregroupOfFreeGroupType",
 #! products between non-trivial elements <M>g</M>, <M>h</M>
 #! are defined if <M>g,h</M> are contained in the same
 #! group.
-DeclareRepresentation( "IsPregroupOfFreeProductRep"
-                     , IsPregroup and
+DeclareRepresentation( "IsPregroupOfFreeProductRep",
+                       IsPregroup and
                        IsComponentObjectRep and
                        IsAttributeStoringRep
                      , []);
