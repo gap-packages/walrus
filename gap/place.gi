@@ -140,7 +140,7 @@ function(P)
 
             for P2T in P2s do
                 P2 := P2T[1];  # Place reachable on R1 by consolidated edge
-                
+
                 P2_loc := Location(P2);
                 P2_inletter := InLetter(P2_loc);
                 P2_outletter := OutLetter(P2_loc);
@@ -156,7 +156,7 @@ function(P)
                        P2_letter = DigraphVertexLabel(vg, v2)[1][2] then
 
                         xi1 := Vertex(pres, v1, v, v2);
-                        if Colour(P2) = "green" then
+                        if IsTerminal(P2) or Colour(P2) = "green" then
                             AddOrUpdate(res, [ __ID(P2), len ], xi1);
 
                         elif Colour(P2) = "red" then
