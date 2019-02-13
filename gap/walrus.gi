@@ -353,6 +353,21 @@ function(loc1, loc2)
     fi;
 end);
 
+# Helper function to add or update
+# a "place quadruple"
+AddOrUpdatePQ := function(L, pq)
+    local pp;
+
+    pp := PositionProperty(L, x -> x[1] = pq[1] and x[2] = pq[2]);
+    if pp = fail then
+        Add(L, Immutable(pq));
+    else
+        if L[pp][4] < pq[4] then
+            L[pp] := Immutable(pq);
+        fi;
+    fi;
+end;
+
 # The RSym tester
 # The epsilon is chosen by the user
 InstallMethod(RSymTestOp, "for a pregroup presentation, and a rational",
@@ -435,17 +450,7 @@ function(pres, eps)
                                     Add( L, Immutable( [ osrp[1], Pq[2] + osrp[2], i, psip ] ) );
                                     return [fail, L, Pq];
                                 else
-                                    pp := PositionProperty(L, x -> (x[1] = osrp[1])
-                                                              and (x[2] = Pq[2] + osrp[2]));
-                                    if pp = fail then
-                                        Add(L, Immutable([osrp[1], Pq[2] + osrp[2], i, psip]) );
-                                    else
-                                        if L[pp][4] < psip then
-#                                            L[pp] := Immutable([-1, -1, -1, -1]); # to not confuse the loop over "L"
-                                            # Add(L, Immutable([osrp[1], Pq[2] + osrp[2], i, psip]));
-                                            L[pp] := Immutable([osrp[1], Pq[2] + osrp[2], i, psip]);
-                                        fi;
-                                    fi;
+                                    AddOrUpdatePQ(L, [osrp[1], Pq[2] + osrp[2], i, psip]);
                                 fi;
                             fi;
                         od;
