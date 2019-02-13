@@ -87,6 +87,11 @@ DeclareOperation("RSymTestOp", [IsPregroupPresentation, IsRat]);
 #! IsPregroupPresentation, IsRat" /> on that input.
 DeclareGlobalFunction("RSymTest");
 
+#! @Arguments place
+#! @Description
+#!
+DeclareGlobalFunction("VerifySolverAtPlace");
+
 #! @BeginGroup
 #! @Description Tests a given presentation for hyperbolicity using the RSym test procedure.
 #! @Arguments presentation
