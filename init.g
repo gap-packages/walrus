@@ -5,6 +5,12 @@
 #
 DeclareInfoClass( "InfoWalrus" );
 
+if IsPackageLoaded("kbmag") then
+   BindConstant("WALRUS_kbmag_available", true);
+else
+   BindConstant("WALRUS_kbmag_available", false);
+fi;
+
 ReadPackage("walrus", "gap/util.gd");
 ReadPackage("walrus", "gap/pregroup.gd");
 ReadPackage("walrus", "gap/relator.gd");
