@@ -110,11 +110,13 @@ function(path, pg, nrel, lrel)
     PregroupPresentationToFile(Concatenation(path, "/presentation-gap"), pgp);
     PregroupPresentationToSimpleFile(Concatenation(path, "/presentation-simple"), pgp);
 
+    if WALRUS_kbmag_available then
     # Also create a KBMAG input file, if RSymTest succeeds on this presentation,
     # we can try computing an automatic structure and run gpgeowa on the result
     # to check whether the group is hyperbolic.
     WriteRWS(KBMAGRewritingSystem(PregroupPresentationToFpGroup(pgp)),
              Concatenation(path, "/presentation-kbmag"));
+    fi;
 end);
 
 # Create a series of examples

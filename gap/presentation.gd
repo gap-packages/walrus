@@ -105,7 +105,8 @@ DeclareOperation("IsHyperbolic", [IsFreeGroup, IsObject, IsObject, IsRat]);
 #! @Returns A KBMAG rewriting system
 #! @Description
 #! Turns the pregroup presentation <A>presentation</A> into
-#! valid input for Knuth-Bendix rewriting using KBMAG.
+#! valid input for Knuth-Bendix rewriting using KBMAG. Only
+#! available if the kbmag package is available.
 DeclareGlobalFunction("PregroupPresentationToKBMAG");
 
 #! @Arguments stream, presentation

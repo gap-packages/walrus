@@ -283,9 +283,12 @@ end);
 
 #T Put pregroup relations in (if pregroup is not the pregroup of the free group)
 #T Choose sensible generator names and print them (maybe just use x1,x2,... or a,b,c))
+if WALRUS_kbmag_available then
+
 InstallGlobalFunction(PregroupPresentationToKBMAG,
     pres -> KBMAGRewritingSystem(PregroupPresentationToFpGroup(pres)));
 
+fi;
 
 # Writes out pregroup as a multiplication table
 # and then the relators, intended as a simple exchange
