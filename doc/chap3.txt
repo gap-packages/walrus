@@ -137,7 +137,8 @@
   [6XReturns:[106X  [33X[0;10YA KBMAG rewriting system[133X
   
   [33X[0;0YTurns   the   pregroup   presentation  [3Xpresentation[103X  into  valid  input  for
-  Knuth-Bendix rewriting using KBMAG.[133X
+  Knuth-Bendix  rewriting  using KBMAG. Only available if the kbmag package is
+  available.[133X
   
   [1X3.6-2 PregroupPresentationToStream[101X
   

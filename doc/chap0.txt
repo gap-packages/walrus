@@ -6,10 +6,10 @@
                    [1X A new approach to proving hyperbolicity [101X
   
   
-                                      0.9
+                                      0.99
   
   
-                                11 February 2019
+                                19 February 2019
   
   
                                 Markus Pfeiffer
