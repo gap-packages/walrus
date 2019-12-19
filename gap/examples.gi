@@ -6,7 +6,10 @@
 # With presentation <a,b,t | a^t = ab, b^t = ba>
 #
 # Alan Logan says this is hyperbolic, but noone wants to publish
-# this result alone. At the moment the tester fails though.
+# this result alone.
+#
+# Tester now proves this to be hyperbolic, after corrected
+# relation. Bug reported by email by Chris Chalk <chalk235@gmail.com>
 #
 InstallGlobalFunction("JackButtonGroup",
 function()
@@ -15,7 +18,7 @@ function()
     pg := PregroupOfFreeGroup(3);
     SetPregroupElementNames(pg, "1aAbBtT");
     return NewPregroupPresentation(pg, [ pg_word( pg, [7,2,6,5,3])
-                                       , pg_word( pg, [7,2,6,3,5]) ]);
+                                       , pg_word( pg, [7,4,6,3,5]) ]);
 end);
 
 # Triangle Groups
