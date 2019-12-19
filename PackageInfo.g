@@ -5,8 +5,9 @@ SetPackageInfo( rec(
 
 PackageName := "walrus",
 Subtitle := "A new approach to proving hyperbolicity",
-Version := "0.99",
-Date := "19/02/2019", # dd/mm/yyyy format
+Version := "0.999",
+Date := "19/12/2019", # dd/mm/yyyy format
+License := "BSD-3-Clause",
 
 Persons := [
   rec(
