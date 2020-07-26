@@ -43,8 +43,7 @@
 #! One can also create pregroup presentations by giving a pregroup
 #! and relators, that is, words over the pregroup.
 #! @BeginExample
-#! gap> G1 := CyclicGroup(3);
-#! <pc group of size 3 with 1 generators>
+#! gap> G1 := CyclicGroup(3);;
 #! gap> pg := PregroupOfFreeProduct(G1,G1);
 #! <pregroup with 5 elements in table rep>
 #! gap> rel := [2,5,3,4,3,4,3,4,3,5,2,4,3,5,2,4,3,5,3,4,2,4,3,5];
