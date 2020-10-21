@@ -46,11 +46,25 @@ InstallMethod(ViewString
              , [IsPregroupPresentationRep],
 function(pgp)
     # Note that we do not really regard 1 as a generator
-    local res;
+    local res, Pluralize2;
+
+    # Remove this (and the suffix '2') when walrus requires GAP 4.12 or later
+    if CompareVersionNumbers(GAPInfo.Version, "4.12") then
+      Pluralize2 := Pluralize;
+    else
+      Pluralize2 := function(n, str)
+        if n <> 1 then
+          str := Concatenation(str, "s");
+        fi;
+        return Concatenation("\>", String(n), "\< ", str);
+      end;
+    fi;
 
     return STRINGIFY("<pregroup presentation with "
-                    , Size(pgp!.pg)-1, " generators and "
-                    , Length(pgp!.rels), " relators>");
+                    , Pluralize2(Size(pgp!.pg)-1, "generator")
+                    , " and "
+                    , Pluralize2(Length(pgp!.rels), "relator")
+                    , ">");
 end);
 
 InstallMethod(Pregroup

@@ -29,11 +29,11 @@
 #! gives the algorithm a hint how hard it should try.
 #! @BeginExample
 #! gap> triangle := TriangleGroup(2,3,7);
-#! <pregroup presentation with 3 generators and 1 relators>
+#! <pregroup presentation with 3 generators and 1 relator>
 #! gap> IsHyperbolic(triangle, 1/6);
 #! true
 #! gap> triangle := TriangleGroup(3,3,3);
-#! <pregroup presentation with 3 generators and 1 relators>
+#! <pregroup presentation with 3 generators and 1 relator>
 #! gap> IsHyperbolic(triangle, 1/6);
 #! [ fail, [ [ 1, 0, 0, 0 ], [ 2, 1, 1, 1/36 ], [ 1, 2, 2, 1/18 ],
 #!          [ 2, 3, 3, 1/12 ], [ 1, 4, 4, 1/9 ], [ 2, 5, 5, 5/36 ],
@@ -49,7 +49,7 @@
 #! gap> rel := [2,5,3,4,3,4,3,4,3,5,2,4,3,5,2,4,3,5,3,4,2,4,3,5];
 #! [ 2, 5, 3, 4, 3, 4, 3, 4, 3, 5, 2, 4, 3, 5, 2, 4, 3, 5, 3, 4, 2, 4, 3, 5 ]
 #! gap> pgp := NewPregroupPresentation(pg,[pg_word(pg,rel)]);
-#! <pregroup presentation with 4 generators and 1 relators>
+#! <pregroup presentation with 4 generators and 1 relator>
 #! gap> res := RSymTest(pgp, 0);;
 #! gap> res[1];
 #! fail

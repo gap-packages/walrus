@@ -133,7 +133,7 @@ DeclareGlobalFunction("PregroupPresentationToStream");
 #! gap> stream := InputTextString(str);
 #! InputTextString(0,146)
 #! gap> PregroupPresentationFromStream(stream);
-#! <pregroup presentation with 3 generators and 1 relators>
+#! <pregroup presentation with 3 generators and 1 relator>
 #! @EndExample
 DeclareGlobalFunction("PregroupPresentationFromStream");
 

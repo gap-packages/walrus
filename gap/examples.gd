@@ -15,13 +15,13 @@
 #! <M>(xy)^r</M>.
 #! @BeginExample
 #! gap> T := TriangleGroup(2,3,7);
-#! <pregroup presentation with 3 generators and 1 relators>
+#! <pregroup presentation with 3 generators and 1 relator>
 #! gap> Pregroup(T);
 #! <pregroup with 4 elements in table rep>
 #! gap> Relators(T);
 #! [ <pregroup relator ([ "2", "3" ])^7> ]
 #! gap> T := TriangleGroup(17,22,100);
-#! <pregroup presentation with 37 generators and 1 relators>
+#! <pregroup presentation with 37 generators and 1 relator>
 #! gap> Pregroup(T);
 #! <pregroup with 38 elements in table rep>
 #! gap> Relators(T);

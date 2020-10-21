@@ -128,7 +128,7 @@ gap> pr := RandomPregroupPresentation(pg, 5, 20);
         epsilon value of <A>epsilon</A>.
         <Example><![CDATA[
 gap> tri_2_3_7 := TriangleGroup(2,3,7);
-<pregroup presentation with 3 generators and 1 relators>
+<pregroup presentation with 3 generators and 1 relator>
 gap> RSymTest(tri_2_3_7, 1/6);
 true
         ]]></Example>
