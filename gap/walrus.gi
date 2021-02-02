@@ -30,6 +30,13 @@
 #  - Make a reasonably standard format (and exporter/importer) to exchange
 #    pregroup presentations so we can move them between GAP/other
 #    implementations for cross-checking
+#  - some names are unfortunate:
+#
+#    PregroupPlace should be PregroupPresentationPlace
+#    PregroupRelator should be PregroupPresentationRelator
+#    generally I would like to implement proper pregroup presentations, defining
+#    the "unive rsal group over a pregroup"
+#    and then quotients of that, in the same way as quotients of free groups are implemented
 
 #
 # TODO (mathematical/functional)
@@ -488,4 +495,63 @@ InstallMethod(IsHyperbolic, "for a free group, a list, a list, and a rational nu
 InstallMethod(IsHyperbolic, "for a pregroup presentation, and a rational number",
               [IsPregroupPresentation, IsRat],
               {pres, eps} -> RSymTest(pres,eps));
+
+
+InstallGlobalFunction("VerifySolverAtPlace",
+function(place)
+    local n, L, places, psip, osrp, pp, i, pq, P, Q, Pq, np, chi;
+
+    places := Places(PregroupPresentationOf(place));
+
+    if not IsPregroupPlace(place) then
+        Error("<place> has to be a PregroupPlace");
+    fi;
+
+    n := Length(Relator(place));
+
+    if IsTerminal(place) then
+        Error("Terminal place in VerifySolverAtPlace");
+    elif Colour(place) = "green" then
+        L := [(place, 0, 1, 3/4)];
+    elif Colour(place) = "red" then
+        L := [(place, 0, 0, 1)];
+        for np in NextPlaces(place) do
+            Add(L, [np, 1, 1, 1 + chi]);
+        od;
+    fi;
+
+    for i in [1..3] do
+        for pq in L do
+
+            if pq[3] = i then
+                P := pq[1];
+                osrp := OneStepReachablePlaces(P);
+                for Q in Keys(osrp) do
+                    psip := pq[4] + Q[2];
+
+                    if pq[2] + Q[2] < n/2 and
+                       not IsTerminal(places[Q[1]]) and
+                       psip > 0 then
+                        pp := PositionProperty(L, x -> (x[1] = osrp[1])
+                                                  and (x[2] = Pq[2] + osrp[2]));
+                        if pp = fail then
+                            Add(L, Immutable([osrp[1], pq[2] + Q[2], i + 1, psip]) );
+                        else
+                            if L[pp][4] < psip then
+                                L[pp] := Immutable([osrp[1], Pq[2] + Q[2], i + 1, psip]);
+                            fi;
+                        fi;
+                    fi;
+
+                    if pq[2] + Q[2] >= n/2 and
+                       IsTerminal(places[Q[1]]) and
+                       psip > 0 then
+                        return [fail, L];
+                    fi;
+                od;
+            fi;
+        od;
+    od;
+    return true;
+end);
 

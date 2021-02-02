@@ -29,6 +29,7 @@ DeclareAttribute("Location", IsPregroupPlace);
 DeclareAttribute("Letter", IsPregroupPlace);
 DeclareAttribute("Colour", IsPregroupPlace);
 DeclareAttribute("NextPlaces", IsPregroupPlace);
+DeclareAttribute("IsTerminal", IsPregroupPlace);
 DeclareAttribute("OneStepReachablePlaces", IsPregroupPlace);
 DeclareAttribute("__ID", IsPregroupPlace);
 

@@ -4,9 +4,16 @@
 
 ## Places
 InstallGlobalFunction(NewPlace,
-function(loc, c, colour)
+function(loc, props...)
     local p;
-    p := Objectify(PregroupPlaceType, [loc,c,colour]);
+    if Length(props) = 1 and props[1] = "terminal" then
+        p := Objectify(PregroupPlaceType, [loc,,,true]);
+    elif Length(props) = 2 then
+        # FIXME: better argument testing
+        p := Objectify(PregroupPlaceType, [loc,props[1],props[2],false]);
+    else
+        Error("usage: NewPlace(location, \"terminal\") or NewPlace(location, letter, colour)");
+    fi;
     Add(loc![3], p);
     return p;
 end);
@@ -40,6 +47,11 @@ function(p)
     fi;
     return p![6];
 end);
+
+InstallMethod(IsTerminal
+             , "for a pregroup place"
+             , [IsPregroupPlaceRep],
+             p -> p![4] );
 
 AddOrUpdate := function(map, key, val)
     local tmp;
@@ -128,7 +140,7 @@ function(P)
 
             for P2T in P2s do
                 P2 := P2T[1];  # Place reachable on R1 by consolidated edge
-                
+
                 P2_loc := Location(P2);
                 P2_inletter := InLetter(P2_loc);
                 P2_outletter := OutLetter(P2_loc);
@@ -144,7 +156,7 @@ function(P)
                        P2_letter = DigraphVertexLabel(vg, v2)[1][2] then
 
                         xi1 := Vertex(pres, v1, v, v2);
-                        if Colour(P2) = "green" then
+                        if IsTerminal(P2) or Colour(P2) = "green" then
                             AddOrUpdate(res, [ __ID(P2), len ], xi1);
 
                         elif Colour(P2) = "red" then
@@ -172,7 +184,9 @@ InstallMethod(OneStepReachablePlaces
              , [IsPregroupPlaceRep],
 function(p)
     if not IsBound(p![7]) then
-        if Colour(p) = "red" then
+        if IsTerminal(p) then
+            p![7] := [];
+        elif Colour(p) = "red" then
             p![7] := OneStepRedCase(p);
         elif Colour(p) = "green" then
             p![7] := OneStepGreenCase(p);
