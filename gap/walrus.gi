@@ -199,7 +199,7 @@ function(pres)
     return vtl;
 end);
 
-InstallGlobalFunction(Vertex,
+InstallGlobalFunction(WalrusVertex,
 function(pres, v1, v, v2)
     local vt, t;
 

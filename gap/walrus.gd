@@ -77,8 +77,8 @@
 DeclareGlobalFunction("CheckReducedDiagram");
 DeclareGlobalFunction("ComputePlaceTriples");
 
-# Not a good choice of name
-DeclareGlobalFunction("Vertex");
+# Vertex is an overloaded word, so name this WalrusVertex
+DeclareGlobalFunction("WalrusVertex");
 
 DeclareGlobalFunction("ShortBlobWords");
 

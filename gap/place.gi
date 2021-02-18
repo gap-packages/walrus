@@ -81,7 +81,7 @@ function(P)
                 #T this check is new, and assuming the paper
                 #T is accurate correct
                 if DigraphVertexLabel(vg, v2)[1][2] = x then
-                    xi2 := Vertex(pres, v1, v, v2);
+                    xi2 := WalrusVertex(pres, v1, v, v2);
 
                     AddOrUpdate(res, [ __ID(Q), 1 ], xi1 + xi2);
                 fi;
@@ -143,7 +143,7 @@ function(P)
                     if DigraphVertexLabel(vg, v2)[1][1] = P2_outletterinv and
                        P2_letter = DigraphVertexLabel(vg, v2)[1][2] then
 
-                        xi1 := Vertex(pres, v1, v, v2);
+                        xi1 := WalrusVertex(pres, v1, v, v2);
                         if Colour(P2) = "green" then
                             AddOrUpdate(res, [ __ID(P2), len ], xi1);
 
