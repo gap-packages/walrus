@@ -122,8 +122,7 @@
   relators, that is, words over the pregroup.[133X
   
   [4X[32X  Example  [32X[104X
-    [4X[25Xgap>[125X [27XG1 := CyclicGroup(3);[127X[104X
-    [4X[28X<pc group of size 3 with 1 generators>[128X[104X
+    [4X[25Xgap>[125X [27XG1 := CyclicGroup(3);;[127X[104X
     [4X[25Xgap>[125X [27Xpg := PregroupOfFreeProduct(G1,G1);[127X[104X
     [4X[28X<pregroup with 5 elements in table rep>[128X[104X
     [4X[25Xgap>[125X [27Xrel := [2,5,3,4,3,4,3,4,3,5,2,4,3,5,2,4,3,5,3,4,2,4,3,5];[127X[104X

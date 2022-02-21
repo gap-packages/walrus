@@ -77,12 +77,12 @@
   [1X2.2-1 IsPregroup[101X
   
   [33X[1;0Y[29X[2XIsPregroup[102X( [3Xarg[103X ) [32X filter[133X
-  [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
+  [6XReturns:[106X  [33X[0;10Y[9Xtrue[109X or [9Xfalse[109X[133X
   
   [1X2.2-2 IsPregroupTableRep[101X
   
   [33X[1;0Y[29X[2XIsPregroupTableRep[102X( [3Xarg[103X ) [32X filter[133X
-  [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
+  [6XReturns:[106X  [33X[0;10Y[9Xtrue[109X or [9Xfalse[109X[133X
   
   [33X[0;0YA  pregroup represented by its multiplication table, which is a square table
   of  integers  between  0 and the size of the pregroup, where 0 represents an
@@ -91,7 +91,7 @@
   [1X2.2-3 IsPregroupOfFreeGroupRep[101X
   
   [33X[1;0Y[29X[2XIsPregroupOfFreeGroupRep[102X( [3Xarg[103X ) [32X filter[133X
-  [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
+  [6XReturns:[106X  [33X[0;10Y[9Xtrue[109X or [9Xfalse[109X[133X
   
   [33X[0;0YPregroup of a free group of rank [22Xk[122X. The only defined products are [22X1⋅ x = x ⋅
   1 = x[122X and [22Xxx^-1 = x^-1x = 1[122X, for all generators [22Xx[122X.[133X
@@ -99,7 +99,7 @@
   [1X2.2-4 IsPregroupOfFreeProductRep[101X
   
   [33X[1;0Y[29X[2XIsPregroupOfFreeProductRep[102X( [3Xarg[103X ) [32X filter[133X
-  [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
+  [6XReturns:[106X  [33X[0;10Y[9Xtrue[109X or [9Xfalse[109X[133X
   
   [33X[0;0YPregroup  of  the  free  product  of a list of groups where products between
   non-trivial  elements  [22Xg[122X,  [22Xh[122X  are  defined  if [22Xg,h[122X are contained in the same
@@ -155,17 +155,17 @@
   [1X2.4-1 IsElementOfPregroup[101X
   
   [33X[1;0Y[29X[2XIsElementOfPregroup[102X( [3Xarg[103X ) [32X filter[133X
-  [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
+  [6XReturns:[106X  [33X[0;10Y[9Xtrue[109X or [9Xfalse[109X[133X
   
   [1X2.4-2 IsElementOfPregroupRep[101X
   
   [33X[1;0Y[29X[2XIsElementOfPregroupRep[102X( [3Xarg[103X ) [32X filter[133X
-  [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
+  [6XReturns:[106X  [33X[0;10Y[9Xtrue[109X or [9Xfalse[109X[133X
   
   [1X2.4-3 IsElementOfPregroupOfFreeGroupRep[101X
   
   [33X[1;0Y[29X[2XIsElementOfPregroupOfFreeGroupRep[102X( [3Xarg[103X ) [32X filter[133X
-  [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
+  [6XReturns:[106X  [33X[0;10Y[9Xtrue[109X or [9Xfalse[109X[133X
   
   [1X2.4-4 PregroupOf[101X
   
