@@ -63,7 +63,7 @@ and probably quite a few more""",
 PackageDoc := rec(
   BookName  := "walrus",
   ArchiveURLSubset := ["doc"],
-  HTMLStart := "doc/chap0.html",
+  HTMLStart := "doc/chap0_mj.html",
   PDFFile   := "doc/manual.pdf",
   SixFile   := "doc/manual.six",
   LongTitle := "Computational Methods for Finitely Generated Monoids and Groups",
