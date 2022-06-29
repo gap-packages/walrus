@@ -20,7 +20,7 @@ proofs that groups are hyperbolic".
 
 # Installation
 
-This package works with [GAP](http://www.gap-system.org) version `4.10.1` or
+This package works with [GAP](https://www.gap-system.org) version `4.10.1` or
 later, and does not require compilation of a kernel module.
 
 It depends on the GAP packages `GAPDoc`, `io`, `digraphs`, `kbmag`, and
@@ -35,7 +35,7 @@ package tarball.
 
 For further information also check the package homepage at
 
-  <http://gap-packages.github.io/walrus/>
+  <https://gap-packages.github.io/walrus/>
 
 ## Bug reports and feature requests
 
