@@ -1,5 +1,6 @@
 name: walrus
-version: 0.9991
+version: "0.9991"
+license: "BSD-3-Clause"
 date: 2022-02-21
 description: |
     A new approach to proving hyperbolicity
