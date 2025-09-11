@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/gap-packages/walrus/workflows/CI/badge.svg?branch=master)](https://github.com/gap-packages/walrus/actions?query=workflow%3ACI+branch%3Amaster)
+[![CI](https://github.com/gap-packages/walrus/actions/workflows/CI.yml/badge.svg)](https://github.com/gap-packages/walrus/actions/workflows/CI.yml)
 [![Code Coverage](https://codecov.io/github/gap-packages/walrus/coverage.svg?branch=master&token=)](https://codecov.io/gh/gap-packages/walrus)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/gap-packages/walrus/master?filepath=Polynomial-time%20proofs%20that%20groups%20are%20hyperbolic.ipynb)
 
