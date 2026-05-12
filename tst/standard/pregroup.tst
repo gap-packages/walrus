@@ -15,4 +15,3 @@ fail
 gap> pgps := List(ANATPH_small_pregroups[6], tbl -> PregroupByTable([1..6], tbl));;
 gap> Length(pgps);
 28
-gap> STOP_TEST("ANATPH: pregroup tests", 1000);
