@@ -262,6 +262,11 @@ BindGlobal("RandomPregroupFromSmallGroups",
 function()
     local n, i, g1, g2;
 
+    if not IsPackageMarkedForLoading("smallgrp", "") then
+        ErrorNoReturn("RandomPregroupFromSmallGroups requires the SmallGrp ",
+                      "package, please load it via LoadPackage(\"smallgrp\")");
+    fi;
+
     n := Random([1..64]);
     i := Random([1..NrSmallGroups(n)]);
     g1 := SmallGroup(n,i);

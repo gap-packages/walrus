@@ -10,4 +10,6 @@ gap> Length(RandomPregroupWord(SmallPregroup(4,1), 10));
 10
 gap> tmp := TmpDirectory();;
 gap> CreateRandomExample(tmp, SmallPregroup(4, 2), 4, 10);
-gap> RandomPregroupFromSmallGroups();;
+gap> if IsPackageMarkedForLoading("smallgrp", "") then
+>      RandomPregroupFromSmallGroups();;
+>    fi;
