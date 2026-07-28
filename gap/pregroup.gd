@@ -11,7 +11,6 @@
 #! This section describes functions to create pregroups from multiplication
 #! tables, free groups, and free products of finite groups.
 
-#! @BeginGroup PregroupByTableGrp
 #! @Arguments enams, table
 #! @Returns A pregroup
 #! @Description
@@ -36,8 +35,10 @@
 #! <pregroup with 4 elements in table rep>
 #! @EndExample
 DeclareGlobalFunction("PregroupByTable");
+
+#! Companion to <Ref Func="PregroupByTable"/> which does not check the
+#! axions for a pregroup.
 DeclareGlobalFunction("PregroupByTableNC");
-#! @EndGroup
 
 #! @Arguments F, rrel, inv
 #! @Description
