@@ -23,8 +23,8 @@ proofs that groups are hyperbolic".
 This package works with [GAP](https://www.gap-system.org) version `4.10.1` or
 later, and does not require compilation of a kernel module.
 
-It depends on the GAP packages `GAPDoc`, `io`, `digraphs`, `kbmag`, and
-`datastructures`.
+It depends on the GAP packages `datastructures` and `digraphs`. The packages
+`kbmag`, `profiling` and `smallgrp` are optional.
 
 ## Documentation
 

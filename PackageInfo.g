@@ -71,8 +71,7 @@ PackageDoc := rec(
 
 Dependencies := rec(
   GAP := ">= 4.10",
-  NeededOtherPackages := [ [ "GAPDoc", ">= 1.5" ],
-                           [ "datastructures", "0.2.2" ],
+  NeededOtherPackages := [ [ "datastructures", "0.2.2" ],
                            [ "digraphs", ">= 0.10" ]],
   SuggestedOtherPackages := [ [ "profiling", " >= 1.3.0"],
                               [ "kbmag", ">= 1.5.4" ],
