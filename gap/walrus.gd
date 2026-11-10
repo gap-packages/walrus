@@ -6,14 +6,6 @@
 
 #!
 #! @Chapter Overview
-#!
-#! This package provides the operations <C>IsHyperbolic</C>, ways of testing a
-#! finitely presented group for hyperbolicity in the sense of Gromov.
-#! <P/>
-#!
-#! The algorithm is based on ideas by Richard Parker, and the theory is described
-#! in the paper "Polynomial time proofs that groups are hyperbolic".
-#!
 #! @Section Testing Hyperbolicity
 #!
 #! The main function of this package is the so-called RSym-tester. Given a
